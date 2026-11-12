@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixcade — Sign in</title>
+<meta name="theme-color" content="#0b0b12">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#0b0b12; color:#f2f2f8; font-family:-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .box { max-width:420px; width:100%; text-align:center; display:flex; flex-direction:column; gap:14px; align-items:center; }
+  .logo { font-size:30px; font-weight:800; }
+  .logo span { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  p { color:#b9b9cc; font-size:15px; line-height:1.55; }
+  .small { color:#6d6d84; font-size:13px; }
+  #gsiBtn { display:flex; justify-content:center; min-height:44px; margin-top:4px; }
+  .btn { display:none; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; border:0; border-radius:999px; padding:13px 28px; font-size:15.5px; font-weight:700; cursor:pointer; text-decoration:none; }
+  .err { color:#ff9a8a; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">Pix<span>cade</span></div>
+  <p id="msg">Sign in with Google here in your browser — you'll be sent straight back into the Pixcade app, signed in.</p>
+  <div id="gsiBtn"></div>
+  <a class="btn" id="backBtn" href="#">Open Pixcade</a>
+  <p class="small" id="sub">Đăng nhập bằng Google ở đây, xong bạn sẽ được đưa thẳng về app Pixcade trong trạng thái đã đăng nhập.</p>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+(function () {
+  var API = 'https://retroplay-api.hahahahuhuahajh.workers.dev';
+  var CLIENT_ID = '650217428363-6kgt80snptcq3il06tlglqqv02seo1e2.apps.googleusercontent.com';
+  var msg = document.getElementById('msg');
+  function back(url) {
+    window.__lastAuthRedirect = url;
+    var b = document.getElementById('backBtn');
+    b.href = url;
+    b.style.display = 'inline-block';
+    msg.textContent = 'Signed in! Opening Pixcade… tap the button if it does not open by itself.';
+    location.href = url;
+  }
+  function onGoogle(resp) {
+    msg.textContent = 'Signing you in…';
+    fetch(API + '/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: resp.credential }),
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.token) { msg.innerHTML = '<span class="err">Sign-in failed. Please go back to the app and try again.</span>'; return; }
+      back('pixcade://auth#t=' + encodeURIComponent(j.token) + '&u=' + encodeURIComponent(JSON.stringify(j.user || {})));
+    }).catch(function () {
+      msg.innerHTML = '<span class="err">Connection problem. Please try again.</span>';
+    });
+  }
+  function init() {
+    if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(init, 400); return; }
+    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onGoogle });
+    google.accounts.id.renderButton(document.getElementById('gsiBtn'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with' });
+  }
+  init();
+})();
+</script>
+</body>
+</html>
