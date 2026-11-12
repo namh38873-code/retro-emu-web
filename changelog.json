@@ -1,5 +1,12 @@
 [
   {
+    "build": 54,
+    "v": "5.4",
+    "date": "2026-11-12",
+    "en": "Crisp button sounds across the app interface (never in-game). Toggle them in Settings.",
+    "vi": "Tiếng bấm tách giòn cho mọi nút trong giao diện app (không kêu trong game). Bật/tắt trong Cài đặt."
+  },
+  {
     "build": 53,
     "v": "5.3",
     "date": "2026-11-12",

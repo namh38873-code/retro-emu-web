@@ -1,6 +1,6 @@
 {
-  "build": 53,
-  "notes_en": "Fixed the search box: it used to close after the first letter, so full game names could not be typed. The search bar now stays open while you type.",
-  "notes_vi": "Sửa ô tìm kiếm: trước đây gõ 1 chữ là ô tự đóng, không gõ hết tên game được. Giờ ô tìm kiếm giữ nguyên trong lúc gõ.",
-  "version": "5.3"
+  "build": 54,
+  "notes_en": "Button sounds are here: a crisp tick on every button in the app (never inside games), with its own Settings on/off switch.",
+  "notes_vi": "Đã có tiếng bấm nút: tiếng tách giòn cho mọi nút trong app (không kêu trong game), có công tắc bật/tắt trong Cài đặt.",
+  "version": "5.4"
 }
