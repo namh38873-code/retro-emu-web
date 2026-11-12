@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RetroPlay — Retro games in your browser</title>
+<title>Pixcade: Retro Play — Retro games in your browser</title>
 <meta name="description" content="Play free homebrew NES, GBA, Game Boy and SNES games right in your browser, or load your own ROM files. Touch controls, joystick and auto-save included.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b0b12">
@@ -138,6 +138,34 @@
   #toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%) translateY(16px); background:#23232f; color:#f2f2f5; font-size:13.5px; padding:11px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:70; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.5); }
   #toast.on { opacity:1; transform:translateX(-50%); }
 
+  /* --- Center add button + account/settings (v3.8) --- */
+  .navfab { flex:none; width:56px; height:56px; border-radius:50%; margin:-24px 4px 0; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); box-shadow:0 8px 22px rgba(28,143,232,.5); border:3.5px solid #0a0a10; color:#fff; font-size:30px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .navfab:active { filter:brightness(1.15); }
+  .navitem .navava { width:23px; height:23px; border-radius:50%; object-fit:cover; display:none; }
+  .navitem.hasava svg { display:none; }
+  .navitem.hasava .navava { display:block; }
+  .acct-top { display:flex; align-items:center; justify-content:space-between; }
+  .acct-card { margin-top:14px; background:#12121a; border-radius:18px; padding:16px; }
+  .acct-card .big { font-size:16px; font-weight:700; }
+  .acct-card p.desc { color:#9a9ab0; font-size:13.5px; line-height:1.6; margin:7px 0 13px; }
+  #gsiBtn { display:flex; justify-content:center; min-height:44px; }
+  .acct-head { display:flex; gap:14px; align-items:center; }
+  .acct-ava { width:64px; height:64px; border-radius:50%; object-fit:cover; background:#26263a; flex:none; }
+  .acct-name { font-size:17.5px; font-weight:800; word-break:break-word; }
+  .acct-email { color:#9a9ab0; font-size:13px; margin-top:2px; word-break:break-all; }
+  .planbadge { display:inline-block; margin-top:6px; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; font-size:11px; font-weight:800; padding:2.5px 9px; border-radius:999px; letter-spacing:.4px; }
+  .setrow { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 0; font-size:14.5px; font-weight:600; }
+  .namerow { display:flex; gap:8px; margin:4px 0 6px; }
+  .namerow input { flex:1; min-width:0; background:#1b1b26; border:1px solid #2a2a3a; border-radius:10px; color:#f2f2f5; font-size:14.5px; padding:10px 12px; outline:none; }
+  .btn-small { flex:none; background:#1b1b26; border:1px solid #34344a; color:#f2f2f5; font-size:13.5px; font-weight:700; padding:9px 15px; border-radius:10px; cursor:pointer; }
+  .btn-blue { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); border:none; color:#fff; }
+  .btn-full { display:block; width:100%; margin-top:10px; background:#1b1b26; border:1px solid #34344a; color:#f2f2f5; font-size:14.5px; font-weight:700; padding:12px 0; border-radius:12px; cursor:pointer; text-align:center; }
+  .btn-full.danger { color:#ff7070; }
+  .syncstate { color:#8b8b9e; font-size:12.5px; font-weight:500; text-align:right; }
+  .seg { display:flex; background:#1b1b26; border:1px solid #2a2a3a; border-radius:999px; padding:3px; gap:3px; }
+  .seg button { border:none; background:none; color:#9a9ab0; font-size:13px; font-weight:700; padding:7px 13px; border-radius:999px; cursor:pointer; }
+  .seg button.on { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; }
+
   /* --- Virtual gamepad restyle: colored buttons, dpad replaced by joystick --- */
   body .ejs_dpad_main { display:none !important; }
   body .ejs_virtualGamepad_button {
@@ -191,7 +219,7 @@
   <!-- HOME VIEW -->
   <div class="view on" id="view-home">
     <div class="tabs">
-      <button class="tab on" data-tab="rec" type="button">Recommended</button>
+      <button class="tab on" data-tab="rec" type="button" data-i18n="recTab">Recommended</button>
       <button class="tab" data-tab="nes" type="button">NES</button>
       <button class="tab" data-tab="gba" type="button">GBA</button>
       <button class="tab" data-tab="gb" type="button">GB</button>
@@ -206,11 +234,11 @@
         <div class="hero-dots" id="heroDots"></div>
       </div>
       <div class="panel">
-        <h2 class="sec">Your Next Favorite</h2>
+        <h2 class="sec" data-i18n="yourNext">Your Next Favorite</h2>
         <div class="shelf" id="favShelf"></div>
       </div>
       <div id="shelves"></div>
-      <h2 class="sec">All Games</h2>
+      <h2 class="sec" data-i18n="allGames">All Games</h2>
       <div class="grid" id="recGrid"></div>
     </div>
 
@@ -222,58 +250,113 @@
 
   <!-- LIBRARY VIEW -->
   <div class="view" id="view-library">
-    <div class="libhead"><h2 class="sec">Game Library</h2><span class="cnt" id="libCount"></span></div>
+    <div class="libhead"><h2 class="sec" data-i18n="gameLibrary">Game Library</h2><span class="cnt" id="libCount"></span></div>
     <div class="grid" id="libGrid"></div>
-    <p class="credits">Every library game is homebrew released for free by its author under the license shown in its details. RetroPlay does not include commercial ROMs — to play your own games, use My ROMs and load a ROM file you own.</p>
+    <h2 class="sec" id="ownTitle" style="display:none" data-i18n="yourGames">Your Games</h2>
+    <div class="grid" id="ownGrid"></div>
+    <p class="credits" data-i18n="credits">Every library game is homebrew released for free by its author under the license shown in its details. Pixcade does not include commercial ROMs — to play your own games, tap the + button and load a ROM file you own.</p>
   </div>
 
-  <!-- MY ROMS VIEW -->
-  <div class="view" id="view-myroms">
-    <h2 class="sec">My ROMs</h2>
+  <!-- ACCOUNT VIEW -->
+  <div class="view" id="view-account">
+    <div class="acct-top">
+      <h2 class="sec" data-i18n="account">Account</h2>
+      <button class="iconbtn" id="gearBtn" type="button" aria-label="Settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34 1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87 1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <div id="acctOut" class="acct-card">
+      <div class="big" data-i18n="signInTitle">Sign in to Pixcade</div>
+      <p class="desc" data-i18n="signInDesc">Sign in with Google to keep your save games, favorites and profile in the cloud — play on any device and pick up right where you left off.</p>
+      <div id="gsiBtn"></div>
+      <p class="desc" id="cloudNote" style="display:none;margin-bottom:0" data-i18n="cloudNote">Cloud sign-in is almost ready — it opens as soon as the Pixcade server is switched on. Your games and on-device saves work as usual.</p>
+    </div>
+    <div id="acctIn" style="display:none">
+      <div class="acct-card acct-head">
+        <img class="acct-ava" id="acctAva" alt="">
+        <div style="min-width:0">
+          <div class="acct-name" id="acctName"></div>
+          <div class="acct-email" id="acctEmail"></div>
+          <span class="planbadge" id="acctPlan">FREE</span>
+        </div>
+      </div>
+      <div class="acct-card">
+        <div class="setrow"><span data-i18n="displayName">Display name</span></div>
+        <div class="namerow">
+          <input id="nameInput" type="text" maxlength="40" autocomplete="off">
+          <button class="btn-small btn-blue" id="nameSave" type="button" data-i18n="saveWord">Save</button>
+        </div>
+        <div class="setrow"><span data-i18n="avatar">Avatar</span>
+          <button class="btn-small" id="avaBtn" type="button" data-i18n="changeWord">Change</button></div>
+      </div>
+      <div class="acct-card">
+        <div class="setrow"><span data-i18n="cloudSaves">Cloud saves</span><span class="syncstate" id="syncState"></span></div>
+        <button class="btn-full" id="syncNow" type="button" data-i18n="syncNow">Sync now</button>
+        <button class="btn-full danger" id="signOut" type="button" data-i18n="signOut">Sign out</button>
+      </div>
+    </div>
     <div class="loadcard">
-      <div class="big">Load your own ROM</div>
-      <p>Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
-      <button class="loadbtn" id="ownBtn" type="button">Choose ROM file</button>
-      <input type="file" id="fileInput" accept=".nes,.gba,.gb,.gbc,.sfc,.smc,.bin,.md,.gen,.zip" hidden>
+      <div class="big" data-i18n="loadOwn">Load your own ROM</div>
+      <p data-i18n="loadOwnDesc">Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
+      <button class="loadbtn" id="ownBtn" type="button" data-i18n="chooseRom">Choose ROM file</button>
     </div>
-    <div class="how">
-      <h3>How to play</h3>
+  </div>
+
+  <!-- SETTINGS VIEW -->
+  <div class="view" id="view-settings">
+    <div class="acct-top">
+      <h2 class="sec" data-i18n="settings">Settings</h2>
+      <button class="iconbtn" id="setBack" type="button" aria-label="Back" style="font-size:26px;line-height:1">‹</button>
+    </div>
+    <div class="acct-card">
+      <div class="setrow"><span data-i18n="language">Language</span>
+        <div class="seg"><button id="langEn" type="button">English</button><button id="langVi" type="button">Tiếng Việt</button></div>
+      </div>
+    </div>
+    <div class="acct-card how" style="margin-top:14px">
+      <h3 data-i18n="howTitle">How to play</h3>
       <ol>
-        <li>Tap a game and it starts right here — on phones it goes full screen in landscape automatically.</li>
-        <li>The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
-        <li>Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.</li>
+        <li data-i18n="how1">Tap a game and it starts right here — on phones it goes full screen in landscape automatically.</li>
+        <li data-i18n="how2">The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
+        <li data-i18n="how3">Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.</li>
       </ol>
-      <div class="note">RetroPlay does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
+      <div class="note" data-i18n="noteText">Pixcade does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
     </div>
+    <p class="credits">Pixcade: Retro Play — <span data-i18n="versionWord">version</span> 3.8</p>
   </div>
 
   <div class="view" id="view-favorites">
-    <h2 class="sec">Your Favorites</h2>
-    <p class="emptyNote" id="favEmpty">No favorites yet. Open any game and tap "Add to Favorites".</p>
+    <h2 class="sec" data-i18n="favTitle">Your Favorites</h2>
+    <p class="emptyNote" id="favEmpty" data-i18n="favEmpty">No favorites yet. Open any game and tap "Add to Favorites".</p>
     <div class="grid" id="favGrid"></div>
-    <h2 class="sec">Recently Played</h2>
-    <p class="emptyNote" id="recentEmpty">Games you play will show up here.</p>
+    <h2 class="sec" data-i18n="recentTitle">Recently Played</h2>
+    <p class="emptyNote" id="recentEmpty" data-i18n="recentEmpty">Games you play will show up here.</p>
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>retro web v3.7</footer>
+  <footer>Pixcade v3.8</footer>
 </div>
 
 <!-- BOTTOM NAV -->
 <nav class="bottomnav">
   <button class="navitem on" data-view="home" type="button">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-4v-6H10v6H6v-9H3z"/></svg>Home
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-4v-6H10v6H6v-9H3z"/></svg><span data-i18n="navHome">Home</span>
   </button>
   <button class="navitem" data-view="library" type="button">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Library
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><span data-i18n="navLibrary">Library</span>
   </button>
+  <button class="navfab" id="fabAdd" type="button" aria-label="Add your own game">+</button>
   <button class="navitem" data-view="favorites" type="button">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Favorites
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span data-i18n="navFavorites">Favorites</span>
   </button>
-  <button class="navitem" data-view="myroms" type="button">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.6l3.3-3.3L17 12l-5 5-5-5 1.7-1.7L12 13.6V3zM5 19h14v2H5z" transform="translate(0,-1)"/></svg>My ROMs
+  <button class="navitem" data-view="account" type="button" id="navAccount">
+    <img class="navava" id="navAva" alt="">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2.2c-3.9 0-9 2-9 5.3V21h18v-1.5c0-3.3-5.1-5.3-9-5.3z"/></svg><span data-i18n="navAccount">Account</span>
   </button>
 </nav>
+<input type="file" id="fileInput" accept=".nes,.gba,.gb,.gbc,.sfc,.smc,.bin,.md,.gen,.zip" hidden>
+<input type="file" id="avaInput" accept="image/*" hidden>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <div id="toast"></div>
 
@@ -290,9 +373,9 @@
         <div class="au" id="sheetAuthor"></div>
       </div>
     </div>
-    <h3>Synopsis</h3>
+    <h3 data-i18n="synopsis">Synopsis</h3>
     <p id="sheetSyn"></p>
-    <button id="sheetPlay" type="button">▶ PLAY</button>
+    <button id="sheetPlay" type="button" data-i18n="playBig">▶ PLAY</button>
     <button id="sheetFav" type="button">♡ Add to Favorites</button>
   </div>
 </div>
@@ -337,6 +420,63 @@
   var recent = lsGet('rp_recent');
   function isFav(id) { return favs.indexOf(id) >= 0; }
 
+  /* ---------- Language: English (default) / Vietnamese ---------- */
+  var STR = {
+    en: { navHome:'Home', navLibrary:'Library', navFavorites:'Favorites', navAccount:'Account',
+      recTab:'Recommended', yourNext:'Your Next Favorite', allGames:'All Games', gameLibrary:'Game Library', gamesWord:' games',
+      credits:'Every library game is homebrew released for free by its author under the license shown in its details. Pixcade does not include commercial ROMs — to play your own games, tap the + button and load a ROM file you own.',
+      yourGames:'Your Games', favTitle:'Your Favorites', favEmpty:'No favorites yet. Open any game and tap "Add to Favorites".',
+      recentTitle:'Recently Played', recentEmpty:'Games you play will show up here.', synopsis:'Synopsis', playBig:'▶ PLAY', playWord:'Play',
+      addFav:'♡ Add to Favorites', inFav:'♥ In your Favorites', closeGame:'✕ Close game', loadingGame:'Loading game…',
+      account:'Account', signInTitle:'Sign in to Pixcade',
+      signInDesc:'Sign in with Google to keep your save games, favorites and profile in the cloud — play on any device and pick up right where you left off.',
+      cloudNote:'Cloud sign-in is almost ready — it opens as soon as the Pixcade server is switched on. Your games and on-device saves work as usual.',
+      displayName:'Display name', saveWord:'Save', avatar:'Avatar', changeWord:'Change', cloudSaves:'Cloud saves',
+      syncNow:'Sync now', signOut:'Sign out', settings:'Settings', language:'Language', versionWord:'version',
+      loadOwn:'Load your own ROM', loadOwnDesc:'Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag & drop a file anywhere on this page.',
+      chooseRom:'Choose ROM file', howTitle:'How to play',
+      how1:'Tap a game and it starts right here — on phones it goes full screen in landscape automatically.',
+      how2:'The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.',
+      how3:'Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.',
+      noteText:'Pixcade does not include any commercial games. Only load ROM files that you own and have the right to use.',
+      resumed:'Resumed where you left off', cloudResumed:'Cloud save loaded', closeFirst:'Close the current game first to load another ROM',
+      noNotif:'No new notifications', syncing:'Syncing…', syncedAt:'Synced', syncErr:'Sync failed — try again',
+      nameSaved:'Name saved', avaSaved:'Avatar updated', signedIn:'Signed in' },
+    vi: { navHome:'Trang chủ', navLibrary:'Thư viện', navFavorites:'Yêu thích', navAccount:'Tài khoản',
+      recTab:'Đề xuất', yourNext:'Game tiếp theo cho bạn', allGames:'Tất cả game', gameLibrary:'Thư viện game', gamesWord:' game',
+      credits:'Mọi game trong thư viện là homebrew do tác giả phát hành miễn phí theo giấy phép ghi trong phần chi tiết. Pixcade không chứa ROM thương mại — muốn chơi game của riêng bạn, bấm nút + và nạp file ROM bạn sở hữu.',
+      yourGames:'Game của bạn', favTitle:'Game yêu thích', favEmpty:'Chưa có game yêu thích nào. Mở 1 game bất kỳ và bấm "Thêm vào Yêu thích".',
+      recentTitle:'Đã chơi gần đây', recentEmpty:'Game bạn chơi sẽ xuất hiện ở đây.', synopsis:'Giới thiệu', playBig:'▶ CHƠI', playWord:'Chơi',
+      addFav:'♡ Thêm vào Yêu thích', inFav:'♥ Đã trong Yêu thích', closeGame:'✕ Đóng game', loadingGame:'Đang tải game…',
+      account:'Tài khoản', signInTitle:'Đăng nhập Pixcade',
+      signInDesc:'Đăng nhập bằng Google để lưu save game, game yêu thích và hồ sơ của bạn lên đám mây — chơi trên máy nào cũng tiếp tục được đúng chỗ đang bỏ dở.',
+      cloudNote:'Đăng nhập đám mây sắp mở — sẽ bật ngay khi máy chủ Pixcade sẵn sàng. Game và save trên máy này vẫn chạy bình thường.',
+      displayName:'Tên hiển thị', saveWord:'Lưu', avatar:'Ảnh đại diện', changeWord:'Đổi', cloudSaves:'Lưu đám mây',
+      syncNow:'Đồng bộ ngay', signOut:'Đăng xuất', settings:'Cài đặt', language:'Ngôn ngữ', versionWord:'phiên bản',
+      loadOwn:'Nạp ROM của bạn', loadOwnDesc:'Chơi file game từ máy của bạn — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, hoặc file .zip chứa 1 game. Bạn cũng có thể kéo & thả file vào bất cứ đâu trên trang này.',
+      chooseRom:'Chọn file ROM', howTitle:'Cách chơi',
+      how1:'Bấm vào 1 game là chơi ngay tại đây — trên điện thoại game tự phóng toàn màn hình ngang.',
+      how2:'Tay cầm cảm ứng hiện ra khi game đang chạy. Trên máy tính, dùng phím mũi tên + Z / X / Enter / Shift.',
+      how3:'Dùng menu của trình chơi game (thanh dưới của khung game) để lưu state, chụp ảnh và cài đặt. Bấm ✕ Đóng để dừng.',
+      noteText:'Pixcade không chứa game thương mại nào. Chỉ nạp file ROM bạn sở hữu và có quyền sử dụng.',
+      resumed:'Đã chơi tiếp từ chỗ cũ', cloudResumed:'Đã tải save từ đám mây', closeFirst:'Đóng game hiện tại trước khi nạp ROM khác',
+      noNotif:'Chưa có thông báo mới', syncing:'Đang đồng bộ…', syncedAt:'Đã đồng bộ', syncErr:'Đồng bộ lỗi — thử lại sau',
+      nameSaved:'Đã lưu tên', avaSaved:'Đã đổi ảnh đại diện', signedIn:'Đã đăng nhập' }
+  };
+  function lsStr(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
+  var lang = lsStr('rp_lang', 'en');
+  function T(k) { return (STR[lang] && STR[lang][k]) || STR.en[k] || k; }
+  function applyLang() {
+    document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = T(el.getAttribute('data-i18n')); });
+    document.querySelectorAll('.playpill').forEach(function (b) { b.textContent = '▶ ' + T('playWord'); });
+    document.getElementById('closeBelow').textContent = T('closeGame');
+    document.getElementById('loading').textContent = T('loadingGame');
+    document.getElementById('libCount').textContent = GAMES.length + T('gamesWord');
+    document.getElementById('langEn').classList.toggle('on', lang === 'en');
+    document.getElementById('langVi').classList.toggle('on', lang === 'vi');
+    if (typeof updateSheetFav === 'function') updateSheetFav();
+  }
+
   var stage = document.getElementById('stage');
   var fileInput = document.getElementById('fileInput');
   var errBox = document.getElementById('err');
@@ -360,8 +500,8 @@
   /* ---------- Views (bottom nav) ---------- */
   var navItems = document.querySelectorAll('.navitem');
   function switchView(name) {
-    navItems.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name); });
-    ['home', 'library', 'favorites', 'myroms'].forEach(function (v) {
+    navItems.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name || (name === 'settings' && b.getAttribute('data-view') === 'account')); });
+    ['home', 'library', 'favorites', 'account', 'settings'].forEach(function (v) {
       document.getElementById('view-' + v).classList.toggle('on', v === name);
     });
     window.scrollTo(0, 0);
@@ -379,7 +519,7 @@
     if (name === 'rec') { sysBox.style.display = 'none'; return; }
     sysBox.style.display = '';
     var sys = name.toUpperCase();
-    document.getElementById('sysTitle').textContent = sys + ' Games';
+    document.getElementById('sysTitle').textContent = lang === 'vi' ? ('Game ' + sys) : (sys + ' Games');
     var grid = document.getElementById('sysGrid');
     grid.innerHTML = '';
     GAMES.filter(function (g) { return g.sys === sys; }).forEach(function (g) { grid.appendChild(gridCard(g)); });
@@ -395,7 +535,7 @@
     card.setAttribute('data-title', g.t.toLowerCase());
     card.innerHTML = '<div class="cv">' + coverHTML(g, true) + '</div>' +
       '<div class="t">' + g.t + '</div>' +
-      '<button class="playpill" type="button">▶ Play</button>';
+      '<button class="playpill" type="button">▶ ' + T('playWord') + '</button>';
     card.addEventListener('click', function () { openSheet(g); });
     card.querySelector('.playpill').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -435,7 +575,7 @@
   var recGrid = document.getElementById('recGrid');
   var libGrid = document.getElementById('libGrid');
   GAMES.forEach(function (g) { recGrid.appendChild(gridCard(g)); libGrid.appendChild(gridCard(g)); });
-  document.getElementById('libCount').textContent = GAMES.length + ' games';
+  document.getElementById('libCount').textContent = GAMES.length + T('gamesWord');
 
   /* ---------- Hero carousel ---------- */
   var heroTrack = document.getElementById('heroTrack');
@@ -508,8 +648,9 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { toastEl.classList.remove('on'); }, 1900);
   }
-  document.getElementById('bellBtn').addEventListener('click', function () { toast('No new notifications'); });
-  document.getElementById('importBtn').addEventListener('click', function () { switchView('myroms'); });
+  document.getElementById('bellBtn').addEventListener('click', function () { toast(T('noNotif')); });
+  document.getElementById('importBtn').addEventListener('click', function () { fileInput.click(); });
+  document.getElementById('fabAdd').addEventListener('click', function () { fileInput.click(); });
   (function () {
     var picks = ['Nova the Squirrel', 'Anguna', 'From Below', 'Feline', 'Tobu Tobu Girl', 'Porklike'];
     document.getElementById('searchInput').setAttribute('placeholder', picks[Math.floor(Math.random() * picks.length)]);
@@ -521,6 +662,7 @@
     var i = favs.indexOf(id);
     if (i >= 0) favs.splice(i, 1); else favs.unshift(id);
     lsSet('rp_favs', favs);
+    queueProfileSync();
     syncFavUI();
   }
   function pushRecent(id) {
@@ -529,6 +671,7 @@
     recent.unshift(id);
     recent = recent.slice(0, 12);
     lsSet('rp_recent', recent);
+    queueProfileSync();
     renderPersonal();
   }
   function syncFavUI() {
@@ -549,14 +692,53 @@
   function updateSheetFav() {
     if (!sheetFavBtn) return;
     var on = sheetGame && isFav(sheetGame.id);
-    sheetFavBtn.textContent = on ? '♥ In your Favorites' : '♡ Add to Favorites';
+    sheetFavBtn.textContent = on ? T('inFav') : T('addFav');
     sheetFavBtn.classList.toggle('on', !!on);
   }
   sheetFavBtn.addEventListener('click', function () { if (sheetGame) toggleFav(sheetGame.id); });
   renderPersonal();
 
+  /* ---------- Your Games: own ROMs added this session, listed in the Library ---------- */
+  var ownGames = [];
+  function ownSysLabel(core) { return core === 'nes' ? 'NES' : core === 'gba' ? 'GBA' : core === 'gb' ? 'GB' : core === 'snes' ? 'SNES' : 'GEN'; }
+  function renderOwn() {
+    var grid = document.getElementById('ownGrid');
+    grid.innerHTML = '';
+    document.getElementById('ownTitle').style.display = ownGames.length ? '' : 'none';
+    ownGames.forEach(function (o) {
+      var card = document.createElement('div');
+      card.className = 'gcard';
+      card.innerHTML = '<div class="cv"><div class="covergrad" style="background:linear-gradient(135deg,#283c86,#45a247)">' + o.name.slice(0, 2).toUpperCase().replace(/</g, '') + '</div><span class="syschip">' + ownSysLabel(o.core) + '</span></div>' +
+        '<div class="t"></div>' +
+        '<button class="playpill" type="button">▶ ' + T('playWord') + '</button>';
+      card.querySelector('.t').textContent = o.name;
+      function play() { playOwn(o); }
+      card.addEventListener('click', play);
+      card.querySelector('.playpill').addEventListener('click', function (e) { e.stopPropagation(); play(); });
+      grid.appendChild(card);
+    });
+  }
+  function playOwn(o) {
+    if (started) {
+      switchView('home'); showStage();
+      if (curGameKey === 'own:' + o.name) { enterPlayMode(); return; }
+      toast(T('closeFirst'));
+      return;
+    }
+    switchView('home');
+    showErr('');
+    showStage();
+    curGameKey = 'own:' + o.name;
+    startGame(o.blob, o.core, o.name);
+  }
+
   /* ---------- Auto save states (IndexedDB): closing a game saves it, reopening resumes ---------- */
   var curGameKey = null;
+  var saveLocalTs = {};
+  try { saveLocalTs = JSON.parse(localStorage.getItem('rp_save_ts') || '{}') || {}; } catch (e) { saveLocalTs = {}; }
+  function persistSaveTs() { try { localStorage.setItem('rp_save_ts', JSON.stringify(saveLocalTs)); } catch (e) {} }
+  function unwrapState(v) { if (!v) return null; if (ArrayBuffer.isView(v) || v instanceof ArrayBuffer) return v; if (v.state) return v.state; return null; }
+  function stateTs(v) { return (v && typeof v === 'object' && v.ts) ? v.ts : 0; }
   var idbPromise = null;
   function idb() {
     if (!idbPromise) {
@@ -594,13 +776,27 @@
     var bytes;
     try { bytes = EJS_emulator.gameManager.getState(); } catch (e) { return Promise.resolve(); }
     if (!bytes || !bytes.length) return Promise.resolve();
-    return idbPut(curGameKey, new Uint8Array(bytes));
+    var copy = new Uint8Array(bytes);
+    var ts = Date.now();
+    var key = curGameKey;
+    saveLocalTs[key] = ts;
+    persistSaveTs();
+    return idbPut(key, { state: copy, ts: ts }).then(function () { queueSaveSync(key); });
   }
   function closeAndSave() {
     var done = false;
     function go() { if (!done) { done = true; location.href = location.pathname; } }
-    Promise.race([autoSaveNow(), new Promise(function (r) { setTimeout(r, 800); })]).then(go, go);
-    setTimeout(go, 1500);
+    var p = autoSaveNow();
+    if (auth && API_BASE && curGameKey) {
+      var key = curGameKey;
+      p = p.then(function () { return idbGet(key); }).then(function (rec) {
+        var b = unwrapState(rec);
+        if (!b) return;
+        return uploadSave(key, b, stateTs(rec) || Date.now());
+      }).catch(function () {});
+    }
+    Promise.race([p, new Promise(function (r) { setTimeout(r, 1200); })]).then(go, go);
+    setTimeout(go, 2000);
   }
   setInterval(function () { if (started && !document.hidden) autoSaveNow(); }, 30000);
   document.addEventListener('visibilitychange', function () { if (document.hidden) autoSaveNow(); });
@@ -756,7 +952,7 @@
       if (curGameKey === 'lib:' + g.id) { showStage(); enterPlayMode(); return; }
       /* A different game was picked while one is running: save this one, then open the new game */
       loading.style.display = 'flex';
-      loading.textContent = 'Loading game…';
+      loading.textContent = T('loadingGame');
       try { await Promise.race([autoSaveNow(), new Promise(function (r) { setTimeout(r, 900); })]); } catch (e) {}
       location.href = location.pathname + '?play=' + g.id;
       return;
@@ -778,7 +974,7 @@
           if (part.done) break;
           chunks.push(part.value);
           got += part.value.length;
-          loading.textContent = 'Loading game… ' + Math.round(got / total * 100) + '%';
+          loading.textContent = T('loadingGame') + ' ' + Math.round(got / total * 100) + '%';
         }
         blob = new Blob(chunks);
       } else {
@@ -816,7 +1012,7 @@
   }
 
   async function handleFile(file) {
-    if (started) { switchView('home'); showStage(); enterPlayMode(); toast('Close the current game first to load another ROM'); return; }
+    if (started) { switchView('home'); showStage(); enterPlayMode(); toast(T('closeFirst')); return; }
     showErr('');
     var core = coreFor(file.name);
     var blob = file;
@@ -828,15 +1024,18 @@
         zip.forEach(function (path, entry) {
           if (!inner && !entry.dir && coreFor(path)) inner = entry;
         });
-        if (!inner) { switchView('myroms'); showErr('No supported game file found inside that zip.'); return; }
+        if (!inner) { switchView('library'); showErr('No supported game file found inside that zip.'); return; }
         core = coreFor(inner.name);
         gameName = inner.name.split('/').pop();
         blob = await inner.async('blob');
       }
     } catch (e) {
-      switchView('myroms'); showErr('Could not read that file.'); return;
+      switchView('library'); showErr('Could not read that file.'); return;
     }
-    if (!core) { switchView('myroms'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc, .bin or .zip file.'); return; }
+    if (!core) { switchView('library'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc, .bin or .zip file.'); return; }
+    var dup = false;
+    ownGames.forEach(function (o) { if (o.name === gameName) dup = true; });
+    if (!dup) { ownGames.push({ name: gameName, core: core, blob: blob }); renderOwn(); }
     switchView('home');
     showStage();
     curGameKey = 'own:' + gameName;
@@ -857,16 +1056,32 @@
     window.EJS_defaultOptions = {'virtual-gamepad': 'enabled', 'save-state-location': 'browser'};
     window.EJS_onGameStart = function () {
       loading.style.display = 'none';
-      loading.textContent = 'Loading game…';
+      loading.textContent = T('loadingGame');
       if (curGameKey) {
-        idbGet(curGameKey).then(function (bytes) {
-          if (bytes && bytes.length) {
+        var key = curGameKey;
+        idbGet(key).then(function (rec) {
+          var localBytes = unwrapState(rec);
+          var localTs = stateTs(rec);
+          var cloudTs = cloudTsMap[key] || 0;
+          function loadBytes(b, fromCloud) {
+            if (!b || !b.length) return;
             setTimeout(function () {
               try {
-                EJS_emulator.gameManager.loadState(new Uint8Array(bytes));
-                toast('Resumed where you left off');
+                EJS_emulator.gameManager.loadState(new Uint8Array(b));
+                toast(fromCloud ? T('cloudResumed') : T('resumed'));
               } catch (e) {}
             }, 400);
+          }
+          if (auth && API_BASE && cloudTs > localTs) {
+            api('/saves/' + encodeURIComponent(key)).then(function (r) {
+              var b = b64ToBytes(r.state);
+              saveLocalTs[key] = r.updatedAt;
+              persistSaveTs();
+              idbPut(key, { state: b, ts: r.updatedAt });
+              loadBytes(b, true);
+            }).catch(function () { loadBytes(localBytes, false); });
+          } else {
+            loadBytes(localBytes, false);
           }
         });
       }
@@ -880,6 +1095,232 @@
     };
     document.body.appendChild(s);
   }
+
+  /* ---------- Accounts + cloud sync ---------- */
+  var API_BASE = '';
+  var GOOGLE_CLIENT_ID = '650217428363-6kgt80snptcq3il06tlglqqv02seo1e2.apps.googleusercontent.com';
+  var auth = null;
+  try { auth = JSON.parse(localStorage.getItem('rp_auth') || 'null'); } catch (e) { auth = null; }
+  var cloudTsMap = {};
+  var profileServerTs = 0;
+  function bytesToB64(bytes) {
+    var u = new Uint8Array(bytes); var s = ''; var CH = 32768;
+    for (var i = 0; i < u.length; i += CH) s += String.fromCharCode.apply(null, u.subarray(i, i + CH));
+    return btoa(s);
+  }
+  function b64ToBytes(b64) {
+    var s = atob(b64); var u = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+    return u;
+  }
+  function api(path, opts) {
+    opts = opts || {};
+    var hdrs = { 'Content-Type': 'application/json' };
+    if (auth && auth.token) hdrs.Authorization = 'Bearer ' + auth.token;
+    return fetch(API_BASE + path, { method: opts.method || 'GET', headers: hdrs, body: opts.body ? JSON.stringify(opts.body) : undefined })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (!r.ok) { var e = new Error(j.error || ('http ' + r.status)); e.status = r.status; e.body = j; throw e; }
+          return j;
+        });
+      });
+  }
+  function setSyncState(txt) { var el = document.getElementById('syncState'); if (el) el.textContent = txt; }
+  function renderAccount() {
+    var out = document.getElementById('acctOut'), inn = document.getElementById('acctIn');
+    var navItem = document.getElementById('navAccount'), navAva = document.getElementById('navAva');
+    if (auth && auth.user) {
+      out.style.display = 'none'; inn.style.display = '';
+      var u = auth.user;
+      document.getElementById('acctName').textContent = u.name || '';
+      document.getElementById('acctEmail').textContent = u.email || '';
+      document.getElementById('acctPlan').textContent = (u.plan || 'free').toUpperCase();
+      var ava = u.avatar || u.picture || '';
+      var avaEl = document.getElementById('acctAva');
+      if (ava) { avaEl.src = ava; avaEl.style.display = ''; } else { avaEl.style.display = 'none'; }
+      document.getElementById('nameInput').value = u.name || '';
+      if (ava) { navAva.src = ava; navItem.classList.add('hasava'); } else { navItem.classList.remove('hasava'); }
+    } else {
+      out.style.display = ''; inn.style.display = 'none';
+      navItem.classList.remove('hasava');
+    }
+  }
+  function saveAuth() { try { localStorage.setItem('rp_auth', JSON.stringify(auth)); } catch (e) {} }
+  function onAuthResp(r) {
+    auth = { token: r.token, user: r.user };
+    saveAuth();
+    renderAccount();
+    syncAll();
+  }
+  function initGsi() {
+    if (!API_BASE) { document.getElementById('cloudNote').style.display = ''; return; }
+    if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(initGsi, 600); return; }
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: function (resp) {
+      api('/auth/google', { method: 'POST', body: { idToken: resp.credential } }).then(function (r) {
+        onAuthResp(r);
+        toast(T('signedIn'));
+      }).catch(function () { toast(T('syncErr')); });
+    } });
+    google.accounts.id.renderButton(document.getElementById('gsiBtn'), { theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with' });
+  }
+  if ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') && API_BASE) {
+    var devBtn = document.createElement('button');
+    devBtn.className = 'btn-full'; devBtn.type = 'button'; devBtn.textContent = 'Dev sign-in (local test)';
+    devBtn.addEventListener('click', function () {
+      api('/auth/google', { method: 'POST', body: { idToken: 'dev:nam@test.local:Nam Test' } }).then(onAuthResp).catch(function () { toast(T('syncErr')); });
+    });
+    document.getElementById('acctOut').appendChild(devBtn);
+  }
+  function syncAll() {
+    if (!auth || !API_BASE) return Promise.resolve();
+    setSyncState(T('syncing'));
+    return Promise.all([syncProfile(), syncSaves()]).then(function () {
+      setSyncState(T('syncedAt') + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }).catch(function () { setSyncState(T('syncErr')); });
+  }
+  function syncProfile() {
+    return api('/profile').then(function (srv) {
+      profileServerTs = srv.updatedAt || 0;
+      var mf = (srv.favs || []).slice();
+      favs.forEach(function (id) { if (mf.indexOf(id) < 0) mf.push(id); });
+      var mr = (srv.recent || []).slice();
+      recent.forEach(function (id) { if (mr.indexOf(id) < 0) mr.push(id); });
+      mr = mr.slice(0, 12);
+      var changed = JSON.stringify(mf) !== JSON.stringify(srv.favs || []) || JSON.stringify(mr) !== JSON.stringify((srv.recent || []).slice(0, 12));
+      favs = mf; recent = mr;
+      lsSet('rp_favs', favs); lsSet('rp_recent', recent);
+      renderPersonal(); updateSheetFav();
+      if (changed) return pushProfile();
+    });
+  }
+  var profileTimer = null;
+  function pushProfile() {
+    if (!auth || !API_BASE) return Promise.resolve();
+    var ts = Date.now();
+    return api('/profile', { method: 'PUT', body: { favs: favs, recent: recent, updatedAt: ts } })
+      .then(function () { profileServerTs = ts; })
+      .catch(function (e) { if (e.status === 409) return syncProfile(); });
+  }
+  function queueProfileSync() {
+    if (!auth || !API_BASE) return;
+    clearTimeout(profileTimer);
+    profileTimer = setTimeout(pushProfile, 2500);
+  }
+  function idbKeys() {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var out = [];
+        try {
+          var rq = db.transaction('autostates').objectStore('autostates').openKeyCursor();
+          rq.onsuccess = function () { var c = rq.result; if (c) { out.push(String(c.key)); c.continue(); } else res(out); };
+          rq.onerror = function () { res(out); };
+        } catch (e) { res(out); }
+      });
+    }).catch(function () { return []; });
+  }
+  function uploadSave(key, bytes, ts) {
+    return api('/saves/' + encodeURIComponent(key), { method: 'PUT', body: { state: bytesToB64(bytes), updatedAt: ts } })
+      .then(function () { cloudTsMap[key] = ts; })
+      .catch(function (e) { if (e.status === 409 && e.body && e.body.serverUpdatedAt) cloudTsMap[key] = e.body.serverUpdatedAt; });
+  }
+  var saveTimers = {};
+  function queueSaveSync(key) {
+    if (!auth || !API_BASE) return;
+    clearTimeout(saveTimers[key]);
+    saveTimers[key] = setTimeout(function () {
+      idbGet(key).then(function (rec) {
+        var b = unwrapState(rec);
+        if (!b) return;
+        uploadSave(key, b, stateTs(rec) || Date.now());
+      });
+    }, 4000);
+  }
+  function syncSaves() {
+    return api('/saves').then(function (r) {
+      (r.saves || []).forEach(function (s) { cloudTsMap[s.key] = s.updatedAt; });
+      return idbKeys().then(function (keys) {
+        var all = {};
+        keys.forEach(function (k) { all[k] = true; });
+        Object.keys(cloudTsMap).forEach(function (k) { all[k] = true; });
+        var chain = Promise.resolve();
+        Object.keys(all).forEach(function (key) {
+          chain = chain.then(function () {
+            return idbGet(key).then(function (rec) {
+              var cts = cloudTsMap[key] || 0;
+              var lts = rec ? (stateTs(rec) || (unwrapState(rec) ? 1 : 0)) : 0;
+              if (cts > lts) {
+                return api('/saves/' + encodeURIComponent(key)).then(function (sr) {
+                  var b = b64ToBytes(sr.state);
+                  saveLocalTs[key] = sr.updatedAt;
+                  persistSaveTs();
+                  return idbPut(key, { state: b, ts: sr.updatedAt });
+                }).catch(function () {});
+              }
+              if (lts > cts && rec) {
+                var b2 = unwrapState(rec);
+                if (!b2) return;
+                var uts = lts === 1 ? Date.now() : lts;
+                if (lts === 1) {
+                  saveLocalTs[key] = uts;
+                  persistSaveTs();
+                  idbPut(key, { state: b2, ts: uts });
+                }
+                return uploadSave(key, b2, uts);
+              }
+            });
+          });
+        });
+        return chain;
+      });
+    });
+  }
+  document.getElementById('gearBtn').addEventListener('click', function () { switchView('settings'); });
+  document.getElementById('setBack').addEventListener('click', function () { switchView('account'); });
+  function setLang(l) { lang = l; try { localStorage.setItem('rp_lang', l); } catch (e) {} applyLang(); }
+  document.getElementById('langEn').addEventListener('click', function () { setLang('en'); });
+  document.getElementById('langVi').addEventListener('click', function () { setLang('vi'); });
+  document.getElementById('syncNow').addEventListener('click', function () { syncAll(); });
+  document.getElementById('signOut').addEventListener('click', function () {
+    auth = null; cloudTsMap = {}; profileServerTs = 0;
+    try { localStorage.removeItem('rp_auth'); } catch (e) {}
+    if (window.google && google.accounts && google.accounts.id) { try { google.accounts.id.disableAutoSelect(); } catch (e) {} }
+    renderAccount();
+  });
+  document.getElementById('nameSave').addEventListener('click', function () {
+    if (!auth) return;
+    var v = document.getElementById('nameInput').value;
+    api('/me', { method: 'PUT', body: { displayName: v } }).then(function (r) {
+      auth.user = r.user; saveAuth();
+      renderAccount(); toast(T('nameSaved'));
+    }).catch(function () { toast(T('syncErr')); });
+  });
+  document.getElementById('avaBtn').addEventListener('click', function () { document.getElementById('avaInput').click(); });
+  document.getElementById('avaInput').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    this.value = '';
+    if (!f || !auth) return;
+    var url = URL.createObjectURL(f);
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement('canvas');
+      c.width = 192; c.height = 192;
+      var ctx = c.getContext('2d');
+      var s = Math.min(img.width, img.height);
+      ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 192, 192);
+      URL.revokeObjectURL(url);
+      var data = c.toDataURL('image/jpeg', 0.85);
+      api('/me/avatar', { method: 'PUT', body: { image: data } }).then(function (r) {
+        auth.user.avatar = r.avatar; saveAuth();
+        renderAccount(); toast(T('avaSaved'));
+      }).catch(function () { toast(T('syncErr')); });
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); toast(T('syncErr')); };
+    img.src = url;
+  });
+  renderAccount();
+  applyLang();
+  initGsi();
+  if (auth && API_BASE) syncAll();
 
   // --- ?play=<id> deep link ---
   (function () {
