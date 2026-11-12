@@ -1,1 +1,6 @@
-{"build":51,"notes_en":"The bell at the top now opens the Pixcade update log: every version and what changed in it, in one place. A red dot on the bell means there is something new to read.","notes_vi":"Nút chuông ở trên giờ mở ra nhật ký cập nhật Pixcade: mọi phiên bản và nội dung thay đổi, gom vào một chỗ. Chuông có chấm đỏ là có mục mới chưa xem.","version":"5.1"}
+{
+  "build": 52,
+  "notes_en": "The Android app now works fully offline: the interface, all 56 games and the emulator cores are built into the app. Only sign-in, cloud saves and update checks need the internet.",
+  "notes_vi": "App Android giờ chơi offline hoàn toàn: giao diện, cả 56 game và lõi giả lập đều nằm sẵn trong app. Chỉ đăng nhập, lưu đám mây và kiểm tra cập nhật mới cần mạng.",
+  "version": "5.2"
+}
