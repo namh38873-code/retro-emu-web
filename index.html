@@ -10,90 +10,43 @@
   * { box-sizing:border-box; margin:0; padding:0; }
   html, body { height:100%; }
   body { background:#0b0b12; color:#f2f2f8; font-family:-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-  .brand { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+  .brand { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; }
   .brand .logo { font-size:30px; font-weight:800; letter-spacing:.4px; }
   .brand .logo span { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .brand .sub { color:#8b8b9e; font-size:13px; }
-  #gateWrap { position:fixed; inset:0; z-index:10; display:none; background:rgba(4,4,8,.72); backdrop-filter:blur(6px); }
-  #gateWrap.on { display:block; }
-  #gateSheet { position:absolute; left:0; right:0; bottom:0; max-width:960px; margin:0 auto; background:#17171f; border-radius:22px 22px 0 0; padding:22px 18px 20px; animation:up .25s ease; }
-  @keyframes up { from { transform:translateY(26px); opacity:.4; } to { transform:none; opacity:1; } }
-  #gateSheet h2 { font-size:19px; margin-bottom:4px; }
-  #gateVer { color:#3ec1f5; font-weight:700; font-size:14.5px; margin-bottom:8px; }
-  #gateNotes { color:#c9c9d6; font-size:14.5px; line-height:1.5; white-space:pre-wrap; }
-  #gateCur { color:#8b8b9e; font-size:13px; margin-top:10px; }
-  .gbtn { display:block; width:100%; border:none; border-radius:14px; padding:14px; font-size:16px; font-weight:700; cursor:pointer; margin-top:14px; }
-  #gateNow { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; }
-  #gateLater { background:none; border:1.5px solid #33334a; color:#c9c9d6; }
 </style>
 </head>
 <body>
-<div class="brand"><div class="logo">Pix<span>cade</span></div><div class="sub" id="brandSub">Loading…</div></div>
-
-<div id="gateWrap">
-  <div id="gateSheet">
-    <h2 id="gateTitle">New version available</h2>
-    <div id="gateVer"></div>
-    <p id="gateNotes"></p>
-    <p id="gateCur"></p>
-    <button class="gbtn" id="gateNow" type="button">Update now</button>
-    <button class="gbtn" id="gateLater" type="button">Later</button>
-  </div>
-</div>
+<div class="brand" id="brand"><div class="logo">Pix<span>cade</span></div><div class="sub" id="brandSub">Loading…</div></div>
 
 <script>
+/* Entry router: send each user to the build they accepted. Update offers
+   live inside the app pages themselves (notice + changelog, fully modal). */
 (function () {
-  var lang = 'en';
-  try { if (localStorage.getItem('rp_lang') === 'vi') lang = 'vi'; } catch (e) {}
-  var T = lang === 'vi' ? {
-    loading: 'Đang tải…', title: 'Có phiên bản mới', now: 'Cập nhật ngay', later: 'Để sau',
-    cur: 'Bạn đang dùng Pixcade v', nocon: 'Không có kết nối mạng.', retry: 'Thử lại'
-  } : {
-    loading: 'Loading…', title: 'New version available', now: 'Update now', later: 'Later',
-    cur: 'You are on Pixcade v', nocon: 'No internet connection.', retry: 'Retry'
-  };
-  document.getElementById('brandSub').textContent = T.loading;
-  document.getElementById('gateTitle').textContent = T.title;
-  document.getElementById('gateNow').textContent = T.now;
-  document.getElementById('gateLater').textContent = T.later;
-
-  function verOf(build) { return (build / 10).toFixed(1); }
-  function accepted() {
-    try { return parseInt(localStorage.getItem('rp_accepted_build') || '0', 10) || 0; } catch (e) { return 0; }
-  }
-  function setAccepted(n) { try { localStorage.setItem('rp_accepted_build', String(n)); } catch (e) {} }
-  function go(build) {
-    location.replace('app-' + build + '.html' + location.search + location.hash);
-  }
-
-  function decide(vj) {
-    var latest = vj.build, acc = accepted();
-    if (!acc) { setAccepted(latest); go(latest); return; }   // first run: nothing to update from
-    if (acc >= latest) { go(latest); return; }               // up to date
-    // an update is waiting: show what changed; the user decides
-    document.getElementById('gateVer').textContent = 'Pixcade v' + (vj.version || verOf(latest));
-    document.getElementById('gateNotes').textContent = (lang === 'vi' ? vj.notes_vi : vj.notes_en) || '';
-    document.getElementById('gateCur').textContent = T.cur + verOf(acc);
-    document.getElementById('gateWrap').classList.add('on');
-    document.getElementById('gateNow').onclick = function () { setAccepted(latest); go(latest); };
-    document.getElementById('gateLater').onclick = function () { go(acc); };
-  }
-
-  function offline() {
-    var acc = accepted();
+  var LEGACY = 46; // the build current when per-build files were introduced
+  var vi = false;
+  try { vi = localStorage.getItem('rp_lang') === 'vi'; } catch (e) {}
+  document.getElementById('brandSub').textContent = vi ? 'Đang tải…' : 'Loading…';
+  var acc = 0;
+  try { acc = parseInt(localStorage.getItem('rp_accepted_build') || '0', 10) || 0; } catch (e) {}
+  var legacy = false;
+  try { legacy = !acc && !!(localStorage.getItem('rp_catalog') || localStorage.getItem('rp_favs') || localStorage.getItem('rp_lang')); } catch (e) {}
+  function go(b) { location.replace('app-' + b + '.html' + location.search + location.hash); }
+  function fallback() {
     if (acc) { go(acc); return; }
-    document.getElementById('gateNotes').textContent = T.nocon;
-    var now = document.getElementById('gateNow');
-    now.textContent = T.retry;
-    now.onclick = function () { location.reload(); };
-    document.getElementById('gateLater').style.display = 'none';
-    document.getElementById('gateWrap').classList.add('on');
+    if (legacy) { go(LEGACY); return; }
+    document.getElementById('brandSub').textContent = vi ? 'Không có kết nối mạng. Chạm để thử lại.' : 'No internet connection. Tap to retry.';
+    document.getElementById('brand').onclick = function () { location.reload(); };
   }
-
   fetch('version.json?x=' + Date.now(), { cache: 'no-store' })
     .then(function (r) { return r.json(); })
-    .then(function (vj) { if (vj && vj.build) decide(vj); else offline(); })
-    .catch(offline);
+    .then(function (vj) {
+      if (!vj || !vj.build) { fallback(); return; }
+      if (acc) go(acc);
+      else if (legacy) go(LEGACY);
+      else { try { localStorage.setItem('rp_accepted_build', String(vj.build)); } catch (e) {} go(vj.build); }
+    })
+    .catch(fallback);
 })();
 </script>
 </body>

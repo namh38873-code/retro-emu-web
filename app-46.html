@@ -142,7 +142,10 @@
   #sheetPlay { margin-top:20px; width:100%; border:none; border-radius:14px; padding:16px 0; font-size:17.5px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(90deg,#1c8fe8,#3ec1f5); box-shadow:0 8px 26px rgba(38,155,240,.35); }
   #sheetPlay:active { filter:brightness(1.12); }
   #sheetFav { margin-top:10px; width:100%; border:1.5px solid #34344a; border-radius:14px; padding:12px 0; font-size:15px; font-weight:700; color:#f2f2f5; cursor:pointer; background:#171724; }
-  #updWrap { position:fixed; inset:0; z-index:70; display:none; }
+  #updWrap { position:fixed; inset:0; z-index:90; display:none; }
+  .upd-notice { font-size:12.5px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; color:#ffb84d; }
+  .upd-avail { font-size:17.5px; font-weight:700; margin-top:7px; }
+  .upd-label { font-size:12.5px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:#8b8b9e; margin-top:16px; }
   #updWrap.on { display:block; }
   #updBg { position:absolute; inset:0; background:rgba(4,4,8,.6); backdrop-filter:blur(6px); }
   #updSheet { position:absolute; left:0; right:0; bottom:0; max-width:960px; margin:0 auto; background:#17171f; border-radius:22px 22px 0 0; padding:22px 18px calc(18px + env(safe-area-inset-bottom)); animation:up .25s ease; }
@@ -413,11 +416,13 @@
 <input type="file" id="biosInput" accept=".bin" hidden>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<div id="updSheet">
-    <div class="upd-tt" data-i18n="updTitle">A new version is available</div>
-    <div class="upd-ver" id="updVer"></div>
+<div id="updWrap">
+  <div id="updBg"></div>
+  <div id="updSheet">
+    <div class="upd-notice" data-i18n="updNotice">Notice</div>
+    <div class="upd-avail"><span data-i18n="updAvail">A new version is available:</span> <span class="upd-ver" id="updVer"></span></div>
+    <div class="upd-label" data-i18n="updContent">What's new:</div>
     <p class="upd-notes" id="updNotes"></p>
-    <p class="upd-forced" id="updForced" data-i18n="updForced" style="display:none">Your version is 3 updates behind, so this update is required.</p>
     <button id="updNow" type="button" data-i18n="updNow">Update now</button>
     <button id="updLater" type="button" data-i18n="updLater">Later</button>
   </div>
@@ -470,7 +475,7 @@
       displayName:'Display name', saveWord:'Save', avatar:'Avatar', changeWord:'Change', cloudSaves:'Cloud saves',
       syncNow:'Sync now', signOut:'Sign out', settings:'Settings', language:'Language', versionWord:'version',
       loadOwn:'Load your own ROM', loadOwnDesc:'Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .sms, .gg, .a26, .z64, .bin/.md, PS1 .iso/.pbp, or a .zip containing one. You can also drag & drop a file anywhere on this page.',
-      chooseRom:'Choose ROM file', addGame:'Add a Game', onDevice:'On this device', storedNote:'Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.', noStored:'No games added yet.', updTitle:'A new version is available', updNow:'Update now', updLater:'Later', updForced:'Your version is 3 updates behind, so this update is required.', psxTitle:'PlayStation (PS1)', psxDesc:'PS1 games are not included. Load your own PS1 game file (.iso or .pbp) plus your own PS1 BIOS — the BIOS is stored only on this device and used for every PS1 game.', biosBtn:'Load PS1 BIOS', biosNone:'BIOS: not loaded yet', biosLoaded:'BIOS on this device: ', psxBiosOk:'PS1 BIOS saved on this device', psxNoBios:'Load a PS1 BIOS first — the button is in the Add Game screen.', howTitle:'How to play',
+      chooseRom:'Choose ROM file', addGame:'Add a Game', onDevice:'On this device', storedNote:'Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.', noStored:'No games added yet.', updNotice:'Notice', updAvail:'A new version is available:', updContent:"What's new:", updTitle:'A new version is available', updNow:'Update now', updLater:'Later', updForced:'Your version is 3 updates behind, so this update is required.', psxTitle:'PlayStation (PS1)', psxDesc:'PS1 games are not included. Load your own PS1 game file (.iso or .pbp) plus your own PS1 BIOS — the BIOS is stored only on this device and used for every PS1 game.', biosBtn:'Load PS1 BIOS', biosNone:'BIOS: not loaded yet', biosLoaded:'BIOS on this device: ', psxBiosOk:'PS1 BIOS saved on this device', psxNoBios:'Load a PS1 BIOS first — the button is in the Add Game screen.', howTitle:'How to play',
       how1:'Tap a game and it starts right here — on phones it goes full screen in landscape automatically.',
       how2:'The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.',
       how3:'Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.',
@@ -490,7 +495,7 @@
       displayName:'Tên hiển thị', saveWord:'Lưu', avatar:'Ảnh đại diện', changeWord:'Đổi', cloudSaves:'Lưu đám mây',
       syncNow:'Đồng bộ ngay', signOut:'Đăng xuất', settings:'Cài đặt', language:'Ngôn ngữ', versionWord:'phiên bản',
       loadOwn:'Nạp ROM của bạn', loadOwnDesc:'Chơi file game từ máy của bạn — .nes, .gba, .gb/.gbc, .sfc, .sms, .gg, .a26, .z64, .bin/.md, PS1 .iso/.pbp, hoặc file .zip chứa 1 game. Bạn cũng có thể kéo & thả file vào bất cứ đâu trên trang này.',
-      chooseRom:'Chọn file ROM', addGame:'Thêm game', onDevice:'Trên máy này', storedNote:'File ROM chỉ lưu trên máy này — không tải lên bất cứ đâu. Xóa game ở đây vẫn giữ nguyên tiến trình chơi.', noStored:'Chưa thêm game nào.', updTitle:'Có phiên bản mới', updNow:'Cập nhật ngay', updLater:'Để sau', updForced:'Bản của bạn đã cũ 3 phiên bản, nên lần này bắt buộc cập nhật.', psxTitle:'PlayStation (PS1)', psxDesc:'Game PS1 không đi kèm. Hãy nạp file game PS1 của bạn (.iso hoặc .pbp) cùng BIOS PS1 của bạn — BIOS chỉ lưu trên máy này và dùng cho mọi game PS1.', biosBtn:'Nạp BIOS PS1', biosNone:'BIOS: chưa nạp', biosLoaded:'BIOS trên máy này: ', psxBiosOk:'Đã lưu BIOS PS1 trên máy này', psxNoBios:'Hãy nạp BIOS PS1 trước — nút nạp nằm ở màn hình Thêm game.', howTitle:'Cách chơi',
+      chooseRom:'Chọn file ROM', addGame:'Thêm game', onDevice:'Trên máy này', storedNote:'File ROM chỉ lưu trên máy này — không tải lên bất cứ đâu. Xóa game ở đây vẫn giữ nguyên tiến trình chơi.', noStored:'Chưa thêm game nào.', updNotice:'Thông báo', updAvail:'Hiện tại có bản cập nhật mới:', updContent:'Nội dung bản cập nhật:', updTitle:'Có phiên bản mới', updNow:'Cập nhật ngay', updLater:'Để sau', updForced:'Bản của bạn đã cũ 3 phiên bản, nên lần này bắt buộc cập nhật.', psxTitle:'PlayStation (PS1)', psxDesc:'Game PS1 không đi kèm. Hãy nạp file game PS1 của bạn (.iso hoặc .pbp) cùng BIOS PS1 của bạn — BIOS chỉ lưu trên máy này và dùng cho mọi game PS1.', biosBtn:'Nạp BIOS PS1', biosNone:'BIOS: chưa nạp', biosLoaded:'BIOS trên máy này: ', psxBiosOk:'Đã lưu BIOS PS1 trên máy này', psxNoBios:'Hãy nạp BIOS PS1 trước — nút nạp nằm ở màn hình Thêm game.', howTitle:'Cách chơi',
       how1:'Bấm vào 1 game là chơi ngay tại đây — trên điện thoại game tự phóng toàn màn hình ngang.',
       how2:'Tay cầm cảm ứng hiện ra khi game đang chạy. Trên máy tính, dùng phím mũi tên + Z / X / Enter / Shift.',
       how3:'Dùng menu của trình chơi game (thanh dưới của khung game) để lưu state, chụp ảnh và cài đặt. Bấm ✕ Đóng để dừng.',
@@ -691,7 +696,26 @@
   /* ---------- Detail sheet ---------- */
   var sheetWrap = document.getElementById('sheetWrap');
   var sheetGame = null;
-  function lockScroll(on) { document.body.style.overflow = on ? 'hidden' : ''; }
+  var _lockY = null;
+  function lockScroll(on) {
+    var v = on ? 'hidden' : '';
+    document.documentElement.style.overflow = v;
+    document.body.style.overflow = v;
+    if (on && _lockY === null) {
+      _lockY = window.scrollY || 0;
+      document.body.style.position = 'fixed';
+      document.body.style.top = (-_lockY) + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+    } else if (!on && _lockY !== null) {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      window.scrollTo(0, _lockY);
+      _lockY = null;
+    }
+  }
   function openSheet(g) {
     sheetGame = g;
     document.getElementById('sheetCv').innerHTML = coverHTML(g, false);
@@ -1595,6 +1619,30 @@
   })();
 
 
+  /* ---------- In-app update check: announce + content, fully modal ---------- */
+  function checkUpdate() {
+    fetch('version.json?x=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (vj) {
+      if (!vj || !vj.build) return;
+      var acc = 0;
+      try { acc = parseInt(localStorage.getItem('rp_accepted_build') || '0', 10) || 0; } catch (e) {}
+      if (acc !== APP_BUILD) { try { localStorage.setItem('rp_accepted_build', String(APP_BUILD)); } catch (e) {} }
+      if (vj.build <= APP_BUILD) return;
+      if (started) return;
+      document.getElementById('updVer').textContent = 'Pixcade v' + (vj.version || '');
+      document.getElementById('updNotes').textContent = (lang === 'vi' ? vj.notes_vi : vj.notes_en) || '';
+      document.getElementById('updWrap').classList.add('on');
+      lockScroll(true);
+      document.getElementById('updNow').onclick = function () {
+        try { localStorage.setItem('rp_accepted_build', String(vj.build)); } catch (e) {}
+        location.replace('app-' + vj.build + '.html' + location.search);
+      };
+      document.getElementById('updLater').onclick = function () {
+        document.getElementById('updWrap').classList.remove('on');
+        lockScroll(false);
+      };
+    }).catch(function () {});
+  }
+  setTimeout(checkUpdate, 1200);
   refreshBiosState();
 
   (function loadCatalog() {
