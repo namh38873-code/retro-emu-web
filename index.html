@@ -93,6 +93,11 @@
   .gcard .cv { border-radius:12px; }
   .gcard .cv { position:relative; aspect-ratio:1/1; border-radius:16px; overflow:hidden; background:#17171f; }
   .owndel { position:absolute; top:6px; right:6px; z-index:3; width:25px; height:25px; border-radius:50%; background:rgba(10,10,16,.75); color:#fff; border:1.5px solid rgba(255,255,255,.45); font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .ownrow { display:flex; align-items:center; gap:10px; background:#12121a; border:1.5px solid #23232f; border-radius:14px; padding:10px 12px; margin-top:8px; cursor:pointer; }
+  .ownrow .grow { flex:1; min-width:0; }
+  .ownrow .nm { font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ownrow .mt { color:#8a8a9a; font-size:12px; margin-top:2px; }
+  .rowdel { flex:none; width:30px; height:30px; border-radius:50%; background:#1d1d28; color:#ff8f9e; border:1.5px solid #33333f; font-size:12px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
   .gcard .t { font-size:13.5px; font-weight:600; margin:8px 2px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .playpill { display:block; width:100%; text-align:center; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); box-shadow:0 4px 14px rgba(28,143,232,.35); color:#fff; border:none; font-size:13.5px; font-weight:600; padding:9px 0; border-radius:999px; cursor:pointer; }
   .playpill:active { background:#e94560; }
@@ -304,11 +309,19 @@
         <button class="btn-full danger" id="signOut" type="button" data-i18n="signOut">Sign out</button>
       </div>
     </div>
+  </div>
+
+  <!-- ADD GAME VIEW -->
+  <div class="view" id="view-add">
     <div class="loadcard">
       <div class="big" data-i18n="loadOwn">Load your own ROM</div>
       <p data-i18n="loadOwnDesc">Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
-      <button class="loadbtn" id="ownBtn" type="button" data-i18n="chooseRom">Choose ROM file</button>
+      <button class="loadbtn" id="addRomBtn" type="button" data-i18n="chooseRom">Choose ROM file</button>
     </div>
+    <h2 class="sec" data-i18n="onDevice">On this device</h2>
+    <p class="note" data-i18n="storedNote">Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.</p>
+    <p class="emptyNote" id="ownEmpty" data-i18n="noStored">No games added yet.</p>
+    <div id="ownList"></div>
   </div>
 
   <!-- SETTINGS VIEW -->
@@ -342,7 +355,7 @@
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>Pixcade v4.1</footer>
+  <footer>Pixcade v4.2</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -414,7 +427,7 @@
       displayName:'Display name', saveWord:'Save', avatar:'Avatar', changeWord:'Change', cloudSaves:'Cloud saves',
       syncNow:'Sync now', signOut:'Sign out', settings:'Settings', language:'Language', versionWord:'version',
       loadOwn:'Load your own ROM', loadOwnDesc:'Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag & drop a file anywhere on this page.',
-      chooseRom:'Choose ROM file', howTitle:'How to play',
+      chooseRom:'Choose ROM file', addGame:'Add a Game', onDevice:'On this device', storedNote:'Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.', noStored:'No games added yet.', howTitle:'How to play',
       how1:'Tap a game and it starts right here — on phones it goes full screen in landscape automatically.',
       how2:'The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.',
       how3:'Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.',
@@ -434,7 +447,7 @@
       displayName:'Tên hiển thị', saveWord:'Lưu', avatar:'Ảnh đại diện', changeWord:'Đổi', cloudSaves:'Lưu đám mây',
       syncNow:'Đồng bộ ngay', signOut:'Đăng xuất', settings:'Cài đặt', language:'Ngôn ngữ', versionWord:'phiên bản',
       loadOwn:'Nạp ROM của bạn', loadOwnDesc:'Chơi file game từ máy của bạn — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, hoặc file .zip chứa 1 game. Bạn cũng có thể kéo & thả file vào bất cứ đâu trên trang này.',
-      chooseRom:'Chọn file ROM', howTitle:'Cách chơi',
+      chooseRom:'Chọn file ROM', addGame:'Thêm game', onDevice:'Trên máy này', storedNote:'File ROM chỉ lưu trên máy này — không tải lên bất cứ đâu. Xóa game ở đây vẫn giữ nguyên tiến trình chơi.', noStored:'Chưa thêm game nào.', howTitle:'Cách chơi',
       how1:'Bấm vào 1 game là chơi ngay tại đây — trên điện thoại game tự phóng toàn màn hình ngang.',
       how2:'Tay cầm cảm ứng hiện ra khi game đang chạy. Trên máy tính, dùng phím mũi tên + Z / X / Enter / Shift.',
       how3:'Dùng menu của trình chơi game (thanh dưới của khung game) để lưu state, chụp ảnh và cài đặt. Bấm ✕ Đóng để dừng.',
@@ -481,7 +494,7 @@
   /* ---------- Views (bottom nav) ---------- */
   var navItems = document.querySelectorAll('.navitem');
   var curView = 'home';
-  var VIEW_TITLE_KEYS = { library: 'gameLibrary', favorites: 'navFavorites', account: 'account', settings: 'settings' };
+  var VIEW_TITLE_KEYS = { library: 'gameLibrary', favorites: 'navFavorites', account: 'account', settings: 'settings', add: 'addGame' };
   function renderTopbar() {
     var home = curView === 'home';
     document.querySelector('.topbar-in').style.display = home ? '' : 'none';
@@ -497,7 +510,7 @@
   function switchView(name) {
     curView = name;
     navItems.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name || (name === 'settings' && b.getAttribute('data-view') === 'account')); });
-    ['home', 'library', 'favorites', 'account', 'settings'].forEach(function (v) {
+    ['home', 'library', 'favorites', 'account', 'settings', 'add'].forEach(function (v) {
       document.getElementById('view-' + v).classList.toggle('on', v === name);
     });
     window.scrollTo(0, 0);
@@ -666,7 +679,7 @@
   }
   document.getElementById('bellBtn').addEventListener('click', function () { toast(T('noNotif')); });
   document.getElementById('importBtn').addEventListener('click', function () { fileInput.click(); });
-  document.getElementById('fabAdd').addEventListener('click', function () { fileInput.click(); });
+  document.getElementById('fabAdd').addEventListener('click', function () { switchView('add'); });
   (function () {
     var picks = ['Nova the Squirrel', 'Anguna', 'From Below', 'Feline', 'Tobu Tobu Girl', 'Porklike'];
     document.getElementById('searchInput').setAttribute('placeholder', picks[Math.floor(Math.random() * picks.length)]);
@@ -733,12 +746,38 @@
       card.querySelector('.playpill').addEventListener('click', function (e) { e.stopPropagation(); play(); });
       card.querySelector('.owndel').addEventListener('click', function (e) {
         e.stopPropagation();
-        ownGames = ownGames.filter(function (x) { return x.name !== o.name; });
-        idbDelFrom('roms', o.name);
-        renderOwn();
-        toast(T('romRemoved'));
+        removeOwn(o.name);
       });
       grid.appendChild(card);
+    });
+    renderOwnList();
+  }
+  function fmtSize(n) {
+    if (n == null) return '';
+    if (n >= 1048576) return (n / 1048576).toFixed(2) + ' MB';
+    if (n >= 1024) return Math.round(n / 1024) + ' KB';
+    return n + ' B';
+  }
+  function removeOwn(name) {
+    ownGames = ownGames.filter(function (x) { return x.name !== name; });
+    idbDelFrom('roms', name);
+    renderOwn();
+    toast(T('romRemoved'));
+  }
+  function renderOwnList() {
+    var list = document.getElementById('ownList');
+    if (!list) return;
+    document.getElementById('ownEmpty').style.display = ownGames.length ? 'none' : '';
+    list.innerHTML = '';
+    ownGames.forEach(function (o) {
+      var row = document.createElement('div');
+      row.className = 'ownrow';
+      row.innerHTML = '<div class="grow"><div class="nm"></div><div class="mt"></div></div><button class="rowdel" type="button" aria-label="Remove">✕</button>';
+      row.querySelector('.nm').textContent = o.name;
+      row.querySelector('.mt').textContent = ownSysLabel(o.core) + (o.blob && o.blob.size ? ' · ' + fmtSize(o.blob.size) : '');
+      row.addEventListener('click', function () { playOwn(o); });
+      row.querySelector('.rowdel').addEventListener('click', function (e) { e.stopPropagation(); removeOwn(o.name); });
+      list.appendChild(row);
     });
   }
   function playOwn(o) {
@@ -1064,7 +1103,7 @@
     }
   }
 
-  document.getElementById('ownBtn').addEventListener('click', function () { fileInput.click(); });
+  document.getElementById('addRomBtn').addEventListener('click', function () { fileInput.click(); });
   fileInput.addEventListener('change', function () {
     if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
   });
