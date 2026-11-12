@@ -17,6 +17,11 @@
   /* --- Top search (GameHub style) --- */
   .topbar { position:sticky; top:0; z-index:30; background:rgba(8,8,13,.92); backdrop-filter:blur(10px); padding:12px 14px 8px; }
   .topbar-in { max-width:960px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+  .topbar .tabs { max-width:960px; margin:0 auto; }
+  .toptitle { max-width:960px; margin:0 auto; display:flex; align-items:center; gap:10px; min-height:45px; }
+  .toptitle .tt { font-size:19px; font-weight:800; }
+  .fchip { display:none; align-items:center; gap:6px; background:#1b1b26; border:1px solid #2a2a3a; color:#cfcfe0; border-radius:999px; padding:5px 11px; font-size:12.5px; cursor:pointer; }
+  .fchip.on { display:inline-flex; }
   .iconbtn { flex:none; width:40px; height:40px; border-radius:50%; background:none; border:none; color:#e8e8f0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
   .iconbtn:active { background:#1b1b26; }
   .search { flex:1; display:flex; align-items:center; gap:8px; background:#1b1b26; border:1px solid #2a2a3a; border-radius:999px; padding:10px 16px; }
@@ -201,6 +206,18 @@
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8v7M9.5 12.5L12 15l2.5-2.5"/></svg>
     </button>
   </div>
+  <div class="toptitle" id="topTitle" style="display:none">
+    <span class="tt" id="topTitleTxt"></span>
+    <button class="fchip" id="filterChip" type="button"></button>
+  </div>
+    <div class="tabs" id="topTabs">
+      <button class="tab on" data-tab="rec" type="button" data-i18n="recTab">Recommended</button>
+      <button class="tab" data-tab="nes" type="button">NES</button>
+      <button class="tab" data-tab="gba" type="button">GBA</button>
+      <button class="tab" data-tab="gb" type="button">GB</button>
+      <button class="tab" data-tab="snes" type="button">SNES</button>
+      <button class="tab" data-tab="gen" type="button">Genesis</button>
+    </div>
 </div>
 
 <div class="wrap">
@@ -218,14 +235,6 @@
 
   <!-- HOME VIEW -->
   <div class="view on" id="view-home">
-    <div class="tabs">
-      <button class="tab on" data-tab="rec" type="button" data-i18n="recTab">Recommended</button>
-      <button class="tab" data-tab="nes" type="button">NES</button>
-      <button class="tab" data-tab="gba" type="button">GBA</button>
-      <button class="tab" data-tab="gb" type="button">GB</button>
-      <button class="tab" data-tab="snes" type="button">SNES</button>
-      <button class="tab" data-tab="gen" type="button">Genesis</button>
-    </div>
 
 
     <div id="tab-rec">
@@ -250,7 +259,7 @@
 
   <!-- LIBRARY VIEW -->
   <div class="view" id="view-library">
-    <div class="libhead"><h2 class="sec" data-i18n="gameLibrary">Game Library</h2><span class="cnt" id="libCount"></span></div>
+    <div class="libhead" style="justify-content:flex-end"><span class="cnt" id="libCount"></span></div>
     <div class="grid" id="libGrid"></div>
     <h2 class="sec" id="ownTitle" style="display:none" data-i18n="yourGames">Your Games</h2>
     <div class="grid" id="ownGrid"></div>
@@ -259,8 +268,7 @@
 
   <!-- ACCOUNT VIEW -->
   <div class="view" id="view-account">
-    <div class="acct-top">
-      <h2 class="sec" data-i18n="account">Account</h2>
+    <div class="acct-top" style="justify-content:flex-end">
       <button class="iconbtn" id="gearBtn" type="button" aria-label="Settings">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34 1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87 1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
       </button>
@@ -305,7 +313,6 @@
   <!-- SETTINGS VIEW -->
   <div class="view" id="view-settings">
     <div class="acct-top">
-      <h2 class="sec" data-i18n="settings">Settings</h2>
       <button class="iconbtn" id="setBack" type="button" aria-label="Back" style="font-size:26px;line-height:1">‹</button>
     </div>
     <div class="acct-card">
@@ -334,7 +341,7 @@
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>Pixcade v3.8</footer>
+  <footer>Pixcade v3.9</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -475,6 +482,7 @@
     document.getElementById('langEn').classList.toggle('on', lang === 'en');
     document.getElementById('langVi').classList.toggle('on', lang === 'vi');
     if (typeof updateSheetFav === 'function') updateSheetFav();
+    if (typeof renderTopbar === 'function') renderTopbar();
   }
 
   var stage = document.getElementById('stage');
@@ -499,12 +507,28 @@
 
   /* ---------- Views (bottom nav) ---------- */
   var navItems = document.querySelectorAll('.navitem');
+  var curView = 'home';
+  var VIEW_TITLE_KEYS = { library: 'gameLibrary', favorites: 'navFavorites', account: 'account', settings: 'settings' };
+  function renderTopbar() {
+    var home = curView === 'home';
+    document.querySelector('.topbar-in').style.display = home ? '' : 'none';
+    document.getElementById('topTabs').style.display = home ? '' : 'none';
+    document.getElementById('topTitle').style.display = home ? 'none' : '';
+    if (!home) document.getElementById('topTitleTxt').textContent = T(VIEW_TITLE_KEYS[curView] || 'navHome');
+    var si = document.getElementById('searchInput');
+    var q = si ? si.value.trim() : '';
+    var chip = document.getElementById('filterChip');
+    chip.classList.toggle('on', curView === 'library' && !!q);
+    if (q) chip.textContent = '\u201C' + q + '\u201D \u2715';
+  }
   function switchView(name) {
+    curView = name;
     navItems.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name || (name === 'settings' && b.getAttribute('data-view') === 'account')); });
     ['home', 'library', 'favorites', 'account', 'settings'].forEach(function (v) {
       document.getElementById('view-' + v).classList.toggle('on', v === name);
     });
     window.scrollTo(0, 0);
+    renderTopbar();
   }
   navItems.forEach(function (b) {
     b.addEventListener('click', function () { switchView(b.getAttribute('data-view')); });
@@ -852,12 +876,21 @@
   })();
 
   var searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', function () {
+  function applySearchFilter() {
     var q = searchInput.value.trim().toLowerCase();
-    if (q) switchView('library');
     libGrid.querySelectorAll('.gcard').forEach(function (c) {
       c.style.display = (!q || c.getAttribute('data-title').indexOf(q) !== -1) ? '' : 'none';
     });
+  }
+  searchInput.addEventListener('input', function () {
+    if (searchInput.value.trim()) switchView('library');
+    applySearchFilter();
+    renderTopbar();
+  });
+  document.getElementById('filterChip').addEventListener('click', function () {
+    searchInput.value = '';
+    applySearchFilter();
+    renderTopbar();
   });
 
   /* ---------- Fullscreen + landscape ---------- */
