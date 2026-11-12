@@ -233,6 +233,7 @@
       <button class="tab" data-tab="gb" type="button">GB</button>
       <button class="tab" data-tab="snes" type="button">SNES</button>
       <button class="tab" data-tab="gen" type="button">Genesis</button>
+      <button class="tab" data-tab="sms" type="button">SMS</button>
     </div>
 </div>
 
@@ -328,6 +329,12 @@
       <p data-i18n="loadOwnDesc">Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
       <button class="loadbtn" id="addRomBtn" type="button" data-i18n="chooseRom">Choose ROM file</button>
     </div>
+    <div class="loadcard" style="margin-top:14px">
+      <div class="big" data-i18n="psxTitle">PlayStation (PS1)</div>
+      <p data-i18n="psxDesc">PS1 games are not included. Load your own PS1 game file (.iso or .pbp) plus your own PS1 BIOS — the BIOS is stored only on this device and used for every PS1 game.</p>
+      <p class="note" id="biosState"></p>
+      <button class="loadbtn" id="biosBtn" type="button" data-i18n="biosBtn">Load PS1 BIOS</button>
+    </div>
     <h2 class="sec" data-i18n="onDevice">On this device</h2>
     <p class="note" data-i18n="storedNote">Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.</p>
     <p class="emptyNote" id="ownEmpty" data-i18n="noStored">No games added yet.</p>
@@ -365,7 +372,7 @@
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>Pixcade v4.3</footer>
+  <footer>Pixcade v4.4</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -385,8 +392,9 @@
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2.2c-3.9 0-9 2-9 5.3V21h18v-1.5c0-3.3-5.1-5.3-9-5.3z"/></svg><span data-i18n="navAccount">Account</span>
   </button>
 </nav>
-<input type="file" id="fileInput" accept=".nes,.gba,.gb,.gbc,.sfc,.smc,.bin,.md,.gen,.zip" hidden>
+<input type="file" id="fileInput" accept=".nes,.gba,.gb,.gbc,.sfc,.smc,.bin,.md,.gen,.sms,.gg,.a26,.z64,.n64,.v64,.iso,.pbp,.zip" hidden>
 <input type="file" id="avaInput" accept="image/*" hidden>
+<input type="file" id="biosInput" accept=".bin" hidden>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <div id="updWrap">
@@ -447,8 +455,8 @@
       cloudNote:'Cloud sign-in is almost ready — it opens as soon as the Pixcade server is switched on. Your games and on-device saves work as usual.',
       displayName:'Display name', saveWord:'Save', avatar:'Avatar', changeWord:'Change', cloudSaves:'Cloud saves',
       syncNow:'Sync now', signOut:'Sign out', settings:'Settings', language:'Language', versionWord:'version',
-      loadOwn:'Load your own ROM', loadOwnDesc:'Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag & drop a file anywhere on this page.',
-      chooseRom:'Choose ROM file', addGame:'Add a Game', onDevice:'On this device', storedNote:'Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.', noStored:'No games added yet.', updTitle:'A new version is available', updNow:'Update now', updLater:'Later', updForced:'Your version is 3 updates behind, so this update is required.', howTitle:'How to play',
+      loadOwn:'Load your own ROM', loadOwnDesc:'Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .sms, .gg, .a26, .z64, .bin/.md, PS1 .iso/.pbp, or a .zip containing one. You can also drag & drop a file anywhere on this page.',
+      chooseRom:'Choose ROM file', addGame:'Add a Game', onDevice:'On this device', storedNote:'Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.', noStored:'No games added yet.', updTitle:'A new version is available', updNow:'Update now', updLater:'Later', updForced:'Your version is 3 updates behind, so this update is required.', psxTitle:'PlayStation (PS1)', psxDesc:'PS1 games are not included. Load your own PS1 game file (.iso or .pbp) plus your own PS1 BIOS — the BIOS is stored only on this device and used for every PS1 game.', biosBtn:'Load PS1 BIOS', biosNone:'BIOS: not loaded yet', biosLoaded:'BIOS on this device: ', psxBiosOk:'PS1 BIOS saved on this device', psxNoBios:'Load a PS1 BIOS first — the button is in the Add Game screen.', howTitle:'How to play',
       how1:'Tap a game and it starts right here — on phones it goes full screen in landscape automatically.',
       how2:'The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.',
       how3:'Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.',
@@ -467,8 +475,8 @@
       cloudNote:'Đăng nhập đám mây sắp mở — sẽ bật ngay khi máy chủ Pixcade sẵn sàng. Game và save trên máy này vẫn chạy bình thường.',
       displayName:'Tên hiển thị', saveWord:'Lưu', avatar:'Ảnh đại diện', changeWord:'Đổi', cloudSaves:'Lưu đám mây',
       syncNow:'Đồng bộ ngay', signOut:'Đăng xuất', settings:'Cài đặt', language:'Ngôn ngữ', versionWord:'phiên bản',
-      loadOwn:'Nạp ROM của bạn', loadOwnDesc:'Chơi file game từ máy của bạn — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, hoặc file .zip chứa 1 game. Bạn cũng có thể kéo & thả file vào bất cứ đâu trên trang này.',
-      chooseRom:'Chọn file ROM', addGame:'Thêm game', onDevice:'Trên máy này', storedNote:'File ROM chỉ lưu trên máy này — không tải lên bất cứ đâu. Xóa game ở đây vẫn giữ nguyên tiến trình chơi.', noStored:'Chưa thêm game nào.', updTitle:'Có phiên bản mới', updNow:'Cập nhật ngay', updLater:'Để sau', updForced:'Bản của bạn đã cũ 3 phiên bản, nên lần này bắt buộc cập nhật.', howTitle:'Cách chơi',
+      loadOwn:'Nạp ROM của bạn', loadOwnDesc:'Chơi file game từ máy của bạn — .nes, .gba, .gb/.gbc, .sfc, .sms, .gg, .a26, .z64, .bin/.md, PS1 .iso/.pbp, hoặc file .zip chứa 1 game. Bạn cũng có thể kéo & thả file vào bất cứ đâu trên trang này.',
+      chooseRom:'Chọn file ROM', addGame:'Thêm game', onDevice:'Trên máy này', storedNote:'File ROM chỉ lưu trên máy này — không tải lên bất cứ đâu. Xóa game ở đây vẫn giữ nguyên tiến trình chơi.', noStored:'Chưa thêm game nào.', updTitle:'Có phiên bản mới', updNow:'Cập nhật ngay', updLater:'Để sau', updForced:'Bản của bạn đã cũ 3 phiên bản, nên lần này bắt buộc cập nhật.', psxTitle:'PlayStation (PS1)', psxDesc:'Game PS1 không đi kèm. Hãy nạp file game PS1 của bạn (.iso hoặc .pbp) cùng BIOS PS1 của bạn — BIOS chỉ lưu trên máy này và dùng cho mọi game PS1.', biosBtn:'Nạp BIOS PS1', biosNone:'BIOS: chưa nạp', biosLoaded:'BIOS trên máy này: ', psxBiosOk:'Đã lưu BIOS PS1 trên máy này', psxNoBios:'Hãy nạp BIOS PS1 trước — nút nạp nằm ở màn hình Thêm game.', howTitle:'Cách chơi',
       how1:'Bấm vào 1 game là chơi ngay tại đây — trên điện thoại game tự phóng toàn màn hình ngang.',
       how2:'Tay cầm cảm ứng hiện ra khi game đang chạy. Trên máy tính, dùng phím mũi tên + Z / X / Enter / Shift.',
       how3:'Dùng menu của trình chơi game (thanh dưới của khung game) để lưu state, chụp ảnh và cài đặt. Bấm ✕ Đóng để dừng.',
@@ -587,9 +595,9 @@
 
   /* ---------- Genre shelves ---------- */
   var SHELVES = [
-    { title: 'Puzzle & Brain', ids: ['n2048', 'croom', 'adjustris', 'libbet', 'big2small', 'symmerged', 'rebound', 'miniplanets'] },
-    { title: 'Platform & Action', ids: ['nova', 'twindragons', 'tobu', 'feline', 'shocklobster', 'bomberworld'] },
-    { title: 'Adventure & Worlds', ids: ['anguna', 'frombelow', 'porklike', 'ucityadvance', 'ucity', 'dragonscastle'] }
+    { title: 'Puzzle & Brain', ids: ['n2048', 'croom', 'adjustris', 'libbet', 'big2small', 'symmerged', 'rebound', 'miniplanets', 'wyrmhole', 'crossconnect', 'wordyl', 'flooder', 'airaki', 'carazu', 'postbot'] },
+    { title: 'Platform & Action', ids: ['nova', 'twindragons', 'tobu', 'feline', 'shocklobster', 'bomberworld', 'squishyturtle', 'renegaderush', 'jp', 'thehat', 'escapeobliterizer', 'meteorain', 'voxelburg', 'dragonblaster', 'foodfighter'] },
+    { title: 'Adventure & Worlds', ids: ['anguna', 'frombelow', 'porklike', 'ucityadvance', 'ucity', 'dragonscastle', 'aevilia', 'purplenight', 'gbcorp', 'gbhack', 'europarescue', 'labirinth', 'skyland', 'duckslayer'] }
   ];
   var shelvesEl = document.getElementById('shelves');
   var recGrid = document.getElementById('recGrid');
@@ -750,7 +758,7 @@
 
   /* ---------- Your Games: own ROMs added this session, listed in the Library ---------- */
   var ownGames = [];
-  function ownSysLabel(core) { return core === 'nes' ? 'NES' : core === 'gba' ? 'GBA' : core === 'gb' ? 'GB' : core === 'snes' ? 'SNES' : 'GEN'; }
+  function ownSysLabel(core) { return core === 'nes' ? 'NES' : core === 'gba' ? 'GBA' : core === 'gb' ? 'GB' : core === 'snes' ? 'SNES' : core === 'segaMS' ? 'SMS' : core === 'segaGG' ? 'GG' : core === 'atari2600' ? 'ATARI' : core === 'n64' ? 'N64' : core === 'psx' ? 'PS1' : 'GEN'; }
   function renderOwn() {
     var grid = document.getElementById('ownGrid');
     grid.innerHTML = '';
@@ -810,9 +818,11 @@
     }
     switchView('home');
     showErr('');
-    showStage();
-    curGameKey = 'own:' + o.name;
-    startGame(o.blob, o.core, o.name);
+    withBios(o.core, function (biosUrl) {
+      showStage();
+      curGameKey = 'own:' + o.name;
+      startGame(o.blob, o.core, o.name, biosUrl);
+    });
   }
 
   /* ---------- Auto save states (IndexedDB): closing a game saves it, reopening resumes ---------- */
@@ -826,11 +836,12 @@
   function idb() {
     if (!idbPromise) {
       idbPromise = new Promise(function (res, rej) {
-        var rq = indexedDB.open('retroplay', 2);
+        var rq = indexedDB.open('retroplay', 3);
         rq.onupgradeneeded = function () {
           var db = rq.result;
           if (!db.objectStoreNames.contains('autostates')) db.createObjectStore('autostates');
           if (!db.objectStoreNames.contains('roms')) db.createObjectStore('roms');
+          if (!db.objectStoreNames.contains('misc')) db.createObjectStore('misc');
         };
         rq.onsuccess = function () { res(rq.result); };
         rq.onerror = function () { rej(rq.error); };
@@ -884,6 +895,15 @@
         rq.onerror = function () { res(out); };
       });
     }).catch(function () { return []; });
+  }
+  function idbGetFrom(store, k) {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var rq = db.transaction(store).objectStore(store).get(k);
+        rq.onsuccess = function () { res(rq.result || null); };
+        rq.onerror = function () { res(null); };
+      });
+    }).catch(function () { return null; });
   }
   function idbDelFrom(store, k) {
     return idb().then(function (db) {
@@ -1126,7 +1146,9 @@
 
   document.getElementById('addRomBtn').addEventListener('click', function () { fileInput.click(); });
   fileInput.addEventListener('change', function () {
-    if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+    var f = fileInput.files && fileInput.files[0];
+    fileInput.value = '';
+    if (f) handleFile(f);
   });
   document.addEventListener('dragover', function (e) { e.preventDefault(); });
   document.addEventListener('drop', function (e) {
@@ -1142,6 +1164,11 @@
     if (n.endsWith('.gb') || n.endsWith('.gbc')) return 'gb';
     if (n.endsWith('.sfc') || n.endsWith('.smc')) return 'snes';
     if (n.endsWith('.bin') || n.endsWith('.md') || n.endsWith('.gen')) return 'segaMD';
+    if (n.endsWith('.sms')) return 'segaMS';
+    if (n.endsWith('.gg')) return 'segaGG';
+    if (n.endsWith('.a26')) return 'atari2600';
+    if (n.endsWith('.z64') || n.endsWith('.n64') || n.endsWith('.v64')) return 'n64';
+    if (n.endsWith('.iso') || n.endsWith('.pbp')) return 'psx';
     return null;
   }
 
@@ -1166,25 +1193,52 @@
     } catch (e) {
       switchView('library'); showErr('Could not read that file.'); return;
     }
-    if (!core) { switchView('library'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc, .bin or .zip file.'); return; }
+    if (!core) { switchView('library'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc, .sms, .gg, .a26, .z64, .iso, .pbp, .bin or .zip file.'); return; }
     var dup = false;
     ownGames.forEach(function (o) { if (o.name === gameName) { dup = true; o.blob = blob; o.core = core; } });
     if (!dup) { ownGames.push({ name: gameName, core: core, blob: blob }); renderOwn(); }
     blob.arrayBuffer().then(function (buf) {
       return idbPutTo('roms', gameName, { name: gameName, core: core, data: new Uint8Array(buf), ts: Date.now() });
     }).catch(function () { toast(T('romPersistFail')); });
-    switchView('home');
-    showStage();
-    curGameKey = 'own:' + gameName;
-    startGame(blob, core, gameName);
+    withBios(core, function (biosUrl) {
+      switchView('home');
+      showStage();
+      curGameKey = 'own:' + gameName;
+      startGame(blob, core, gameName, biosUrl);
+    });
   }
 
-  function startGame(blob, core, gameName) {
+  function withBios(core, cb) {
+    if (core !== 'psx') { cb(null); return; }
+    idbGetFrom('misc', 'psx_bios').then(function (rec) {
+      if (rec && rec.data) cb(URL.createObjectURL(new Blob([rec.data], { type: 'application/octet-stream' })));
+      else { toast(T('psxNoBios')); switchView('add'); }
+    }).catch(function () { toast(T('psxNoBios')); switchView('add'); });
+  }
+  var biosInput = document.getElementById('biosInput');
+  document.getElementById('biosBtn').addEventListener('click', function () { biosInput.click(); });
+  biosInput.addEventListener('change', function () {
+    var f = biosInput.files && biosInput.files[0];
+    biosInput.value = '';
+    if (!f) return;
+    f.arrayBuffer().then(function (buf) {
+      return idbPutTo('misc', 'psx_bios', { name: f.name, data: new Uint8Array(buf), ts: Date.now() });
+    }).then(function () { refreshBiosState(); toast(T('psxBiosOk')); }).catch(function () {});
+  });
+  function refreshBiosState() {
+    idbGetFrom('misc', 'psx_bios').then(function (rec) {
+      var el = document.getElementById('biosState');
+      if (el) el.textContent = rec && rec.name ? (T('biosLoaded') + rec.name) : T('biosNone');
+    }).catch(function () {});
+  }
+
+  function startGame(blob, core, gameName, biosUrl) {
     started = true;
     enterPlayMode();
     loading.style.display = 'flex';
     window.EJS_player = '#game';
     window.EJS_core = core;
+    if (biosUrl) window.EJS_biosUrl = biosUrl;
     window.EJS_gameUrl = URL.createObjectURL(blob);
     window.EJS_gameName = gameName;
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
@@ -1234,7 +1288,7 @@
   }
 
   /* ---------- Accounts + cloud sync ---------- */
-  var APP_BUILD = 43;
+  var APP_BUILD = 44;
   var API_BASE = 'https://retroplay-api.hahahahuhuahajh.workers.dev';
   var GOOGLE_CLIENT_ID = '650217428363-6kgt80snptcq3il06tlglqqv02seo1e2.apps.googleusercontent.com';
   var auth = null;
@@ -1518,6 +1572,7 @@
     }).catch(function () {});
   }
   setTimeout(checkUpdate, 1800);
+  refreshBiosState();
 
   (function loadCatalog() {
     var booted = false;
