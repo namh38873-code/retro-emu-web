@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>RetroPlay — NES & GBA in your browser</title>
-<meta name="description" content="Play your own NES and Game Boy Advance ROM files right in your browser. No downloads, no installs. Touch controls and save states included.">
+<meta name="description" content="Play free homebrew NES and Game Boy Advance games right in your browser, or load your own ROM files. Touch controls and save states included.">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:#0f0f1a; color:#e8e8f0; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; min-height:100vh; }
@@ -24,7 +24,22 @@
   #pickBtn:active { transform:scale(.97); }
   #picker p { color:#9a9ab0; font-size:13px; line-height:1.6; }
   #err { color:#ff7070; font-size:13px; min-height:18px; }
-  #loading { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:#000; color:#cfcfe0; font-size:15px; }
+  #loading { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:#000; color:#cfcfe0; font-size:15px; z-index:5; }
+  section.lib { max-width:960px; margin:26px auto 0; padding:0 12px; }
+  section.lib h2 { font-size:20px; }
+  section.lib .sub { color:#9a9ab0; font-size:13px; margin:5px 0 14px; line-height:1.6; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .card { background:#171728; border:1px solid #2c2c44; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+  .cover { height:92px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:800; color:rgba(255,255,255,.92); letter-spacing:1px; text-shadow:0 2px 8px rgba(0,0,0,.45); }
+  .card .body { padding:10px 11px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .card .t { font-size:14.5px; font-weight:700; line-height:1.3; }
+  .card .g { font-size:12px; color:#a5a5bf; }
+  .card .meta { font-size:10.5px; color:#6d6d88; margin-top:auto; padding-top:6px; line-height:1.5; }
+  .sys { align-self:flex-start; font-size:10px; font-weight:800; padding:2.5px 8px; border-radius:999px; background:#e94560; color:#fff; letter-spacing:.5px; }
+  .sys.gba { background:#7b5cff; }
+  .play { margin-top:8px; background:#23233a; color:#fff; border:1px solid #3d3d5c; border-radius:8px; padding:9px 0; font-size:13.5px; font-weight:700; cursor:pointer; }
+  .play:active { background:#e94560; border-color:#e94560; }
+  .credits { max-width:960px; margin:16px auto 0; padding:0 16px; color:#6d6d88; font-size:11.5px; line-height:1.7; }
   .how { max-width:960px; margin:18px auto 0; padding:0 16px 30px; }
   .how h2 { font-size:17px; margin-bottom:10px; color:#fff; }
   .how ol { margin-left:20px; color:#b9b9cc; font-size:14px; line-height:1.75; }
@@ -35,10 +50,10 @@
 <body>
 <header>
   <h1>RETRO<span>PLAY</span></h1>
-  <p>Play your own retro games right in your browser. No downloads, no installs.</p>
+  <p>Free retro games in your browser. Pick one below and play — or load your own ROM.</p>
   <div class="badges">
-    <div class="badge"><b>NES</b> supported</div>
-    <div class="badge"><b>GBA</b> supported</div>
+    <div class="badge"><b>12</b> free games included</div>
+    <div class="badge"><b>NES</b> + <b>GBA</b></div>
     <div class="badge">Touch controls</div>
     <div class="badge">Save states</div>
   </div>
@@ -57,27 +72,87 @@
   </div>
 </div>
 
+<section class="lib">
+  <h2>Game Library</h2>
+  <p class="sub">Free homebrew games shared by their authors — tap Play and the game starts right here. No downloads, no installs.</p>
+  <div class="grid" id="grid"></div>
+</section>
+
+<p class="credits">Every library game is homebrew released for free by its author under the license shown on its card. RetroPlay does not include commercial ROMs — to play your own games, use Select Game above and load a ROM file you own.</p>
+
 <div class="how">
   <h2>How to play</h2>
   <ol>
-    <li>Tap <b>Select Game</b> above (or drag &amp; drop a file onto the player).</li>
-    <li>Pick a ROM file from your device: <b>.nes</b> for NES, <b>.gba</b> for Game Boy Advance. A .zip containing one of those works too.</li>
+    <li>Tap <b>Play</b> on any game in the library — or tap <b>Select Game</b> to load your own ROM file (.nes, .gba, or a .zip containing one).</li>
     <li>On phones, the touch gamepad appears automatically. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
     <li>Use the player menu (bottom bar) for save states, screenshots and full screen.</li>
   </ol>
-  <div class="note">RetroPlay does not include any games. Only load ROM files that you own and have the right to use.</div>
+  <div class="note">RetroPlay does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
 </div>
 
-<footer>retro web v1.2</footer>
+<footer>retro web v1.3</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
+  var GAMES = [
+    {id:'nova',       t:'Nova the Squirrel', sys:'NES', core:'nes', file:'nova.nes',       genre:'Platform adventure', author:'NovaSquirrel', license:'GPLv3',        c1:'#2b5876', c2:'#4e4376', ini:'NS'},
+    {id:'anguna',     t:'Anguna',            sys:'GBA', core:'gba', file:'anguna.gba',     genre:'Dungeon adventure',  author:'Nathan Tolbert', license:'Open source', c1:'#134e5e', c2:'#71b280', ini:'AG'},
+    {id:'frombelow',  t:'From Below',        sys:'NES', core:'nes', file:'frombelow.nes',  genre:'Falling blocks vs. the kraken', author:'Matt Hughson', license:'MIT', c1:'#0f2027', c2:'#2c5364', ini:'FB'},
+    {id:'blade-none', t:'', sys:'', core:'', file:'', genre:'', author:'', license:'', c1:'', c2:'', ini:''},
+    {id:'feline',     t:'Feline',            sys:'GBA', core:'gba', file:'feline.gba',     genre:'Cat platformer',     author:'Jono Shields', license:'MIT',          c1:'#8e2de2', c2:'#4a00e0', ini:'FE'},
+    {id:'twindragons',t:'Twin Dragons',      sys:'NES', core:'nes', file:'twindragons.nes',genre:'Platformer',         author:'Garydos', license:'zlib / CC-BY',    c1:'#c33764', c2:'#1d2671', ini:'TD'},
+    {id:'thwaite',    t:'Thwaite',           sys:'NES', core:'nes', file:'thwaite.nes',    genre:'Missile defense',    author:'Damian Yerrick', license:'GPL',        c1:'#232526', c2:'#414345', ini:'TH'},
+    {id:'symmerged',  t:'Symbol Merged',     sys:'GBA', core:'gba', file:'symmerged.gba',  genre:'Puzzle',             author:'copyrat90', license:'MIT',             c1:'#11998e', c2:'#38ef7d', ini:'SM'},
+    {id:'n2048',      t:'2048',              sys:'NES', core:'nes', file:'n2048.nes',      genre:'Sliding number puzzle', author:'tsone', license:'Open source',      c1:'#b7985a', c2:'#94762e', ini:'20'},
+    {id:'microjam23', t:"GBA Microjam '23",  sys:'GBA', core:'gba', file:'microjam23.gba', genre:'13 mini-games in one', author:'gbadev community', license:'Open source', c1:'#fc4a1a', c2:'#f7b733', ini:'MJ'},
+    {id:'rhde',       t:'RHDE: Furniture Fight', sys:'NES', core:'nes', file:'rhde.nes',   genre:'Furniture brawler',  author:'Damian Yerrick', license:'GPL',           c1:'#5d4157', c2:'#a8caba', ini:'RH'},
+    {id:'croom',      t:'Concentration Room', sys:'NES', core:'nes', file:'croom.nes',     genre:'Card matching',      author:'Damian Yerrick', license:'GPL',           c1:'#3a6186', c2:'#89253e', ini:'CR'},
+    {id:'roulette',   t:'Russian Roulette',  sys:'NES', core:'nes', file:'roulette.nes',   genre:'Party bluffing',     author:'Damian Yerrick', license:'GPL',           c1:'#41295a', c2:'#2f0743', ini:'RR'}
+  ].filter(function (g) { return g.file; });
+
   var picker = document.getElementById('picker');
   var fileInput = document.getElementById('fileInput');
   var errBox = document.getElementById('err');
   var loading = document.getElementById('loading');
   var started = false;
 
+  // --- Library cards ---
+  var grid = document.getElementById('grid');
+  GAMES.forEach(function (g) {
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="cover" style="background:linear-gradient(135deg,' + g.c1 + ',' + g.c2 + ')">' + g.ini + '</div>' +
+      '<div class="body">' +
+        '<span class="sys' + (g.sys === 'GBA' ? ' gba' : '') + '">' + g.sys + '</span>' +
+        '<div class="t">' + g.t + '</div>' +
+        '<div class="g">' + g.genre + '</div>' +
+        '<div class="meta">by ' + g.author + ' · ' + g.license + '</div>' +
+        '<button class="play" type="button">Play</button>' +
+      '</div>';
+    card.querySelector('.play').addEventListener('click', function () { playLibrary(g); });
+    grid.appendChild(card);
+  });
+
+  async function playLibrary(g) {
+    if (started) { document.getElementById('stage').scrollIntoView({behavior:'smooth'}); return; }
+    showErr('');
+    picker.style.display = 'none';
+    loading.style.display = 'flex';
+    document.getElementById('stage').scrollIntoView({behavior:'smooth'});
+    try {
+      var res = await fetch('games/' + g.file);
+      if (!res.ok) throw new Error('http ' + res.status);
+      var blob = await res.blob();
+      startGame(blob, g.core, g.file);
+    } catch (e) {
+      loading.style.display = 'none';
+      picker.style.display = 'flex';
+      showErr('Failed to load ' + g.t + '. Check your connection and try again.');
+    }
+  }
+
+  // --- Own ROM picker ---
   document.getElementById('pickBtn').addEventListener('click', function () { fileInput.click(); });
   fileInput.addEventListener('change', function () {
     if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
@@ -149,6 +224,15 @@
     };
     document.body.appendChild(s);
   }
+
+  // --- ?play=<id> deep link ---
+  (function () {
+    var id = new URLSearchParams(location.search).get('play');
+    if (!id) return;
+    for (var i = 0; i < GAMES.length; i++) {
+      if (GAMES[i].id === id) { playLibrary(GAMES[i]); break; }
+    }
+  })();
 </script>
 </body>
 </html>
