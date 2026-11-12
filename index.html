@@ -37,8 +37,9 @@
   #stage.mini { position:fixed; top:auto; left:auto; right:12px; bottom:calc(100px + env(safe-area-inset-bottom)); width:min(47vw, 250px); height:auto; aspect-ratio:4/3; max-height:none; z-index:55; margin:0; border-radius:13px; border:1px solid #3a3a52; box-shadow:0 16px 44px rgba(0,0,0,.7); }
   #stage.mini + #closeBelow { display:none; }
   #miniTap { display:none; }
-  #stage.mini #miniTap { display:block; position:absolute; inset:0; z-index:30; background:linear-gradient(180deg, transparent 52%, rgba(0,0,0,.5)); cursor:pointer; }
-  #miniTap svg { position:absolute; right:7px; bottom:7px; opacity:.95; }
+  #stage.mini #miniTap { display:block; position:absolute; inset:0; z-index:30; background:linear-gradient(180deg, transparent 52%, rgba(0,0,0,.5)); cursor:pointer; touch-action:none; }
+  #miniResize { display:none; }
+  #stage.mini #miniResize { display:flex; position:absolute; right:0; bottom:0; width:32px; height:32px; z-index:31; align-items:flex-end; justify-content:flex-end; padding:0 5px 5px 0; cursor:nwse-resize; touch-action:none; }
   #miniClose { display:none; }
   #stage.mini #miniClose { display:flex; position:absolute; top:6px; left:6px; z-index:31; width:28px; height:28px; border-radius:50%; background:rgba(14,14,22,.78); color:#fff; border:1.5px solid rgba(255,255,255,.5); font-size:13px; font-weight:700; align-items:center; justify-content:center; cursor:pointer; padding:0; }
   #stage.mini #game * { visibility:hidden !important; }
@@ -171,8 +172,9 @@
   <div id="stage">
     <div id="game"></div>
     <div id="loading">Loading game…</div>
-    <div id="miniTap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></div>
+    <div id="miniTap"></div>
     <button id="miniClose" type="button">✕</button>
+    <div id="miniResize"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2.6" stroke-linecap="round"><path d="M21 8L8 21M21 15l-6 6"/></svg></div>
   </div>
   <button id="closeBelow" type="button">✕ Close game</button>
   <div id="err"></div>
@@ -232,7 +234,7 @@
     </div>
   </div>
 
-  <footer>retro web v3.3</footer>
+  <footer>retro web v3.4</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -490,7 +492,55 @@
       setMini(false);
     }
   });
-  document.getElementById('miniTap').addEventListener('click', function () { enterPlayMode(); });
+  (function () {
+    var tap = document.getElementById('miniTap');
+    var grip = document.getElementById('miniResize');
+    var sx = 0, sy = 0, moved = false, r0 = null;
+    function clampPos() {
+      var r = stage.getBoundingClientRect();
+      var x = Math.max(2, Math.min(r.left, window.innerWidth - r.width - 2));
+      var y = Math.max(2, Math.min(r.top, window.innerHeight - r.height - 2));
+      stage.style.left = x + 'px';
+      stage.style.top = y + 'px';
+    }
+    tap.addEventListener('pointerdown', function (e) {
+      sx = e.clientX; sy = e.clientY; moved = false;
+      r0 = stage.getBoundingClientRect();
+      try { tap.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    tap.addEventListener('pointermove', function (e) {
+      if (!r0) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (!moved && Math.abs(dx) + Math.abs(dy) < 9) return;
+      moved = true;
+      stage.style.right = 'auto';
+      stage.style.bottom = 'auto';
+      stage.style.left = Math.max(2, Math.min(r0.left + dx, window.innerWidth - r0.width - 2)) + 'px';
+      stage.style.top = Math.max(2, Math.min(r0.top + dy, window.innerHeight - r0.height - 2)) + 'px';
+    });
+    tap.addEventListener('pointerup', function () {
+      var wasDrag = moved;
+      r0 = null; moved = false;
+      window.dispatchEvent(new Event('resize'));
+      if (!wasDrag) enterPlayMode();
+    });
+    var gw = 0;
+    grip.addEventListener('pointerdown', function (e) {
+      e.stopPropagation();
+      sx = e.clientX; gw = stage.getBoundingClientRect().width;
+      try { grip.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    grip.addEventListener('pointermove', function (e) {
+      if (!gw) return;
+      var w = Math.max(118, Math.min(gw + (e.clientX - sx), Math.min(window.innerWidth * 0.94, 430)));
+      stage.style.width = w + 'px';
+    });
+    grip.addEventListener('pointerup', function () {
+      gw = 0;
+      clampPos();
+      window.dispatchEvent(new Event('resize'));
+    });
+  })();
   document.getElementById('miniClose').addEventListener('click', function (e) {
     e.stopPropagation();
     location.href = location.pathname;
