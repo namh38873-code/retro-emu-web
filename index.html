@@ -187,6 +187,10 @@
   .seg button { border:none; background:none; color:#9a9ab0; font-size:13px; font-weight:700; padding:7px 13px; border-radius:999px; cursor:pointer; }
   .seg button.on { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; }
 
+  /* --- App feel: no text selection or copy callouts (inputs stay editable) --- */
+  body { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  input, textarea { -webkit-user-select:text; user-select:text; }
+
   /* --- Virtual gamepad restyle: colored buttons, dpad replaced by joystick --- */
   body .ejs_dpad_main { display:none !important; }
   body .ejs_virtualGamepad_button {
@@ -201,6 +205,17 @@
   body .ejs_virtualGamepad_button.b_x { background:linear-gradient(145deg,rgba(46,204,140,.95),rgba(16,140,90,.95)) !important; border-color:rgba(160,255,205,.85) !important; color:#fff !important; }
   body .ejs_virtualGamepad_button.b_y { background:linear-gradient(145deg,rgba(170,110,255,.95),rgba(110,50,210,.95)) !important; border-color:rgba(215,185,255,.85) !important; color:#fff !important; }
   body .ejs_virtualGamepad_button_down { filter:brightness(1.5) !important; }
+  /* v4.5 pad layout: no speed buttons; Select/menu/Start row sits low */
+  body .ejs_virtualGamepad_button.b_speed_fast,
+  body .ejs_virtualGamepad_button.b_speed_slow { display:none !important; }
+  /* the row's exact drop is set in arrangePad (its parent is a 0-height strip) */
+  body .ejs_virtualGamepad_open.b_moved {
+    position:static !important; flex:none !important;
+    width:46px !important; height:31px !important; margin:0 !important;
+    border:2px solid rgba(126,186,255,.55) !important; border-radius:8px !important;
+    background-color:rgba(14,18,36,.78) !important;
+    box-shadow:0 4px 14px rgba(0,0,0,.45);
+  }
   /* --- Custom joystick --- */
   #joy { display:none; position:absolute; left:16px; bottom:15%; width:126px; height:126px; border-radius:50%; background:rgba(10,14,28,.5); border:2px solid rgba(126,186,255,.55); z-index:40; touch-action:none; }
   html.touch #stage.on:not(.mini) #joy { display:block; }
@@ -234,6 +249,7 @@
       <button class="tab" data-tab="snes" type="button">SNES</button>
       <button class="tab" data-tab="gen" type="button">Genesis</button>
       <button class="tab" data-tab="sms" type="button">SMS</button>
+      <button class="tab" data-tab="atari" type="button">Atari</button>
     </div>
 </div>
 
@@ -372,7 +388,7 @@
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>Pixcade v4.4</footer>
+  <footer>Pixcade v4.5</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -595,8 +611,8 @@
 
   /* ---------- Genre shelves ---------- */
   var SHELVES = [
-    { title: 'Puzzle & Brain', ids: ['n2048', 'croom', 'adjustris', 'libbet', 'big2small', 'symmerged', 'rebound', 'miniplanets', 'wyrmhole', 'crossconnect', 'wordyl', 'flooder', 'airaki', 'carazu', 'postbot'] },
-    { title: 'Platform & Action', ids: ['nova', 'twindragons', 'tobu', 'feline', 'shocklobster', 'bomberworld', 'squishyturtle', 'renegaderush', 'jp', 'thehat', 'escapeobliterizer', 'meteorain', 'voxelburg', 'dragonblaster', 'foodfighter'] },
+    { title: 'Puzzle & Brain', ids: ['n2048', 'croom', 'adjustris', 'libbet', 'big2small', 'symmerged', 'rebound', 'miniplanets', 'wyrmhole', 'crossconnect', 'wordyl', 'flooder', 'airaki', 'carazu', 'postbot', 'gamelife'] },
+    { title: 'Platform & Action', ids: ['nova', 'twindragons', 'tobu', 'feline', 'shocklobster', 'bomberworld', 'squishyturtle', 'renegaderush', 'jp', 'thehat', 'escapeobliterizer', 'meteorain', 'voxelburg', 'dragonblaster', 'foodfighter', 'candykid', 'city3d'] },
     { title: 'Adventure & Worlds', ids: ['anguna', 'frombelow', 'porklike', 'ucityadvance', 'ucity', 'dragonscastle', 'aevilia', 'purplenight', 'gbcorp', 'gbhack', 'europarescue', 'labirinth', 'skyland', 'duckslayer'] }
   ];
   var shelvesEl = document.getElementById('shelves');
@@ -996,6 +1012,34 @@
     joy.addEventListener('pointercancel', end);
   })();
 
+  /* ---------- Pad layout: menu button between Select and Start ---------- */
+  function arrangePad() {
+    var tries = 0;
+    (function attempt() {
+      var bottom = document.querySelector('.ejs_virtualGamepad_bottom');
+      var open = document.querySelector('.ejs_virtualGamepad_open');
+      var sel = document.querySelector('.ejs_virtualGamepad_button.b_select');
+      var sta = document.querySelector('.ejs_virtualGamepad_button.b_start');
+      if (!bottom || !open || !sel || !sta) {
+        if (++tries < 24) setTimeout(attempt, 500);
+        return;
+      }
+      bottom.style.display = 'flex';
+      bottom.style.alignItems = 'center';
+      bottom.style.justifyContent = 'center';
+      bottom.style.gap = '8px';
+      bottom.style.width = 'auto';
+      bottom.style.top = 'auto';
+      bottom.style.bottom = '-41px';
+      sel.style.position = 'static'; sel.style.order = '1'; sel.style.margin = '0';
+      sta.style.position = 'static'; sta.style.order = '3'; sta.style.margin = '0';
+      if (open.parentNode !== bottom) bottom.insertBefore(open, sta);
+      open.style.order = '2';
+      open.classList.add('b_moved');
+    })();
+  }
+  stage.addEventListener('contextmenu', function (e) { e.preventDefault(); e.stopPropagation(); }, true);
+
   var searchInput = document.getElementById('searchInput');
   function applySearchFilter() {
     var q = searchInput.value.trim().toLowerCase();
@@ -1247,6 +1291,7 @@
     window.EJS_defaultOptions = {'virtual-gamepad': 'enabled', 'save-state-location': 'browser'};
     window.EJS_onGameStart = function () {
       loading.style.display = 'none';
+      setTimeout(arrangePad, 350);
       loading.textContent = T('loadingGame');
       if (curGameKey) {
         var key = curGameKey;
@@ -1288,7 +1333,7 @@
   }
 
   /* ---------- Accounts + cloud sync ---------- */
-  var APP_BUILD = 44;
+  var APP_BUILD = 45;
   var API_BASE = 'https://retroplay-api.hahahahuhuahajh.workers.dev';
   var GOOGLE_CLIENT_ID = '650217428363-6kgt80snptcq3il06tlglqqv02seo1e2.apps.googleusercontent.com';
   var auth = null;
