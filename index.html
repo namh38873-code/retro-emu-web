@@ -142,6 +142,16 @@
   #sheetPlay { margin-top:20px; width:100%; border:none; border-radius:14px; padding:16px 0; font-size:17.5px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(90deg,#1c8fe8,#3ec1f5); box-shadow:0 8px 26px rgba(38,155,240,.35); }
   #sheetPlay:active { filter:brightness(1.12); }
   #sheetFav { margin-top:10px; width:100%; border:1.5px solid #34344a; border-radius:14px; padding:12px 0; font-size:15px; font-weight:700; color:#f2f2f5; cursor:pointer; background:#171724; }
+  #updWrap { position:fixed; inset:0; z-index:70; display:none; }
+  #updWrap.on { display:block; }
+  #updBg { position:absolute; inset:0; background:rgba(4,4,8,.6); backdrop-filter:blur(6px); }
+  #updSheet { position:absolute; left:0; right:0; bottom:0; max-width:960px; margin:0 auto; background:#17171f; border-radius:22px 22px 0 0; padding:22px 18px calc(18px + env(safe-area-inset-bottom)); animation:up .25s ease; }
+  .upd-tt { font-size:19px; font-weight:800; }
+  .upd-ver { color:#3ec1f5; font-weight:700; font-size:14px; margin-top:4px; }
+  .upd-notes { color:#c6c6d4; font-size:14.5px; line-height:1.65; margin-top:10px; }
+  .upd-forced { color:#ff8f9e; font-size:13.5px; margin-top:10px; }
+  #updNow { margin-top:18px; width:100%; border:none; border-radius:14px; padding:15px 0; font-size:16.5px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(90deg,#1c8fe8,#3ec1f5); box-shadow:0 8px 26px rgba(38,155,240,.35); }
+  #updLater { margin-top:10px; width:100%; border:1.5px solid #34344a; border-radius:14px; padding:12px 0; font-size:15px; font-weight:700; color:#f2f2f5; cursor:pointer; background:#171724; }
   #sheetFav.on { color:#ff5470; border-color:rgba(255,84,112,.5); }
   .emptyNote { color:#8a8a9e; font-size:13.5px; margin:-6px 0 14px; }
 
@@ -355,7 +365,7 @@
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>Pixcade v4.2</footer>
+  <footer>Pixcade v4.3</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -379,6 +389,17 @@
 <input type="file" id="avaInput" accept="image/*" hidden>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+<div id="updWrap">
+  <div id="updBg"></div>
+  <div id="updSheet">
+    <div class="upd-tt" data-i18n="updTitle">A new version is available</div>
+    <div class="upd-ver" id="updVer"></div>
+    <p class="upd-notes" id="updNotes"></p>
+    <p class="upd-forced" id="updForced" data-i18n="updForced" style="display:none">Your version is 3 updates behind, so this update is required.</p>
+    <button id="updNow" type="button" data-i18n="updNow">Update now</button>
+    <button id="updLater" type="button" data-i18n="updLater">Later</button>
+  </div>
+</div>
 <div id="toast"></div>
 
 <!-- GAME DETAIL SHEET -->
@@ -427,7 +448,7 @@
       displayName:'Display name', saveWord:'Save', avatar:'Avatar', changeWord:'Change', cloudSaves:'Cloud saves',
       syncNow:'Sync now', signOut:'Sign out', settings:'Settings', language:'Language', versionWord:'version',
       loadOwn:'Load your own ROM', loadOwnDesc:'Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag & drop a file anywhere on this page.',
-      chooseRom:'Choose ROM file', addGame:'Add a Game', onDevice:'On this device', storedNote:'Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.', noStored:'No games added yet.', howTitle:'How to play',
+      chooseRom:'Choose ROM file', addGame:'Add a Game', onDevice:'On this device', storedNote:'Your ROM files are stored only on this device — never uploaded anywhere. Deleting a game here keeps its save progress.', noStored:'No games added yet.', updTitle:'A new version is available', updNow:'Update now', updLater:'Later', updForced:'Your version is 3 updates behind, so this update is required.', howTitle:'How to play',
       how1:'Tap a game and it starts right here — on phones it goes full screen in landscape automatically.',
       how2:'The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.',
       how3:'Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.',
@@ -447,7 +468,7 @@
       displayName:'Tên hiển thị', saveWord:'Lưu', avatar:'Ảnh đại diện', changeWord:'Đổi', cloudSaves:'Lưu đám mây',
       syncNow:'Đồng bộ ngay', signOut:'Đăng xuất', settings:'Cài đặt', language:'Ngôn ngữ', versionWord:'phiên bản',
       loadOwn:'Nạp ROM của bạn', loadOwnDesc:'Chơi file game từ máy của bạn — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, hoặc file .zip chứa 1 game. Bạn cũng có thể kéo & thả file vào bất cứ đâu trên trang này.',
-      chooseRom:'Chọn file ROM', addGame:'Thêm game', onDevice:'Trên máy này', storedNote:'File ROM chỉ lưu trên máy này — không tải lên bất cứ đâu. Xóa game ở đây vẫn giữ nguyên tiến trình chơi.', noStored:'Chưa thêm game nào.', howTitle:'Cách chơi',
+      chooseRom:'Chọn file ROM', addGame:'Thêm game', onDevice:'Trên máy này', storedNote:'File ROM chỉ lưu trên máy này — không tải lên bất cứ đâu. Xóa game ở đây vẫn giữ nguyên tiến trình chơi.', noStored:'Chưa thêm game nào.', updTitle:'Có phiên bản mới', updNow:'Cập nhật ngay', updLater:'Để sau', updForced:'Bản của bạn đã cũ 3 phiên bản, nên lần này bắt buộc cập nhật.', howTitle:'Cách chơi',
       how1:'Bấm vào 1 game là chơi ngay tại đây — trên điện thoại game tự phóng toàn màn hình ngang.',
       how2:'Tay cầm cảm ứng hiện ra khi game đang chạy. Trên máy tính, dùng phím mũi tên + Z / X / Enter / Shift.',
       how3:'Dùng menu của trình chơi game (thanh dưới của khung game) để lưu state, chụp ảnh và cài đặt. Bấm ✕ Đóng để dừng.',
@@ -1213,6 +1234,7 @@
   }
 
   /* ---------- Accounts + cloud sync ---------- */
+  var APP_BUILD = 43;
   var API_BASE = 'https://retroplay-api.hahahahuhuahajh.workers.dev';
   var GOOGLE_CLIENT_ID = '650217428363-6kgt80snptcq3il06tlglqqv02seo1e2.apps.googleusercontent.com';
   var auth = null;
@@ -1472,6 +1494,30 @@
       if (added) renderOwn();
     }).catch(function () {});
   })();
+
+  /* ---------- In-app update check (version.json on the server) ---------- */
+  function checkUpdate() {
+    fetch('version.json?x=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (vj) {
+      if (!vj || !vj.build || vj.build <= APP_BUILD) return;
+      if (started) return;
+      var lag = vj.build - APP_BUILD;
+      var forced = lag >= 3;
+      document.getElementById('updVer').textContent = 'Pixcade v' + (vj.version || '');
+      document.getElementById('updNotes').textContent = (lang === 'vi' ? vj.notes_vi : vj.notes_en) || '';
+      document.getElementById('updForced').style.display = forced ? '' : 'none';
+      document.getElementById('updLater').style.display = forced ? 'none' : '';
+      document.getElementById('updWrap').classList.add('on');
+      document.getElementById('updNow').onclick = function () {
+        var u = new URL(location.href);
+        u.searchParams.set('u', vj.build);
+        location.replace(u.toString());
+      };
+      document.getElementById('updLater').onclick = function () {
+        document.getElementById('updWrap').classList.remove('on');
+      };
+    }).catch(function () {});
+  }
+  setTimeout(checkUpdate, 1800);
 
   (function loadCatalog() {
     var booted = false;
