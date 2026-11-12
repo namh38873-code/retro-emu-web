@@ -30,6 +30,8 @@
   #wrap { max-width:960px; margin:12px auto 0; padding:0 10px; }
   #stage { display:none; width:100%; aspect-ratio:4/3; max-height:78vh; background:#000; border-radius:12px; overflow:hidden; position:relative; border:1px solid #34344e; box-shadow:0 12px 44px rgba(0,0,0,.55), 0 0 0 4px rgba(233,69,96,.08); }
   #stage.on { display:block; }
+  #stage:fullscreen { width:100%; height:100%; aspect-ratio:auto; max-height:none; border-radius:0; border:none; background:#000; }
+  #stage:fullscreen #game { width:100%; height:100%; }
   #game { width:100%; height:100%; }
   #closeBtn { position:absolute; top:8px; right:8px; z-index:20; background:rgba(10,10,18,.75); color:#fff; border:1.5px solid rgba(255,255,255,.55); border-radius:999px; font-size:13px; font-weight:700; padding:7px 14px; cursor:pointer; }
   #loading { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:#000; color:#cfcfe0; font-size:15px; z-index:5; }
@@ -119,7 +121,7 @@
   <div class="note">RetroPlay does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
 </div>
 
-<footer>retro web v2.0</footer>
+<footer>retro web v2.1</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
@@ -175,10 +177,34 @@
     grid.appendChild(card);
   });
 
+  function lockLandscape() {
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(function () {});
+      }
+    } catch (e) {}
+  }
+  function enterPlayMode() {
+    try {
+      if (document.fullscreenElement === stage) { lockLandscape(); return; }
+      if (stage.requestFullscreen) {
+        var pr = stage.requestFullscreen({navigationUI: 'hide'});
+        if (pr && pr.then) pr.then(lockLandscape).catch(function () {});
+        else lockLandscape();
+      }
+    } catch (e) {}
+  }
+  document.addEventListener('fullscreenchange', function () {
+    if (!document.fullscreenElement) {
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+    }
+  });
+
   async function playLibrary(g) {
     if (started) { showStage(); return; }
     showErr('');
     showStage();
+    enterPlayMode();
     loading.style.display = 'flex';
     try {
       var res = await fetch('games/' + g.file);
@@ -239,6 +265,7 @@
 
   function startGame(blob, core, gameName) {
     started = true;
+    enterPlayMode();
     loading.style.display = 'flex';
     window.EJS_player = '#game';
     window.EJS_core = core;
