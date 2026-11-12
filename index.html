@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RetroPlay — NES & GBA in your browser</title>
-<meta name="description" content="Play free homebrew NES and Game Boy Advance games right in your browser, or load your own ROM files. Touch controls and save states included.">
+<title>RetroPlay — Retro games in your browser</title>
+<meta name="description" content="Play free homebrew NES, GBA, Game Boy and SNES games right in your browser, or load your own ROM files. Touch controls, joystick and auto-save included.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0b12">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { background:#08080d; color:#f2f2f5; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; min-height:100vh; padding-bottom:86px; }
@@ -126,6 +130,10 @@
   #sheetSyn { color:#c6c6d4; font-size:14.5px; line-height:1.65; }
   #sheetPlay { margin-top:20px; width:100%; border:none; border-radius:14px; padding:16px 0; font-size:17.5px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(90deg,#1c8fe8,#3ec1f5); box-shadow:0 8px 26px rgba(38,155,240,.35); }
   #sheetPlay:active { filter:brightness(1.12); }
+  #sheetFav { margin-top:10px; width:100%; border:1.5px solid #34344a; border-radius:14px; padding:12px 0; font-size:15px; font-weight:700; color:#f2f2f5; cursor:pointer; background:#171724; }
+  #sheetFav.on { color:#ff5470; border-color:rgba(255,84,112,.5); }
+  .favbtn { position:absolute; top:6px; right:6px; z-index:3; width:30px; height:30px; border-radius:50%; border:none; background:rgba(8,8,16,.55); color:#fff; font-size:15px; line-height:1; cursor:pointer; }
+  .favbtn.on { color:#ff5470; background:rgba(8,8,16,.72); }
 
   footer { text-align:center; color:#4c4c62; font-size:12px; margin-top:26px; }
   #toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%) translateY(16px); background:#23232f; color:#f2f2f5; font-size:13.5px; padding:11px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:70; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.5); }
@@ -189,6 +197,7 @@
       <button class="tab" data-tab="gba" type="button">GBA</button>
       <button class="tab" data-tab="gb" type="button">GB</button>
       <button class="tab" data-tab="snes" type="button">SNES</button>
+      <button class="tab" data-tab="gen" type="button">Genesis</button>
     </div>
 
 
@@ -197,9 +206,17 @@
         <div class="hero-track" id="heroTrack"></div>
         <div class="hero-dots" id="heroDots"></div>
       </div>
+      <div id="recentWrap" style="display:none">
+        <h2 class="sec">Recently Played</h2>
+        <div class="shelf" id="recentShelf"></div>
+      </div>
       <div class="panel">
         <h2 class="sec">Your Next Favorite</h2>
         <div class="shelf" id="favShelf"></div>
+      </div>
+      <div id="myFavWrap" style="display:none">
+        <h2 class="sec">Your Favorites</h2>
+        <div class="shelf" id="myFavShelf"></div>
       </div>
       <div id="shelves"></div>
       <h2 class="sec">All Games</h2>
@@ -224,9 +241,9 @@
     <h2 class="sec">My ROMs</h2>
     <div class="loadcard">
       <div class="big">Load your own ROM</div>
-      <p>Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
+      <p>Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, .bin/.md, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
       <button class="loadbtn" id="ownBtn" type="button">Choose ROM file</button>
-      <input type="file" id="fileInput" accept=".nes,.gba,.gb,.gbc,.sfc,.smc,.zip" hidden>
+      <input type="file" id="fileInput" accept=".nes,.gba,.gb,.gbc,.sfc,.smc,.bin,.md,.gen,.zip" hidden>
     </div>
     <div class="how">
       <h3>How to play</h3>
@@ -239,7 +256,7 @@
     </div>
   </div>
 
-  <footer>retro web v3.5</footer>
+  <footer>retro web v3.6</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -273,6 +290,7 @@
     <h3>Synopsis</h3>
     <p id="sheetSyn"></p>
     <button id="sheetPlay" type="button">▶ PLAY</button>
+    <button id="sheetFav" type="button">♡ Add to Favorites</button>
   </div>
 </div>
 
@@ -302,11 +320,19 @@
     {id:'ucity',       t:'µCity',              sys:'GB', core:'gb', file:'ucity.gbc',      size:'128 KB', genre:'City builder', quote:'A whole city in your pocket.', syn:'A full city builder in color on the Game Boy Color: lay roads, zone districts, supply power and watch your tiny city grow.', author:'AntonioND', license:'GPLv3', c1:'#136a8a', c2:'#89f7fe', ini:'µC'},
     {id:'rebound',     t:'Rebound',            sys:'GB', core:'gb', file:'rebound.gbc',    size:'128 KB', genre:'Action puzzle', quote:'Keep it bouncing.', syn:'A Game Boy Color brick-breaker with a bounce: clear the blocks, keep the ball alive, and chase the high score.', author:'DevEd', license:'MIT', c1:'#7b2d8b', c2:'#f107a3', ini:'RB'},
     {id:'ucityadvance',t:'µCity Advance',      sys:'GBA', core:'gba', file:'ucityadvance.gba', size:'1.8 MB', genre:'City builder', quote:'Mayor of a tiny world.', syn:'Build a tiny city on your GBA: zones, power, roads and budgets, all simulated in your pocket.', author:'AntonioND', license:'MIT / Unlicense', c1:'#1e3c72', c2:'#2a5298', ini:'µA'},
-    {id:'bomberworld', t:'BomberWorld',        sys:'SNES', core:'snes', file:'bomberworld.sfc', size:'256 KB', genre:'Maze action', quote:'Bomb your way out.', syn:'Bomb, blast and trap your way through maze arenas in this SNES homebrew take on the classic bomber formula.', author:'1r3n33', license:'Open source', c1:'#93291e', c2:'#ed213a', ini:'BW'}
+    {id:'bomberworld', t:'BomberWorld',        sys:'SNES', core:'snes', file:'bomberworld.sfc', size:'256 KB', genre:'Maze action', quote:'Bomb your way out.', syn:'Bomb, blast and trap your way through maze arenas in this SNES homebrew take on the classic bomber formula.', author:'1r3n33', license:'Open source', c1:'#93291e', c2:'#ed213a', ini:'BW'},
+    {id:'miniplanets', t:'Mini Planets', sys:'GEN', core:'segaMD', file:'miniplanets.bin', size:'256 KB', genre:'Puzzle', quote:'Small planets, big brain.', syn:'A pocket-size puzzle game set on tiny planets: push, rotate and think your way through bite-sized worlds that fit in the palm of your hand.', author:'Javier Degirolmo (Sik)', license:'Open source', c1:'#0f2027', c2:'#2c5364', ini:'MP'},
+    {id:'dragonscastle', t:"Dragon's Castle", sys:'GEN', core:'segaMD', file:'dragonscastle.bin', size:'172 KB', genre:'Adventure platformer', quote:'The castle is calling.', syn:'Explore a sprawling castle full of secrets, traps and treasure in this Mega Drive adventure platformer, built as a love letter to the classics.', author:'Javier Degirolmo (Sik)', license:'Open source', c1:'#3a1c71', c2:'#d76d77', ini:'DC'}
   ];
   var FEATURED = ['nova', 'anguna', 'frombelow'];
   var byId = {};
   GAMES.forEach(function (g) { byId[g.id] = g; });
+  /* Favorites & recent state must exist before the first card is built */
+  function lsGet(k) { try { var v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var favs = lsGet('rp_favs');
+  var recent = lsGet('rp_recent');
+  function isFav(id) { return favs.indexOf(id) >= 0; }
 
   var stage = document.getElementById('stage');
   var fileInput = document.getElementById('fileInput');
@@ -326,9 +352,7 @@
   }
   function showErr(msg) { errBox.textContent = msg; }
 
-  document.getElementById('closeBelow').addEventListener('click', function () {
-    location.href = location.pathname;
-  });
+  document.getElementById('closeBelow').addEventListener('click', function () { closeAndSave(); });
 
   /* ---------- Views (bottom nav) ---------- */
   var navItems = document.querySelectorAll('.navitem');
@@ -366,9 +390,14 @@
     var card = document.createElement('div');
     card.className = 'gcard';
     card.setAttribute('data-title', g.t.toLowerCase());
-    card.innerHTML = '<div class="cv">' + coverHTML(g, true) + '</div>' +
+    card.innerHTML = '<div class="cv">' + coverHTML(g, true) +
+      '<button class="favbtn' + (isFav(g.id) ? ' on' : '') + '" data-fav="' + g.id + '" type="button">' + (isFav(g.id) ? '♥' : '♡') + '</button></div>' +
       '<div class="t">' + g.t + '</div>' +
       '<button class="playpill" type="button">▶ Play</button>';
+    card.querySelector('.favbtn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      toggleFav(g.id);
+    });
     card.addEventListener('click', function () { openSheet(g); });
     card.querySelector('.playpill').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -390,9 +419,9 @@
 
   /* ---------- Genre shelves ---------- */
   var SHELVES = [
-    { title: 'Puzzle & Brain', ids: ['n2048', 'croom', 'adjustris', 'libbet', 'big2small', 'symmerged', 'rebound'] },
+    { title: 'Puzzle & Brain', ids: ['n2048', 'croom', 'adjustris', 'libbet', 'big2small', 'symmerged', 'rebound', 'miniplanets'] },
     { title: 'Platform & Action', ids: ['nova', 'twindragons', 'tobu', 'feline', 'shocklobster', 'bomberworld'] },
-    { title: 'Adventure & Worlds', ids: ['anguna', 'frombelow', 'porklike', 'ucityadvance', 'ucity'] }
+    { title: 'Adventure & Worlds', ids: ['anguna', 'frombelow', 'porklike', 'ucityadvance', 'ucity', 'dragonscastle'] }
   ];
   var shelvesEl = document.getElementById('shelves');
   SHELVES.forEach(function (sh) {
@@ -459,6 +488,7 @@
     document.getElementById('sheetSize').textContent = g.sys + ' · ' + g.size;
     document.getElementById('sheetAuthor').textContent = 'by ' + g.author + ' · ' + g.license;
     document.getElementById('sheetSyn').textContent = g.syn;
+    updateSheetFav();
     sheetWrap.classList.add('on');
   }
   function closeSheet() { sheetWrap.classList.remove('on'); sheetGame = null; }
@@ -488,6 +518,103 @@
   })();
 
   /* ---------- Search ---------- */
+  /* ---------- Favorites & Recently Played (stored on this device) ---------- */
+  function toggleFav(id) {
+    var i = favs.indexOf(id);
+    if (i >= 0) favs.splice(i, 1); else favs.unshift(id);
+    lsSet('rp_favs', favs);
+    syncFavUI();
+  }
+  function pushRecent(id) {
+    var i = recent.indexOf(id);
+    if (i >= 0) recent.splice(i, 1);
+    recent.unshift(id);
+    recent = recent.slice(0, 12);
+    lsSet('rp_recent', recent);
+    renderPersonal();
+  }
+  function syncFavUI() {
+    document.querySelectorAll('.favbtn').forEach(function (b) {
+      var on = isFav(b.getAttribute('data-fav'));
+      b.classList.toggle('on', on);
+      b.textContent = on ? '♥' : '♡';
+    });
+    updateSheetFav();
+    renderPersonal();
+  }
+  function renderPersonal() {
+    var rw = document.getElementById('recentWrap');
+    var rs = document.getElementById('recentShelf');
+    rs.innerHTML = '';
+    recent.forEach(function (id) { if (byId[id]) rs.appendChild(shelfCard(byId[id])); });
+    rw.style.display = recent.length ? '' : 'none';
+    var fw = document.getElementById('myFavWrap');
+    var fs = document.getElementById('myFavShelf');
+    fs.innerHTML = '';
+    favs.forEach(function (id) { if (byId[id]) fs.appendChild(shelfCard(byId[id])); });
+    fw.style.display = favs.length ? '' : 'none';
+  }
+  var sheetFavBtn = document.getElementById('sheetFav');
+  function updateSheetFav() {
+    if (!sheetFavBtn) return;
+    var on = sheetGame && isFav(sheetGame.id);
+    sheetFavBtn.textContent = on ? '♥ In your Favorites' : '♡ Add to Favorites';
+    sheetFavBtn.classList.toggle('on', !!on);
+  }
+  sheetFavBtn.addEventListener('click', function () { if (sheetGame) toggleFav(sheetGame.id); });
+  renderPersonal();
+
+  /* ---------- Auto save states (IndexedDB): closing a game saves it, reopening resumes ---------- */
+  var curGameKey = null;
+  var idbPromise = null;
+  function idb() {
+    if (!idbPromise) {
+      idbPromise = new Promise(function (res, rej) {
+        var rq = indexedDB.open('retroplay', 1);
+        rq.onupgradeneeded = function () { rq.result.createObjectStore('autostates'); };
+        rq.onsuccess = function () { res(rq.result); };
+        rq.onerror = function () { rej(rq.error); };
+      });
+    }
+    return idbPromise;
+  }
+  function idbPut(k, v) {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        try {
+          var tx = db.transaction('autostates', 'readwrite');
+          tx.objectStore('autostates').put(v, k);
+          tx.oncomplete = res; tx.onerror = res; tx.onabort = res;
+        } catch (e) { res(); }
+      });
+    }).catch(function () {});
+  }
+  function idbGet(k) {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var rq = db.transaction('autostates').objectStore('autostates').get(k);
+        rq.onsuccess = function () { res(rq.result || null); };
+        rq.onerror = function () { res(null); };
+      });
+    }).catch(function () { return null; });
+  }
+  function autoSaveNow() {
+    if (!curGameKey || !window.EJS_emulator || !EJS_emulator.gameManager) return Promise.resolve();
+    var bytes;
+    try { bytes = EJS_emulator.gameManager.getState(); } catch (e) { return Promise.resolve(); }
+    if (!bytes || !bytes.length) return Promise.resolve();
+    return idbPut(curGameKey, new Uint8Array(bytes));
+  }
+  function closeAndSave() {
+    var done = false;
+    function go() { if (!done) { done = true; location.href = location.pathname; } }
+    Promise.race([autoSaveNow(), new Promise(function (r) { setTimeout(r, 800); })]).then(go, go);
+    setTimeout(go, 1500);
+  }
+  setInterval(function () { if (started && !document.hidden) autoSaveNow(); }, 30000);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) autoSaveNow(); });
+  window.addEventListener('pagehide', function () { autoSaveNow(); });
+
   /* ---------- Virtual joystick: drives the EJS dpad via keyboard events ---------- */
   (function () {
     var joy = document.getElementById('joy');
@@ -627,14 +754,22 @@
   })();
   document.getElementById('miniClose').addEventListener('click', function (e) {
     e.stopPropagation();
-    location.href = location.pathname;
+    closeAndSave();
   });
 
   /* ---------- Playing ---------- */
   async function playLibrary(g) {
     closeSheet();
     switchView('home');
-    if (started) { showStage(); enterPlayMode(); return; }
+    if (started) {
+      if (curGameKey === 'lib:' + g.id) { showStage(); enterPlayMode(); return; }
+      /* A different game was picked while one is running: save this one, then open the new game */
+      loading.style.display = 'flex';
+      loading.textContent = 'Loading game…';
+      try { await Promise.race([autoSaveNow(), new Promise(function (r) { setTimeout(r, 900); })]); } catch (e) {}
+      location.href = location.pathname + '?play=' + g.id;
+      return;
+    }
     showErr('');
     showStage();
     enterPlayMode();
@@ -642,7 +777,24 @@
     try {
       var res = await fetch('games/' + g.file);
       if (!res.ok) throw new Error('http ' + res.status);
-      var blob = await res.blob();
+      var total = parseInt(res.headers.get('content-length') || '0', 10);
+      var blob;
+      if (res.body && res.body.getReader && total > 0) {
+        var reader = res.body.getReader();
+        var chunks = [], got = 0;
+        for (;;) {
+          var part = await reader.read();
+          if (part.done) break;
+          chunks.push(part.value);
+          got += part.value.length;
+          loading.textContent = 'Loading game… ' + Math.round(got / total * 100) + '%';
+        }
+        blob = new Blob(chunks);
+      } else {
+        blob = await res.blob();
+      }
+      curGameKey = 'lib:' + g.id;
+      pushRecent(g.id);
       startGame(blob, g.core, g.file);
     } catch (e) {
       loading.style.display = 'none';
@@ -668,11 +820,12 @@
     if (n.endsWith('.gba')) return 'gba';
     if (n.endsWith('.gb') || n.endsWith('.gbc')) return 'gb';
     if (n.endsWith('.sfc') || n.endsWith('.smc')) return 'snes';
+    if (n.endsWith('.bin') || n.endsWith('.md') || n.endsWith('.gen')) return 'segaMD';
     return null;
   }
 
   async function handleFile(file) {
-    if (started) { switchView('home'); showStage(); enterPlayMode(); return; }
+    if (started) { switchView('home'); showStage(); enterPlayMode(); toast('Close the current game first to load another ROM'); return; }
     showErr('');
     var core = coreFor(file.name);
     var blob = file;
@@ -692,9 +845,10 @@
     } catch (e) {
       switchView('myroms'); showErr('Could not read that file.'); return;
     }
-    if (!core) { switchView('myroms'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc or .zip file.'); return; }
+    if (!core) { switchView('myroms'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc, .bin or .zip file.'); return; }
     switchView('home');
     showStage();
+    curGameKey = 'own:' + gameName;
     startGame(blob, core, gameName);
   }
 
@@ -709,8 +863,23 @@
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_color = '#e94560';
     window.EJS_startOnLoaded = true;
-    window.EJS_defaultOptions = {'virtual-gamepad': 'enabled'};
-    window.EJS_onGameStart = function () { loading.style.display = 'none'; };
+    window.EJS_defaultOptions = {'virtual-gamepad': 'enabled', 'save-state-location': 'browser'};
+    window.EJS_onGameStart = function () {
+      loading.style.display = 'none';
+      loading.textContent = 'Loading game…';
+      if (curGameKey) {
+        idbGet(curGameKey).then(function (bytes) {
+          if (bytes && bytes.length) {
+            setTimeout(function () {
+              try {
+                EJS_emulator.gameManager.loadState(new Uint8Array(bytes));
+                toast('Resumed where you left off');
+              } catch (e) {}
+            }, 400);
+          }
+        });
+      }
+    };
     var s = document.createElement('script');
     s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
     s.onerror = function () {
