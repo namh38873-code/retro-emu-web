@@ -92,6 +92,7 @@
   .gcard { cursor:pointer; min-width:0; background:#12121a; border-radius:18px; padding:8px 8px 10px; }
   .gcard .cv { border-radius:12px; }
   .gcard .cv { position:relative; aspect-ratio:1/1; border-radius:16px; overflow:hidden; background:#17171f; }
+  .owndel { position:absolute; top:6px; right:6px; z-index:3; width:25px; height:25px; border-radius:50%; background:rgba(10,10,16,.75); color:#fff; border:1.5px solid rgba(255,255,255,.45); font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
   .gcard .t { font-size:13.5px; font-weight:600; margin:8px 2px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .playpill { display:block; width:100%; text-align:center; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); box-shadow:0 4px 14px rgba(28,143,232,.35); color:#fff; border:none; font-size:13.5px; font-weight:600; padding:9px 0; border-radius:999px; cursor:pointer; }
   .playpill:active { background:#e94560; }
@@ -341,7 +342,7 @@
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>Pixcade v4.0</footer>
+  <footer>Pixcade v4.1</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -418,7 +419,7 @@
       how2:'The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.',
       how3:'Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.',
       noteText:'Pixcade does not include any commercial games. Only load ROM files that you own and have the right to use.',
-      resumed:'Resumed where you left off', cloudResumed:'Cloud save loaded', closeFirst:'Close the current game first to load another ROM',
+      resumed:'Resumed where you left off', cloudResumed:'Cloud save loaded', closeFirst:'Close the current game first to load another ROM', romPersistFail:'This game could not be stored on this device, so it will not stay in Your Games after you leave.', romRemoved:'Removed from Your Games. Your save progress is kept.',
       noNotif:'No new notifications', syncing:'Syncing…', syncedAt:'Synced', syncErr:'Sync failed — try again',
       nameSaved:'Name saved', avaSaved:'Avatar updated', signedIn:'Signed in' },
     vi: { navHome:'Trang chủ', navLibrary:'Thư viện', navFavorites:'Yêu thích', navAccount:'Tài khoản',
@@ -438,7 +439,7 @@
       how2:'Tay cầm cảm ứng hiện ra khi game đang chạy. Trên máy tính, dùng phím mũi tên + Z / X / Enter / Shift.',
       how3:'Dùng menu của trình chơi game (thanh dưới của khung game) để lưu state, chụp ảnh và cài đặt. Bấm ✕ Đóng để dừng.',
       noteText:'Pixcade không chứa game thương mại nào. Chỉ nạp file ROM bạn sở hữu và có quyền sử dụng.',
-      resumed:'Đã chơi tiếp từ chỗ cũ', cloudResumed:'Đã tải save từ đám mây', closeFirst:'Đóng game hiện tại trước khi nạp ROM khác',
+      resumed:'Đã chơi tiếp từ chỗ cũ', cloudResumed:'Đã tải save từ đám mây', closeFirst:'Đóng game hiện tại trước khi nạp ROM khác', romPersistFail:'Không lưu được game này vào máy, nên nó sẽ không còn trong Game của bạn sau khi thoát.', romRemoved:'Đã xóa khỏi Game của bạn. Tiến trình chơi vẫn được giữ.',
       noNotif:'Chưa có thông báo mới', syncing:'Đang đồng bộ…', syncedAt:'Đã đồng bộ', syncErr:'Đồng bộ lỗi — thử lại sau',
       nameSaved:'Đã lưu tên', avaSaved:'Đã đổi ảnh đại diện', signedIn:'Đã đăng nhập' }
   };
@@ -723,13 +724,20 @@
     ownGames.forEach(function (o) {
       var card = document.createElement('div');
       card.className = 'gcard';
-      card.innerHTML = '<div class="cv"><div class="covergrad" style="background:linear-gradient(135deg,#283c86,#45a247)">' + o.name.slice(0, 2).toUpperCase().replace(/</g, '') + '</div><span class="syschip">' + ownSysLabel(o.core) + '</span></div>' +
+      card.innerHTML = '<div class="cv"><div class="covergrad" style="background:linear-gradient(135deg,#283c86,#45a247)">' + o.name.slice(0, 2).toUpperCase().replace(/</g, '') + '</div><span class="syschip">' + ownSysLabel(o.core) + '</span><button class="owndel" type="button" aria-label="Remove">✕</button></div>' +
         '<div class="t"></div>' +
         '<button class="playpill" type="button">▶ ' + T('playWord') + '</button>';
       card.querySelector('.t').textContent = o.name;
       function play() { playOwn(o); }
       card.addEventListener('click', play);
       card.querySelector('.playpill').addEventListener('click', function (e) { e.stopPropagation(); play(); });
+      card.querySelector('.owndel').addEventListener('click', function (e) {
+        e.stopPropagation();
+        ownGames = ownGames.filter(function (x) { return x.name !== o.name; });
+        idbDelFrom('roms', o.name);
+        renderOwn();
+        toast(T('romRemoved'));
+      });
       grid.appendChild(card);
     });
   }
@@ -758,8 +766,12 @@
   function idb() {
     if (!idbPromise) {
       idbPromise = new Promise(function (res, rej) {
-        var rq = indexedDB.open('retroplay', 1);
-        rq.onupgradeneeded = function () { rq.result.createObjectStore('autostates'); };
+        var rq = indexedDB.open('retroplay', 2);
+        rq.onupgradeneeded = function () {
+          var db = rq.result;
+          if (!db.objectStoreNames.contains('autostates')) db.createObjectStore('autostates');
+          if (!db.objectStoreNames.contains('roms')) db.createObjectStore('roms');
+        };
         rq.onsuccess = function () { res(rq.result); };
         rq.onerror = function () { rej(rq.error); };
       });
@@ -785,6 +797,44 @@
         rq.onerror = function () { res(null); };
       });
     }).catch(function () { return null; });
+  }
+  function idbPutTo(store, k, v) {
+    return idb().then(function (db) {
+      return new Promise(function (res, rej) {
+        try {
+          var tx = db.transaction(store, 'readwrite');
+          tx.objectStore(store).put(v, k);
+          tx.oncomplete = function () { res(true); };
+          tx.onerror = function () { rej(tx.error); };
+          tx.onabort = function () { rej(tx.error); };
+        } catch (e) { rej(e); }
+      });
+    });
+  }
+  function idbGetAll(store) {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var out = [];
+        var rq = db.transaction(store).objectStore(store).openCursor();
+        rq.onsuccess = function () {
+          var cur = rq.result;
+          if (cur) { out.push({ key: cur.key, value: cur.value }); cur.continue(); }
+          else res(out);
+        };
+        rq.onerror = function () { res(out); };
+      });
+    }).catch(function () { return []; });
+  }
+  function idbDelFrom(store, k) {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        try {
+          var tx = db.transaction(store, 'readwrite');
+          tx.objectStore(store).delete(k);
+          tx.oncomplete = res; tx.onerror = res; tx.onabort = res;
+        } catch (e) { res(); }
+      });
+    }).catch(function () {});
   }
   function autoSaveNow() {
     if (!curGameKey || !window.EJS_emulator || !EJS_emulator.gameManager) return Promise.resolve();
@@ -1058,8 +1108,11 @@
     }
     if (!core) { switchView('library'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc, .bin or .zip file.'); return; }
     var dup = false;
-    ownGames.forEach(function (o) { if (o.name === gameName) dup = true; });
+    ownGames.forEach(function (o) { if (o.name === gameName) { dup = true; o.blob = blob; o.core = core; } });
     if (!dup) { ownGames.push({ name: gameName, core: core, blob: blob }); renderOwn(); }
+    blob.arrayBuffer().then(function (buf) {
+      return idbPutTo('roms', gameName, { name: gameName, core: core, data: new Uint8Array(buf), ts: Date.now() });
+    }).catch(function () { toast(T('romPersistFail')); });
     switchView('home');
     showStage();
     curGameKey = 'own:' + gameName;
@@ -1364,6 +1417,23 @@
     handleDeepLink();
     return true;
   }
+  (function loadStoredRoms() {
+    idbGetAll('roms').then(function (entries) {
+      var added = false;
+      entries.forEach(function (en) {
+        var v = en.value;
+        if (!v || !v.data) return;
+        var exists = false;
+        ownGames.forEach(function (o) { if (o.name === v.name) exists = true; });
+        if (!exists) {
+          ownGames.push({ name: v.name, core: v.core || coreFor(v.name), blob: new Blob([v.data]) });
+          added = true;
+        }
+      });
+      if (added) renderOwn();
+    }).catch(function () {});
+  })();
+
   (function loadCatalog() {
     var booted = false;
     try {
