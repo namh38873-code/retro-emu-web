@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixcade — Quản trị</title>
+<meta name="theme-color" content="#0b0b12">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#0b0b12; color:#f2f2f8; font-family:-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; padding:20px 16px 48px; }
+  .wrap { max-width:560px; margin:0 auto; display:flex; flex-direction:column; gap:16px; }
+  .logo { font-size:24px; font-weight:800; }
+  .logo span { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .logo small { display:block; font-size:12px; font-weight:600; color:#8b8b9e; margin-top:2px; letter-spacing:.4px; }
+  .card { background:#12121a; border:1px solid #1e1e2c; border-radius:16px; padding:16px; }
+  .card h2 { font-size:16px; margin-bottom:10px; }
+  .muted { color:#8b8b9e; font-size:13px; line-height:1.5; }
+  .btn { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; border:0; border-radius:999px; padding:11px 22px; font-size:14.5px; font-weight:700; cursor:pointer; }
+  .btn:active { transform:scale(.97); }
+  .btn.ghost { background:#1b1b28; color:#d8d8e8; border:1px solid #2a2a3d; }
+  .btn.red { background:linear-gradient(135deg,#e0483e,#f57a3e); }
+  .row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .spacer { flex:1; }
+  .status { font-size:15px; font-weight:800; padding:8px 14px; border-radius:999px; }
+  .status.open { background:rgba(46,204,113,.15); color:#2ecc71; }
+  .status.closed { background:rgba(231,76,60,.16); color:#ff7a6b; }
+  textarea { width:100%; background:#0d0d15; border:1px solid #262637; color:#f2f2f8; border-radius:10px; padding:10px 12px; font-size:14px; font-family:inherit; resize:vertical; min-height:64px; margin-top:6px; }
+  label.flabel { display:block; font-size:13px; color:#b9b9cc; margin-top:12px; }
+  .switch { position:relative; width:56px; height:32px; flex:none; }
+  .switch input { opacity:0; width:100%; height:100%; position:absolute; margin:0; cursor:pointer; }
+  .switch .tr { position:absolute; inset:0; background:#2a2a3d; border-radius:999px; transition:.2s; pointer-events:none; }
+  .switch .tr::after { content:""; position:absolute; width:26px; height:26px; border-radius:50%; background:#fff; top:3px; left:3px; transition:.2s; }
+  .switch input:checked + .tr { background:#e0483e; }
+  .switch input:checked + .tr::after { left:27px; }
+  input[type="search"] { width:100%; background:#0d0d15; border:1px solid #262637; color:#f2f2f8; border-radius:999px; padding:10px 16px; font-size:14.5px; margin-bottom:12px; outline:none; }
+  .user { display:flex; gap:12px; padding:11px 2px; border-top:1px solid #1c1c2a; align-items:flex-start; }
+  .user:first-of-type { border-top:0; }
+  .user img { width:42px; height:42px; border-radius:50%; object-fit:cover; background:#1b1b28; flex:none; }
+  .user .nm { font-weight:700; font-size:15px; }
+  .user .em { color:#8b8b9e; font-size:13px; word-break:break-all; }
+  .user .meta { color:#6d6d84; font-size:12.5px; margin-top:2px; line-height:1.5; }
+  .toast { position:fixed; left:50%; bottom:26px; transform:translateX(-50%); background:#1e2a1e; color:#c9f5d2; border:1px solid #2ecc71; padding:10px 18px; border-radius:999px; font-size:14px; font-weight:600; opacity:0; pointer-events:none; transition:.25s; max-width:92vw; text-align:center; }
+  .toast.show { opacity:1; }
+  .toast.err { background:#2a1e1e; color:#f5c9c9; border-color:#e0483e; }
+  [hidden] { display:none !important; }
+  #gbtn { display:flex; justify-content:center; padding:8px 0 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Pix<span>cade</span><small>TRANG QUẢN TRỊ</small></div>
+
+  <div class="card" id="loginCard">
+    <h2>Đăng nhập quản trị</h2>
+    <p class="muted">Đăng nhập bằng đúng tài khoản Google của chủ app. Tài khoản khác sẽ bị từ chối ở phía server.</p>
+    <div id="gbtn"></div>
+    <p class="muted" id="loginMsg" style="text-align:center"></p>
+  </div>
+
+  <div class="card" id="deniedCard" hidden>
+    <h2>Không có quyền quản trị</h2>
+    <p class="muted" id="deniedMsg">Tài khoản này không nằm trong danh sách quản trị.</p>
+    <div class="row" style="margin-top:12px"><button class="btn ghost" id="deniedOut" type="button">Đăng xuất</button></div>
+  </div>
+
+  <div id="panel" hidden>
+    <div class="card">
+      <h2>Bảo trì</h2>
+      <div class="row">
+        <span class="status open" id="maintStatus">Đang mở</span>
+        <span class="spacer"></span>
+        <label class="switch" title="Bật/tắt bảo trì">
+          <input type="checkbox" id="maintToggle">
+          <span class="tr"></span>
+        </label>
+      </div>
+      <p class="muted" style="margin-top:8px">Bật lên là mọi người mở app đều bị chặn ở màn hình bảo trì — không vào chơi được, không bỏ qua được. Tắt thì app tự cho vào lại.</p>
+      <label class="flabel">Nội dung thông báo — tiếng Anh (mặc định cho người dùng)</label>
+      <textarea id="msgEn" maxlength="300"></textarea>
+      <label class="flabel">Nội dung thông báo — tiếng Việt</label>
+      <textarea id="msgVi" maxlength="300"></textarea>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="saveCfg" type="button">Lưu cài đặt</button>
+        <span class="muted" id="cfgHint"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <h2 style="margin:0">Thành viên</h2>
+        <span class="status open" id="userTotal" style="font-size:13px">0</span>
+        <span class="spacer"></span>
+        <button class="btn ghost" id="reloadUsers" type="button">Tải lại</button>
+      </div>
+      <div style="height:12px"></div>
+      <input type="search" id="userSearch" placeholder="Tìm theo tên hoặc email…">
+      <div id="userList"></div>
+      <p class="muted" id="userEmpty" hidden>Chưa có thành viên nào.</p>
+    </div>
+
+    <div class="row">
+      <span class="muted" id="whoami"></span>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="signOut" type="button">Đăng xuất</button>
+    </div>
+  </div>
+
+  <p class="muted" style="text-align:center">Pixcade Admin</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+(function () {
+  var API = 'https://retroplay-api.hahahahuhuahajh.workers.dev';
+  var CLIENT_ID = '650217428363-6kgt80snptcq3il06tlglqqv02seo1e2.apps.googleusercontent.com';
+  var $ = function (id) { return document.getElementById(id); };
+  var auth = null;
+  try { auth = JSON.parse(localStorage.getItem('rp_auth') || 'null'); } catch (e) { auth = null; }
+  var users = [];
+
+  function toast(msg, err) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (err ? ' err' : '');
+    setTimeout(function () { t.className = 'toast' + (err ? ' err' : ''); }, 2600);
+  }
+  function fmtDate(ms) {
+    if (!ms) return '—';
+    var d = new Date(ms);
+    return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  }
+  function api(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+    if (auth && auth.token) opts.headers.Authorization = 'Bearer ' + auth.token;
+    return fetch(API + path, opts).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, body: j }; });
+    });
+  }
+  function showOnly(id) {
+    ['loginCard', 'deniedCard', 'panel'].forEach(function (x) { $(x).hidden = x !== id; });
+  }
+  function signOut() {
+    auth = null;
+    try { localStorage.removeItem('rp_auth'); } catch (e) {}
+    if (window.google && google.accounts && google.accounts.id) { try { google.accounts.id.disableAutoSelect(); } catch (e) {} }
+    showOnly('loginCard');
+    initGis();
+  }
+
+  // ---------- maintenance ----------
+  function renderCfg(cfg) {
+    var on = !!cfg.maintenance;
+    $('maintToggle').checked = on;
+    var st = $('maintStatus');
+    st.textContent = on ? 'ĐANG BẢO TRÌ' : 'Đang mở';
+    st.className = 'status ' + (on ? 'closed' : 'open');
+    $('msgEn').value = cfg.msgEn || '';
+    $('msgVi').value = cfg.msgVi || '';
+  }
+  function loadCfg() {
+    return api('/admin/config').then(function (r) {
+      if (r.status === 200) renderCfg(r.body);
+    });
+  }
+  $('saveCfg').addEventListener('click', function () {
+    var on = $('maintToggle').checked;
+    api('/admin/config', {
+      method: 'PUT',
+      body: JSON.stringify({ maintenance: on, msgEn: $('msgEn').value, msgVi: $('msgVi').value }),
+    }).then(function (r) {
+      if (r.status === 200) {
+        renderCfg(r.body);
+        toast(on ? 'Đã BẬT bảo trì — app đã khóa với mọi người dùng.' : 'Đã TẮT bảo trì — app mở lại bình thường.');
+      } else {
+        toast('Lưu không thành công (' + r.status + ')', true);
+      }
+    }).catch(function () { toast('Mất kết nối tới server', true); });
+  });
+  $('maintToggle').addEventListener('change', function () {
+    $('cfgHint').textContent = 'Bấm "Lưu cài đặt" để áp dụng.';
+  });
+
+  // ---------- members ----------
+  function renderUsers() {
+    var q = ($('userSearch').value || '').trim().toLowerCase();
+    var list = users.filter(function (u) {
+      return !q || (u.name || '').toLowerCase().indexOf(q) >= 0 || (u.email || '').toLowerCase().indexOf(q) >= 0;
+    });
+    $('userTotal').textContent = users.length + ' tài khoản';
+    $('userEmpty').hidden = list.length > 0;
+    $('userList').innerHTML = list.map(function (u) {
+      var av = u.picture ? '<img src="' + u.picture + '" alt="" referrerpolicy="no-referrer">' : '<img alt="">';
+      return '<div class="user">' + av + '<div>' +
+        '<div class="nm">' + escapeHtml(u.name || '(chưa đặt tên)') + '</div>' +
+        '<div class="em">' + escapeHtml(u.email || '') + '</div>' +
+        '<div class="meta">Đăng ký: ' + fmtDate(u.createdAt) + ' · Đăng nhập cuối: ' + fmtDate(u.lastLogin) + '<br>' +
+        'Bản lưu trên mây: ' + (u.saveCount || 0) + ' · Lưu gần nhất: ' + fmtDate(u.lastSaveAt) + ' · Gói: ' + escapeHtml(u.plan || 'free') + '</div>' +
+        '</div></div>';
+    }).join('');
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  }
+  function loadUsers() {
+    return api('/admin/users').then(function (r) {
+      if (r.status === 200) { users = r.body.users || []; renderUsers(); }
+    });
+  }
+  $('userSearch').addEventListener('input', renderUsers);
+  $('reloadUsers').addEventListener('click', function () { loadUsers(); loadCfg(); });
+
+  // ---------- auth ----------
+  function enterPanel() {
+    api('/admin/users').then(function (r) {
+      if (r.status === 200) {
+        users = r.body.users || [];
+        showOnly('panel');
+        $('whoami').textContent = 'Đang đăng nhập: ' + ((auth && auth.user && auth.user.email) || '');
+        renderUsers();
+        loadCfg();
+      } else if (r.status === 403) {
+        showOnly('deniedCard');
+        $('deniedMsg').textContent = 'Tài khoản ' + ((auth && auth.user && auth.user.email) || '') + ' không nằm trong danh sách quản trị.';
+      } else {
+        signOut();
+      }
+    }).catch(function () { toast('Mất kết nối tới server', true); });
+  }
+  $('signOut').addEventListener('click', signOut);
+  $('deniedOut').addEventListener('click', signOut);
+
+  function onGoogle(resp) {
+    $('loginMsg').textContent = 'Đang xác thực…';
+    fetch(API + '/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: resp.credential }),
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.token) { $('loginMsg').textContent = 'Đăng nhập Google thất bại, thử lại.'; return; }
+      auth = { token: j.token, user: j.user };
+      try { localStorage.setItem('rp_auth', JSON.stringify(auth)); } catch (e) {}
+      $('loginMsg').textContent = '';
+      enterPanel();
+    }).catch(function () { $('loginMsg').textContent = 'Mất kết nối tới server.'; });
+  }
+  var gisReady = false;
+  function initGis() {
+    if (gisReady || !window.google || !google.accounts || !google.accounts.id) return;
+    gisReady = true;
+    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onGoogle });
+    google.accounts.id.renderButton($('gbtn'), { theme: 'filled_blue', size: 'large', text: 'signin_with', shape: 'pill' });
+  }
+  window.addEventListener('load', function () {
+    initGis();
+    var iv = setInterval(function () { initGis(); if (gisReady) clearInterval(iv); }, 400);
+    setTimeout(function () { clearInterval(iv); }, 6000);
+  });
+
+  if (auth && auth.token) enterPanel();
+  else showOnly('loginCard');
+})();
+</script>
+</body>
+</html>

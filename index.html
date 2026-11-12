@@ -10,20 +10,43 @@
   * { box-sizing:border-box; margin:0; padding:0; }
   html, body { height:100%; }
   body { background:#0b0b12; color:#f2f2f8; font-family:-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-  .brand { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; }
+  .brand { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; padding:24px; text-align:center; }
   .brand .logo { font-size:30px; font-weight:800; letter-spacing:.4px; }
   .brand .logo span { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .brand .sub { color:#8b8b9e; font-size:13px; }
+  .maint { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:28px; text-align:center; }
+  .maint[hidden] { display:none; }
+  .maint .logo { font-size:22px; font-weight:800; letter-spacing:.4px; }
+  .maint .logo span { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .maint .wrench { width:64px; height:64px; color:#3ec1f5; opacity:.9; }
+  .maint h1 { font-size:22px; font-weight:800; }
+  .maint p { color:#b9b9cc; font-size:15px; line-height:1.55; max-width:420px; }
+  .maint .auto { color:#6d6d84; font-size:12.5px; }
+  .maint button { margin-top:6px; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; border:0; border-radius:999px; padding:12px 26px; font-size:15px; font-weight:700; cursor:pointer; }
+  .maint button:active { transform:scale(.97); }
 </style>
 </head>
 <body>
 <div class="brand" id="brand"><div class="logo">Pix<span>cade</span></div><div class="sub" id="brandSub">Loading…</div></div>
 
+<div class="maint" id="maint" hidden>
+  <div class="logo">Pix<span>cade</span></div>
+  <svg class="wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 6L3 18l3 3 5.7-5.7a4.5 4.5 0 0 0 6-6L14 13l-3-3 3.7-3.7z"/></svg>
+  <h1 id="maintTitle">Under maintenance</h1>
+  <p id="maintMsg"></p>
+  <button id="maintRetry" type="button">Check again</button>
+  <div class="auto" id="maintAuto"></div>
+</div>
+
 <script>
 /* Entry router: send each user to the build they accepted. Update offers
-   live inside the app pages themselves (notice + changelog, fully modal). */
+   live inside the app pages themselves (notice + changelog, fully modal).
+   Before routing, the maintenance gate asks the API: when maintenance is
+   ON, nobody gets in — a full-screen notice shows instead (no way past it
+   from here) and the gate re-checks every 30 seconds on its own. */
 (function () {
   var LEGACY = 46; // the build current when per-build files were introduced
+  var API_BASE = 'https://retroplay-api.hahahahuhuahajh.workers.dev';
   var vi = false;
   try { vi = localStorage.getItem('rp_lang') === 'vi'; } catch (e) {}
   document.getElementById('brandSub').textContent = vi ? 'Đang tải…' : 'Loading…';
@@ -38,15 +61,60 @@
     document.getElementById('brandSub').textContent = vi ? 'Không có kết nối mạng. Chạm để thử lại.' : 'No internet connection. Tap to retry.';
     document.getElementById('brand').onclick = function () { location.reload(); };
   }
-  fetch('version.json?x=' + Date.now(), { cache: 'no-store' })
+  var routed = false;
+  function proceed() {
+    if (routed) return;
+    routed = true;
+    fetch('version.json?x=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (vj) {
+        if (!vj || !vj.build) { fallback(); return; }
+        if (acc) go(acc);
+        else if (legacy) go(LEGACY);
+        else { try { localStorage.setItem('rp_accepted_build', String(vj.build)); } catch (e) {} go(vj.build); }
+      })
+      .catch(fallback);
+  }
+  // ---- maintenance gate ----
+  var maintTimer = null;
+  function showMaint(cfg) {
+    document.getElementById('brand').style.display = 'none';
+    var m = document.getElementById('maint');
+    m.hidden = false;
+    document.getElementById('maintTitle').textContent = vi ? 'Đang bảo trì' : 'Under maintenance';
+    document.getElementById('maintMsg').textContent = (vi ? cfg.msgVi : cfg.msgEn) || '';
+    document.getElementById('maintRetry').textContent = vi ? 'Kiểm tra lại' : 'Check again';
+    document.getElementById('maintAuto').textContent = vi ? 'Tự động kiểm tra lại sau mỗi 30 giây…' : 'Checking again automatically every 30 seconds…';
+    if (maintTimer) clearInterval(maintTimer);
+    maintTimer = setInterval(checkMaint, 30000);
+  }
+  function checkMaint() {
+    fetch(API_BASE + '/config?x=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (cfg) {
+        if (cfg && cfg.maintenance) { showMaint(cfg); return; }
+        if (maintTimer) { clearInterval(maintTimer); maintTimer = null; }
+        document.getElementById('maint').hidden = true;
+        document.getElementById('brand').style.display = '';
+        proceed();
+      })
+      .catch(function () { /* gate unreachable: keep waiting if already shown, else proceed */ 
+        if (document.getElementById('maint').hidden) proceed();
+      });
+  }
+  document.getElementById('maintRetry').addEventListener('click', checkMaint);
+  // First check runs with a short timeout so a dead network never bricks the
+  // app: if the gate cannot be reached at all, let people in as before.
+  var gateDone = false;
+  setTimeout(function () { if (!gateDone) { gateDone = true; proceed(); } }, 2500);
+  fetch(API_BASE + '/config?x=' + Date.now(), { cache: 'no-store' })
     .then(function (r) { return r.json(); })
-    .then(function (vj) {
-      if (!vj || !vj.build) { fallback(); return; }
-      if (acc) go(acc);
-      else if (legacy) go(LEGACY);
-      else { try { localStorage.setItem('rp_accepted_build', String(vj.build)); } catch (e) {} go(vj.build); }
+    .then(function (cfg) {
+      gateDone = true;
+      if (cfg && cfg.maintenance) { showMaint(cfg); return; }
+      proceed();
     })
-    .catch(fallback);
+    .catch(function () { gateDone = true; proceed(); });
 })();
 </script>
 </body>
