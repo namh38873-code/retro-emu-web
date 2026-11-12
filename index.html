@@ -16,7 +16,15 @@
   .badge { background:#1c1c2e; border:1px solid #34344e; color:#cfcfe0; font-size:12px; padding:5px 12px; border-radius:999px; }
   .badge b { color:#e94560; }
   #wrap { max-width:960px; margin:10px auto 0; padding:0 10px; }
-  #game { width:100%; aspect-ratio:4/3; max-height:78vh; background:#000; border-radius:10px; overflow:hidden; }
+  #stage { width:100%; aspect-ratio:4/3; max-height:78vh; background:#000; border-radius:10px; overflow:hidden; position:relative; }
+  #game { width:100%; height:100%; }
+  #picker { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#12121f; text-align:center; padding:20px; }
+  #picker.drag { background:#1d1d33; outline:2px dashed #e94560; outline-offset:-10px; }
+  #pickBtn { background:#e94560; color:#fff; border:none; font-size:18px; font-weight:700; padding:15px 38px; border-radius:999px; cursor:pointer; }
+  #pickBtn:active { transform:scale(.97); }
+  #picker p { color:#9a9ab0; font-size:13px; line-height:1.6; }
+  #err { color:#ff7070; font-size:13px; min-height:18px; }
+  #loading { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:#000; color:#cfcfe0; font-size:15px; }
   .how { max-width:960px; margin:18px auto 0; padding:0 16px 30px; }
   .how h2 { font-size:17px; margin-bottom:10px; color:#fff; }
   .how ol { margin-left:20px; color:#b9b9cc; font-size:14px; line-height:1.75; }
@@ -36,28 +44,111 @@
   </div>
 </header>
 
-<div id="wrap"><div id="game"></div></div>
+<div id="wrap">
+  <div id="stage">
+    <div id="game"></div>
+    <div id="picker">
+      <button id="pickBtn" type="button">Select Game</button>
+      <p>Choose a ROM file from your device<br>.nes (NES) &nbsp;·&nbsp; .gba (Game Boy Advance) &nbsp;·&nbsp; .zip containing one</p>
+      <div id="err"></div>
+      <input type="file" id="fileInput" accept=".nes,.gba,.zip" hidden>
+    </div>
+    <div id="loading">Loading game…</div>
+  </div>
+</div>
 
 <div class="how">
   <h2>How to play</h2>
   <ol>
-    <li>Tap <b>Select Game</b> on the player screen (or drag &amp; drop a file onto it).</li>
-    <li>Pick a ROM file from your device: <b>.nes</b> for NES, <b>.gba</b> for Game Boy Advance. Zipped ROMs (.zip) work too.</li>
+    <li>Tap <b>Select Game</b> above (or drag &amp; drop a file onto the player).</li>
+    <li>Pick a ROM file from your device: <b>.nes</b> for NES, <b>.gba</b> for Game Boy Advance. A .zip containing one of those works too.</li>
     <li>On phones, the touch gamepad appears automatically. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
     <li>Use the player menu (bottom bar) for save states, screenshots and full screen.</li>
   </ol>
   <div class="note">RetroPlay does not include any games. Only load ROM files that you own and have the right to use.</div>
 </div>
 
-<footer>retro web v1</footer>
+<footer>retro web v1.1</footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-  EJS_player = '#game';
-  EJS_pathToData = 'https://cdn.emulatorjs.org/stable/data/';
-  EJS_color = '#e94560';
-  EJS_startOnLoaded = true;
-  EJS_gameID = 1;
+  var picker = document.getElementById('picker');
+  var fileInput = document.getElementById('fileInput');
+  var errBox = document.getElementById('err');
+  var loading = document.getElementById('loading');
+  var started = false;
+
+  document.getElementById('pickBtn').addEventListener('click', function () { fileInput.click(); });
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+  ['dragover', 'dragenter'].forEach(function (ev) {
+    picker.addEventListener(ev, function (e) { e.preventDefault(); picker.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    picker.addEventListener(ev, function (e) { e.preventDefault(); picker.classList.remove('drag'); });
+  });
+  picker.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+
+  function showErr(msg) { errBox.textContent = msg; }
+
+  function coreFor(name) {
+    var n = name.toLowerCase();
+    if (n.endsWith('.nes')) return 'nes';
+    if (n.endsWith('.gba')) return 'gba';
+    return null;
+  }
+
+  async function handleFile(file) {
+    if (started) return;
+    showErr('');
+    var core = coreFor(file.name);
+    var blob = file;
+    var gameName = file.name;
+    try {
+      if (file.name.toLowerCase().endsWith('.zip')) {
+        var zip = await JSZip.loadAsync(file);
+        var inner = null;
+        zip.forEach(function (path, entry) {
+          if (!inner && !entry.dir && coreFor(path)) inner = entry;
+        });
+        if (!inner) { showErr('No .nes or .gba file found inside that zip.'); return; }
+        core = coreFor(inner.name);
+        gameName = inner.name.split('/').pop();
+        blob = await inner.async('blob');
+      }
+    } catch (e) {
+      showErr('Could not read that file.'); return;
+    }
+    if (!core) { showErr('Unsupported file. Please pick a .nes, .gba or .zip file.'); return; }
+    startGame(blob, core, gameName);
+  }
+
+  function startGame(blob, core, gameName) {
+    started = true;
+    picker.style.display = 'none';
+    loading.style.display = 'flex';
+    window.EJS_player = '#game';
+    window.EJS_core = core;
+    window.EJS_gameUrl = URL.createObjectURL(blob);
+    window.EJS_gameName = gameName;
+    window.EJS_pathToData = 'https://cdn.emulatorjs.org/stable/data/';
+    window.EJS_color = '#e94560';
+    window.EJS_startOnLoaded = true;
+    window.EJS_onGameStart = function () { loading.style.display = 'none'; };
+    var s = document.createElement('script');
+    s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+    s.onerror = function () {
+      loading.style.display = 'none';
+      picker.style.display = 'flex';
+      started = false;
+      showErr('Failed to load the emulator. Check your connection and try again.');
+    };
+    document.body.appendChild(s);
+  }
 </script>
-<script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 </body>
 </html>
