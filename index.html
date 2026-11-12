@@ -31,7 +31,7 @@
   try { acc = parseInt(localStorage.getItem('rp_accepted_build') || '0', 10) || 0; } catch (e) {}
   var legacy = false;
   try { legacy = !acc && !!(localStorage.getItem('rp_catalog') || localStorage.getItem('rp_favs') || localStorage.getItem('rp_lang')); } catch (e) {}
-  function go(b) { location.replace('app-' + b + '.html' + location.search + location.hash); }
+  function go(b) { var q = location.search ? location.search + '&' : '?'; location.replace('app-' + b + '.html' + q + 'v=' + b + location.hash); }
   function fallback() {
     if (acc) { go(acc); return; }
     if (legacy) { go(LEGACY); return; }
