@@ -132,8 +132,7 @@
   #sheetPlay:active { filter:brightness(1.12); }
   #sheetFav { margin-top:10px; width:100%; border:1.5px solid #34344a; border-radius:14px; padding:12px 0; font-size:15px; font-weight:700; color:#f2f2f5; cursor:pointer; background:#171724; }
   #sheetFav.on { color:#ff5470; border-color:rgba(255,84,112,.5); }
-  .favbtn { position:absolute; top:6px; right:6px; z-index:3; width:30px; height:30px; border-radius:50%; border:none; background:rgba(8,8,16,.55); color:#fff; font-size:15px; line-height:1; cursor:pointer; }
-  .favbtn.on { color:#ff5470; background:rgba(8,8,16,.72); }
+  .emptyNote { color:#8a8a9e; font-size:13.5px; margin:-6px 0 14px; }
 
   footer { text-align:center; color:#4c4c62; font-size:12px; margin-top:26px; }
   #toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%) translateY(16px); background:#23232f; color:#f2f2f5; font-size:13.5px; padding:11px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:70; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.5); }
@@ -206,17 +205,9 @@
         <div class="hero-track" id="heroTrack"></div>
         <div class="hero-dots" id="heroDots"></div>
       </div>
-      <div id="recentWrap" style="display:none">
-        <h2 class="sec">Recently Played</h2>
-        <div class="shelf" id="recentShelf"></div>
-      </div>
       <div class="panel">
         <h2 class="sec">Your Next Favorite</h2>
         <div class="shelf" id="favShelf"></div>
-      </div>
-      <div id="myFavWrap" style="display:none">
-        <h2 class="sec">Your Favorites</h2>
-        <div class="shelf" id="myFavShelf"></div>
       </div>
       <div id="shelves"></div>
       <h2 class="sec">All Games</h2>
@@ -256,7 +247,16 @@
     </div>
   </div>
 
-  <footer>retro web v3.6</footer>
+  <div class="view" id="view-favorites">
+    <h2 class="sec">Your Favorites</h2>
+    <p class="emptyNote" id="favEmpty">No favorites yet. Open any game and tap "Add to Favorites".</p>
+    <div class="grid" id="favGrid"></div>
+    <h2 class="sec">Recently Played</h2>
+    <p class="emptyNote" id="recentEmpty">Games you play will show up here.</p>
+    <div class="grid" id="recentGrid"></div>
+  </div>
+
+  <footer>retro web v3.7</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -266,6 +266,9 @@
   </button>
   <button class="navitem" data-view="library" type="button">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Library
+  </button>
+  <button class="navitem" data-view="favorites" type="button">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Favorites
   </button>
   <button class="navitem" data-view="myroms" type="button">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.6l3.3-3.3L17 12l-5 5-5-5 1.7-1.7L12 13.6V3zM5 19h14v2H5z" transform="translate(0,-1)"/></svg>My ROMs
@@ -358,7 +361,7 @@
   var navItems = document.querySelectorAll('.navitem');
   function switchView(name) {
     navItems.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name); });
-    ['home', 'library', 'myroms'].forEach(function (v) {
+    ['home', 'library', 'favorites', 'myroms'].forEach(function (v) {
       document.getElementById('view-' + v).classList.toggle('on', v === name);
     });
     window.scrollTo(0, 0);
@@ -390,14 +393,9 @@
     var card = document.createElement('div');
     card.className = 'gcard';
     card.setAttribute('data-title', g.t.toLowerCase());
-    card.innerHTML = '<div class="cv">' + coverHTML(g, true) +
-      '<button class="favbtn' + (isFav(g.id) ? ' on' : '') + '" data-fav="' + g.id + '" type="button">' + (isFav(g.id) ? '♥' : '♡') + '</button></div>' +
+    card.innerHTML = '<div class="cv">' + coverHTML(g, true) + '</div>' +
       '<div class="t">' + g.t + '</div>' +
       '<button class="playpill" type="button">▶ Play</button>';
-    card.querySelector('.favbtn').addEventListener('click', function (e) {
-      e.stopPropagation();
-      toggleFav(g.id);
-    });
     card.addEventListener('click', function () { openSheet(g); });
     card.querySelector('.playpill').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -534,25 +532,18 @@
     renderPersonal();
   }
   function syncFavUI() {
-    document.querySelectorAll('.favbtn').forEach(function (b) {
-      var on = isFav(b.getAttribute('data-fav'));
-      b.classList.toggle('on', on);
-      b.textContent = on ? '♥' : '♡';
-    });
     updateSheetFav();
     renderPersonal();
   }
   function renderPersonal() {
-    var rw = document.getElementById('recentWrap');
-    var rs = document.getElementById('recentShelf');
-    rs.innerHTML = '';
-    recent.forEach(function (id) { if (byId[id]) rs.appendChild(shelfCard(byId[id])); });
-    rw.style.display = recent.length ? '' : 'none';
-    var fw = document.getElementById('myFavWrap');
-    var fs = document.getElementById('myFavShelf');
-    fs.innerHTML = '';
-    favs.forEach(function (id) { if (byId[id]) fs.appendChild(shelfCard(byId[id])); });
-    fw.style.display = favs.length ? '' : 'none';
+    var rg = document.getElementById('recentGrid');
+    rg.innerHTML = '';
+    recent.forEach(function (id) { if (byId[id]) rg.appendChild(gridCard(byId[id])); });
+    document.getElementById('recentEmpty').style.display = recent.length ? 'none' : '';
+    var fg = document.getElementById('favGrid');
+    fg.innerHTML = '';
+    favs.forEach(function (id) { if (byId[id]) fg.appendChild(gridCard(byId[id])); });
+    document.getElementById('favEmpty').style.display = favs.length ? 'none' : '';
   }
   var sheetFavBtn = document.getElementById('sheetFav');
   function updateSheetFav() {
