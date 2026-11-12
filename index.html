@@ -15,17 +15,16 @@
   .badges { display:flex; gap:8px; justify-content:center; margin:12px 0 4px; flex-wrap:wrap; }
   .badge { background:#1c1c2e; border:1px solid #34344e; color:#cfcfe0; font-size:12px; padding:5px 12px; border-radius:999px; }
   .badge b { color:#e94560; }
+  #ownBtn { margin-top:14px; background:transparent; color:#e8e8f0; border:1.5px solid #3d3d5c; font-size:14px; font-weight:600; padding:10px 22px; border-radius:999px; cursor:pointer; }
+  #ownBtn:active { border-color:#e94560; color:#e94560; }
+  #err { color:#ff7070; font-size:13px; min-height:18px; text-align:center; padding:4px 16px 0; }
   #wrap { max-width:960px; margin:10px auto 0; padding:0 10px; }
-  #stage { width:100%; aspect-ratio:4/3; max-height:78vh; background:#000; border-radius:10px; overflow:hidden; position:relative; }
+  #stage { display:none; width:100%; aspect-ratio:4/3; max-height:78vh; background:#000; border-radius:10px; overflow:hidden; position:relative; }
+  #stage.on { display:block; }
   #game { width:100%; height:100%; }
-  #picker { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#12121f; text-align:center; padding:20px; }
-  #picker.drag { background:#1d1d33; outline:2px dashed #e94560; outline-offset:-10px; }
-  #pickBtn { background:#e94560; color:#fff; border:none; font-size:18px; font-weight:700; padding:15px 38px; border-radius:999px; cursor:pointer; }
-  #pickBtn:active { transform:scale(.97); }
-  #picker p { color:#9a9ab0; font-size:13px; line-height:1.6; }
-  #err { color:#ff7070; font-size:13px; min-height:18px; }
+  #closeBtn { position:absolute; top:8px; right:8px; z-index:20; background:rgba(10,10,18,.72); color:#fff; border:1.5px solid rgba(255,255,255,.55); border-radius:999px; font-size:13px; font-weight:700; padding:7px 14px; cursor:pointer; }
   #loading { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:#000; color:#cfcfe0; font-size:15px; z-index:5; }
-  section.lib { max-width:960px; margin:26px auto 0; padding:0 12px; }
+  section.lib { max-width:960px; margin:22px auto 0; padding:0 12px; }
   section.lib h2 { font-size:20px; }
   section.lib .sub { color:#9a9ab0; font-size:13px; margin:5px 0 14px; line-height:1.6; }
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
@@ -45,6 +44,26 @@
   .how ol { margin-left:20px; color:#b9b9cc; font-size:14px; line-height:1.75; }
   .how .note { margin-top:14px; background:#1c1c2e; border:1px solid #34344e; border-radius:8px; padding:10px 14px; font-size:13px; color:#9a9ab0; line-height:1.6; }
   footer { text-align:center; color:#55556e; font-size:12px; padding:0 0 22px; }
+
+  /* --- Virtual gamepad restyle: dark + high contrast on any game background --- */
+  body .ejs_virtualGamepad_button {
+    background:rgba(10,10,20,.60) !important;
+    border:2px solid rgba(255,255,255,.92) !important;
+    color:#fff !important;
+    box-shadow:0 3px 10px rgba(0,0,0,.5);
+    text-shadow:0 1px 3px rgba(0,0,0,.8);
+  }
+  body .ejs_virtualGamepad_button_down { background:rgba(233,69,96,.85) !important; }
+  body .ejs_dpad_main { opacity:.96 !important; }
+  body .ejs_dpad_bar { background:rgba(10,10,20,.60) !important; box-shadow:0 0 0 2px rgba(255,255,255,.55); }
+  body .ejs_dpad_horizontal:before { border-right-color:#fff !important; }
+  body .ejs_dpad_horizontal:after { border-left-color:#fff !important; }
+  body .ejs_dpad_vertical:before { border-bottom-color:#fff !important; }
+  body .ejs_dpad_vertical:after { border-top-color:#fff !important; }
+  body .ejs_dpad_left_pressed .ejs_dpad_horizontal:before { border-right-color:#e94560 !important; }
+  body .ejs_dpad_right_pressed .ejs_dpad_horizontal:after { border-left-color:#e94560 !important; }
+  body .ejs_dpad_up_pressed .ejs_dpad_vertical:before { border-bottom-color:#e94560 !important; }
+  body .ejs_dpad_down_pressed .ejs_dpad_vertical:after { border-top-color:#e94560 !important; }
 </style>
 </head>
 <body>
@@ -57,17 +76,15 @@
     <div class="badge">Touch controls</div>
     <div class="badge">Save states</div>
   </div>
+  <button id="ownBtn" type="button">Load your own ROM</button>
+  <input type="file" id="fileInput" accept=".nes,.gba,.zip" hidden>
 </header>
+<div id="err"></div>
 
 <div id="wrap">
   <div id="stage">
     <div id="game"></div>
-    <div id="picker">
-      <button id="pickBtn" type="button">Select Game</button>
-      <p>Choose a ROM file from your device<br>.nes (NES) &nbsp;·&nbsp; .gba (Game Boy Advance) &nbsp;·&nbsp; .zip containing one</p>
-      <div id="err"></div>
-      <input type="file" id="fileInput" accept=".nes,.gba,.zip" hidden>
-    </div>
+    <button id="closeBtn" type="button">✕ Close</button>
     <div id="loading">Loading game…</div>
   </div>
 </div>
@@ -78,19 +95,19 @@
   <div class="grid" id="grid"></div>
 </section>
 
-<p class="credits">Every library game is homebrew released for free by its author under the license shown on its card. RetroPlay does not include commercial ROMs — to play your own games, use Select Game above and load a ROM file you own.</p>
+<p class="credits">Every library game is homebrew released for free by its author under the license shown on its card. RetroPlay does not include commercial ROMs — to play your own games, use Load your own ROM above and load a ROM file you own.</p>
 
 <div class="how">
   <h2>How to play</h2>
   <ol>
-    <li>Tap <b>Play</b> on any game in the library — or tap <b>Select Game</b> to load your own ROM file (.nes, .gba, or a .zip containing one).</li>
-    <li>On phones, the touch gamepad appears automatically. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
-    <li>Use the player menu (bottom bar) for save states, screenshots and full screen.</li>
+    <li>Tap <b>Play</b> on any game in the library — or tap <b>Load your own ROM</b> to load your own ROM file (.nes, .gba, or a .zip containing one). You can also drag &amp; drop a file anywhere on this page.</li>
+    <li>On phones, the touch gamepad appears automatically while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
+    <li>Use the player menu (bottom bar) for save states, screenshots and full screen. Tap ✕ Close to stop and go back to the library.</li>
   </ol>
   <div class="note">RetroPlay does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
 </div>
 
-<footer>retro web v1.3</footer>
+<footer>retro web v1.4</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
@@ -98,7 +115,6 @@
     {id:'nova',       t:'Nova the Squirrel', sys:'NES', core:'nes', file:'nova.nes',       genre:'Platform adventure', author:'NovaSquirrel', license:'GPLv3',        c1:'#2b5876', c2:'#4e4376', ini:'NS'},
     {id:'anguna',     t:'Anguna',            sys:'GBA', core:'gba', file:'anguna.gba',     genre:'Dungeon adventure',  author:'Nathan Tolbert', license:'Open source', c1:'#134e5e', c2:'#71b280', ini:'AG'},
     {id:'frombelow',  t:'From Below',        sys:'NES', core:'nes', file:'frombelow.nes',  genre:'Falling blocks vs. the kraken', author:'Matt Hughson', license:'MIT', c1:'#0f2027', c2:'#2c5364', ini:'FB'},
-    {id:'blade-none', t:'', sys:'', core:'', file:'', genre:'', author:'', license:'', c1:'', c2:'', ini:''},
     {id:'feline',     t:'Feline',            sys:'GBA', core:'gba', file:'feline.gba',     genre:'Cat platformer',     author:'Jono Shields', license:'MIT',          c1:'#8e2de2', c2:'#4a00e0', ini:'FE'},
     {id:'twindragons',t:'Twin Dragons',      sys:'NES', core:'nes', file:'twindragons.nes',genre:'Platformer',         author:'Garydos', license:'zlib / CC-BY',    c1:'#c33764', c2:'#1d2671', ini:'TD'},
     {id:'thwaite',    t:'Thwaite',           sys:'NES', core:'nes', file:'thwaite.nes',    genre:'Missile defense',    author:'Damian Yerrick', license:'GPL',        c1:'#232526', c2:'#414345', ini:'TH'},
@@ -108,13 +124,23 @@
     {id:'rhde',       t:'RHDE: Furniture Fight', sys:'NES', core:'nes', file:'rhde.nes',   genre:'Furniture brawler',  author:'Damian Yerrick', license:'GPL',           c1:'#5d4157', c2:'#a8caba', ini:'RH'},
     {id:'croom',      t:'Concentration Room', sys:'NES', core:'nes', file:'croom.nes',     genre:'Card matching',      author:'Damian Yerrick', license:'GPL',           c1:'#3a6186', c2:'#89253e', ini:'CR'},
     {id:'roulette',   t:'Russian Roulette',  sys:'NES', core:'nes', file:'roulette.nes',   genre:'Party bluffing',     author:'Damian Yerrick', license:'GPL',           c1:'#41295a', c2:'#2f0743', ini:'RR'}
-  ].filter(function (g) { return g.file; });
+  ];
 
-  var picker = document.getElementById('picker');
+  var stage = document.getElementById('stage');
   var fileInput = document.getElementById('fileInput');
   var errBox = document.getElementById('err');
   var loading = document.getElementById('loading');
   var started = false;
+
+  function showStage() {
+    stage.classList.add('on');
+    stage.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  function showErr(msg) { errBox.textContent = msg; }
+
+  document.getElementById('closeBtn').addEventListener('click', function () {
+    location.href = location.pathname;
+  });
 
   // --- Library cards ---
   var grid = document.getElementById('grid');
@@ -135,11 +161,10 @@
   });
 
   async function playLibrary(g) {
-    if (started) { document.getElementById('stage').scrollIntoView({behavior:'smooth'}); return; }
+    if (started) { showStage(); return; }
     showErr('');
-    picker.style.display = 'none';
+    showStage();
     loading.style.display = 'flex';
-    document.getElementById('stage').scrollIntoView({behavior:'smooth'});
     try {
       var res = await fetch('games/' + g.file);
       if (!res.ok) throw new Error('http ' + res.status);
@@ -147,28 +172,22 @@
       startGame(blob, g.core, g.file);
     } catch (e) {
       loading.style.display = 'none';
-      picker.style.display = 'flex';
+      stage.classList.remove('on');
       showErr('Failed to load ' + g.t + '. Check your connection and try again.');
     }
   }
 
   // --- Own ROM picker ---
-  document.getElementById('pickBtn').addEventListener('click', function () { fileInput.click(); });
+  document.getElementById('ownBtn').addEventListener('click', function () { fileInput.click(); });
   fileInput.addEventListener('change', function () {
     if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
   });
-  ['dragover', 'dragenter'].forEach(function (ev) {
-    picker.addEventListener(ev, function (e) { e.preventDefault(); picker.classList.add('drag'); });
-  });
-  ['dragleave', 'drop'].forEach(function (ev) {
-    picker.addEventListener(ev, function (e) { e.preventDefault(); picker.classList.remove('drag'); });
-  });
-  picker.addEventListener('drop', function (e) {
+  document.addEventListener('dragover', function (e) { e.preventDefault(); });
+  document.addEventListener('drop', function (e) {
+    e.preventDefault();
     var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
     if (f) handleFile(f);
   });
-
-  function showErr(msg) { errBox.textContent = msg; }
 
   function coreFor(name) {
     var n = name.toLowerCase();
@@ -199,12 +218,12 @@
       showErr('Could not read that file.'); return;
     }
     if (!core) { showErr('Unsupported file. Please pick a .nes, .gba or .zip file.'); return; }
+    showStage();
     startGame(blob, core, gameName);
   }
 
   function startGame(blob, core, gameName) {
     started = true;
-    picker.style.display = 'none';
     loading.style.display = 'flex';
     window.EJS_player = '#game';
     window.EJS_core = core;
@@ -213,12 +232,12 @@
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_color = '#e94560';
     window.EJS_startOnLoaded = true;
+    window.EJS_defaultOptions = {'virtual-gamepad': 'enabled'};
     window.EJS_onGameStart = function () { loading.style.display = 'none'; };
     var s = document.createElement('script');
     s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
     s.onerror = function () {
       loading.style.display = 'none';
-      picker.style.display = 'flex';
       started = false;
       showErr('Failed to load the emulator. Check your connection and try again.');
     };
