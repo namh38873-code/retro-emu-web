@@ -61,19 +61,19 @@
 
   /* --- Virtual gamepad restyle: dark + high contrast on any game background --- */
   body .ejs_virtualGamepad_button {
-    background:rgba(10,10,20,.60) !important;
-    border:2px solid rgba(255,255,255,.92) !important;
-    color:#fff !important;
-    box-shadow:0 3px 10px rgba(0,0,0,.5);
-    text-shadow:0 1px 3px rgba(0,0,0,.8);
+    background:rgba(12,12,22,.42) !important;
+    border:1.5px solid rgba(255,255,255,.45) !important;
+    color:rgba(255,255,255,.88) !important;
+    box-shadow:none;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
-  body .ejs_virtualGamepad_button_down { background:rgba(233,69,96,.85) !important; }
-  body .ejs_dpad_main { opacity:.96 !important; }
-  body .ejs_dpad_bar { background:rgba(10,10,20,.60) !important; box-shadow:0 0 0 2px rgba(255,255,255,.55); }
-  body .ejs_dpad_horizontal:before { border-right-color:#fff !important; }
-  body .ejs_dpad_horizontal:after { border-left-color:#fff !important; }
-  body .ejs_dpad_vertical:before { border-bottom-color:#fff !important; }
-  body .ejs_dpad_vertical:after { border-top-color:#fff !important; }
+  body .ejs_virtualGamepad_button_down { background:rgba(233,69,96,.55) !important; }
+  body .ejs_dpad_main { opacity:.92 !important; }
+  body .ejs_dpad_bar { background:rgba(12,12,22,.42) !important; box-shadow:0 0 0 1.5px rgba(255,255,255,.30); }
+  body .ejs_dpad_horizontal:before { border-right-color:rgba(255,255,255,.85) !important; }
+  body .ejs_dpad_horizontal:after { border-left-color:rgba(255,255,255,.85) !important; }
+  body .ejs_dpad_vertical:before { border-bottom-color:rgba(255,255,255,.85) !important; }
+  body .ejs_dpad_vertical:after { border-top-color:rgba(255,255,255,.85) !important; }
   body .ejs_dpad_left_pressed .ejs_dpad_horizontal:before { border-right-color:#e94560 !important; }
   body .ejs_dpad_right_pressed .ejs_dpad_horizontal:after { border-left-color:#e94560 !important; }
   body .ejs_dpad_up_pressed .ejs_dpad_vertical:before { border-bottom-color:#e94560 !important; }
@@ -121,7 +121,7 @@
   <div class="note">RetroPlay does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
 </div>
 
-<footer>retro web v2.1</footer>
+<footer>retro web v2.2</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
@@ -201,7 +201,7 @@
   });
 
   async function playLibrary(g) {
-    if (started) { showStage(); return; }
+    if (started) { showStage(); enterPlayMode(); return; }
     showErr('');
     showStage();
     enterPlayMode();
