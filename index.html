@@ -120,7 +120,7 @@
   .credits { margin-top:20px; color:#66667c; font-size:11.5px; line-height:1.7; }
 
   /* --- Bottom nav --- */
-  .bottomnav { position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(10,10,16,.94); backdrop-filter:blur(12px); border-top:1px solid #1e1e2c; display:flex; padding:8px 6px calc(10px + env(safe-area-inset-bottom)); }
+  .bottomnav { position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(10,10,16,.94); backdrop-filter:blur(12px); border-top:1px solid #1e1e2c; display:flex; padding:7px 6px 9px; }
   .navitem { flex:1; background:none; border:none; color:#8b8b9e; font-size:11.5px; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:2px 0; }
   .navitem svg { width:23px; height:23px; }
   .navitem.on { color:#fff; }
@@ -388,7 +388,7 @@
     <div class="grid" id="recentGrid"></div>
   </div>
 
-  <footer>Pixcade v4.5</footer>
+  <footer>Pixcade v4.6</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -693,6 +693,7 @@
   /* ---------- Detail sheet ---------- */
   var sheetWrap = document.getElementById('sheetWrap');
   var sheetGame = null;
+  function lockScroll(on) { document.body.style.overflow = on ? 'hidden' : ''; }
   function openSheet(g) {
     sheetGame = g;
     document.getElementById('sheetCv').innerHTML = coverHTML(g, false);
@@ -702,8 +703,9 @@
     document.getElementById('sheetSyn').textContent = g.syn;
     updateSheetFav();
     sheetWrap.classList.add('on');
+    lockScroll(true);
   }
-  function closeSheet() { sheetWrap.classList.remove('on'); sheetGame = null; }
+  function closeSheet() { sheetWrap.classList.remove('on'); sheetGame = null; lockScroll(false); }
   document.getElementById('sheetX').addEventListener('click', closeSheet);
   document.getElementById('sheetBg').addEventListener('click', closeSheet);
   document.getElementById('sheetPlay').addEventListener('click', function () {
@@ -1333,7 +1335,7 @@
   }
 
   /* ---------- Accounts + cloud sync ---------- */
-  var APP_BUILD = 45;
+  var APP_BUILD = 46;
   var API_BASE = 'https://retroplay-api.hahahahuhuahajh.workers.dev';
   var GOOGLE_CLIENT_ID = '650217428363-6kgt80snptcq3il06tlglqqv02seo1e2.apps.googleusercontent.com';
   var auth = null;
@@ -1606,6 +1608,7 @@
       document.getElementById('updForced').style.display = forced ? '' : 'none';
       document.getElementById('updLater').style.display = forced ? 'none' : '';
       document.getElementById('updWrap').classList.add('on');
+      lockScroll(true);
       document.getElementById('updNow').onclick = function () {
         var u = new URL(location.href);
         u.searchParams.set('u', vj.build);
@@ -1613,6 +1616,7 @@
       };
       document.getElementById('updLater').onclick = function () {
         document.getElementById('updWrap').classList.remove('on');
+        lockScroll(false);
       };
     }).catch(function () {});
   }
