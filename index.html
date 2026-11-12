@@ -5,61 +5,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>RetroPlay — NES & GBA in your browser</title>
 <meta name="description" content="Play free homebrew NES and Game Boy Advance games right in your browser, or load your own ROM files. Touch controls and save states included.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background:
-      radial-gradient(600px 340px at 15% -60px, rgba(233,69,96,.20), transparent 70%),
-      radial-gradient(700px 380px at 90% 30px, rgba(123,92,255,.16), transparent 70%),
-      linear-gradient(180deg, #0a0a16 0%, #0d0d1d 55%, #0a0a16 100%);
-    color:#e8e8f0; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; min-height:100vh;
-  }
-  header { text-align:center; padding:30px 16px 4px; }
-  .logo { font-family:'Press Start 2P', monospace; font-size:clamp(19px, 6vw, 30px); letter-spacing:1px; color:#fff; text-shadow:0 3px 0 #e94560, 0 6px 18px rgba(233,69,96,.45); }
-  .logo span { color:#e94560; text-shadow:0 3px 0 rgba(0,0,0,.55), 0 6px 18px rgba(233,69,96,.45); }
-  header p { color:#a2a2bd; font-size:14px; margin-top:14px; }
-  .badges { display:flex; gap:8px; justify-content:center; margin:14px 0 2px; flex-wrap:wrap; }
-  .badge { background:rgba(28,28,46,.85); border:1px solid #34344e; color:#cfcfe0; font-size:12px; padding:5px 12px; border-radius:999px; }
-  .badge b { color:#e94560; }
-  #ownBtn { margin-top:14px; background:rgba(20,20,36,.6); color:#e8e8f0; border:1.5px solid #3d3d5c; font-size:14px; font-weight:600; padding:10px 22px; border-radius:999px; cursor:pointer; }
-  #ownBtn:active { border-color:#e94560; color:#e94560; }
-  #err { color:#ff7070; font-size:13px; min-height:18px; text-align:center; padding:4px 16px 0; }
-  #wrap { max-width:960px; margin:12px auto 0; padding:0 10px; }
-  #stage { display:none; width:100%; aspect-ratio:4/3; max-height:78vh; background:#000; border-radius:12px; overflow:hidden; position:relative; border:1px solid #34344e; box-shadow:0 12px 44px rgba(0,0,0,.55), 0 0 0 4px rgba(233,69,96,.08); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:#08080d; color:#f2f2f5; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; min-height:100vh; padding-bottom:86px; }
+  .wrap { max-width:960px; margin:0 auto; padding:0 14px; }
+
+  /* --- Top search (GameHub style) --- */
+  .topbar { position:sticky; top:0; z-index:30; background:rgba(8,8,13,.92); backdrop-filter:blur(10px); padding:12px 14px 8px; }
+  .topbar-in { max-width:960px; margin:0 auto; display:flex; align-items:center; gap:10px; }
+  .brand { font-size:17px; font-weight:800; letter-spacing:.4px; white-space:nowrap; }
+  .brand span { color:#e94560; }
+  .search { flex:1; display:flex; align-items:center; gap:8px; background:#1b1b26; border:1px solid #2a2a3a; border-radius:999px; padding:10px 16px; }
+  .search svg { flex:none; opacity:.55; }
+  .search input { flex:1; background:none; border:none; outline:none; color:#f2f2f5; font-size:14.5px; min-width:0; }
+  .search input::placeholder { color:#8b8b9e; }
+
+  /* --- Tabs --- */
+  .tabs { display:flex; gap:26px; padding:10px 2px 2px; }
+  .tab { background:none; border:none; color:#8b8b9e; font-size:16.5px; font-weight:600; padding:6px 0 8px; cursor:pointer; position:relative; }
+  .tab.on { color:#fff; font-weight:800; }
+  .tab.on::after { content:''; position:absolute; left:50%; transform:translateX(-50%); bottom:0; width:20px; height:3.5px; border-radius:99px; background:#fff; }
+
+  /* --- Player stage --- */
+  #stage { display:none; width:100%; aspect-ratio:4/3; max-height:78vh; background:#000; border-radius:14px; overflow:hidden; position:relative; border:1px solid #26263a; margin-top:12px; }
   #stage.on { display:block; }
   #stage:fullscreen { width:100%; height:100%; aspect-ratio:auto; max-height:none; border-radius:0; border:none; background:#000; }
   #stage:fullscreen #game { width:100%; height:100%; }
   #game { width:100%; height:100%; }
   #closeBtn { position:absolute; top:8px; right:8px; z-index:20; background:rgba(10,10,18,.75); color:#fff; border:1.5px solid rgba(255,255,255,.55); border-radius:999px; font-size:13px; font-weight:700; padding:7px 14px; cursor:pointer; }
   #loading { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:#000; color:#cfcfe0; font-size:15px; z-index:5; }
-  section.lib { max-width:960px; margin:26px auto 0; padding:0 12px; }
-  section.lib h2 { font-family:'Press Start 2P', monospace; font-size:15px; color:#fff; letter-spacing:.5px; }
-  section.lib h2 i { color:#e94560; font-style:normal; }
-  section.lib .sub { color:#9a9ab0; font-size:13px; margin:9px 0 15px; line-height:1.6; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:13px; }
-  .card { background:#14142a; border:1px solid #282846; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; cursor:pointer; transition:transform .12s ease, border-color .12s ease; }
-  .card:active { transform:scale(.98); border-color:#e94560; }
-  .coverbox { position:relative; aspect-ratio:4/3; overflow:hidden; }
-  .covergrad { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; color:rgba(255,255,255,.92); letter-spacing:1px; text-shadow:0 2px 8px rgba(0,0,0,.45); }
-  .coverimg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
-  .sys { position:absolute; top:8px; left:8px; z-index:2; font-size:10px; font-weight:800; padding:3px 9px; border-radius:999px; background:#e94560; color:#fff; letter-spacing:.5px; box-shadow:0 2px 8px rgba(0,0,0,.5); }
-  .sys.gba { background:#7b5cff; }
-  .playpill { position:absolute; right:8px; bottom:8px; z-index:2; background:#e94560; color:#fff; font-size:12.5px; font-weight:800; padding:7px 15px; border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.55); letter-spacing:.3px; }
-  .card .body { padding:10px 12px 12px; display:flex; flex-direction:column; gap:3px; flex:1; }
-  .card .t { font-size:15px; font-weight:700; line-height:1.3; }
-  .card .g { font-size:12px; color:#a5a5bf; line-height:1.45; }
-  .card .meta { font-size:10.5px; color:#6d6d88; margin-top:auto; padding-top:7px; line-height:1.5; }
-  .credits { max-width:960px; margin:18px auto 0; padding:0 16px; color:#6d6d88; font-size:11.5px; line-height:1.7; }
-  .how { max-width:960px; margin:20px auto 0; padding:0 16px 30px; }
-  .how h2 { font-size:17px; margin-bottom:10px; color:#fff; }
-  .how ol { margin-left:20px; color:#b9b9cc; font-size:14px; line-height:1.75; }
-  .how .note { margin-top:14px; background:#1c1c2e; border:1px solid #34344e; border-radius:8px; padding:10px 14px; font-size:13px; color:#9a9ab0; line-height:1.6; }
-  footer { text-align:center; color:#55556e; font-size:12px; padding:0 0 22px; }
+  #err { color:#ff7070; font-size:13px; min-height:18px; text-align:center; padding:6px 16px 0; }
 
-  /* --- Virtual gamepad restyle: dark + high contrast on any game background --- */
+  /* --- Hero carousel --- */
+  .hero { margin-top:14px; border-radius:20px; overflow:hidden; position:relative; background:#14141f; }
+  .hero-track { display:flex; transition:transform .45s ease; }
+  .hero-slide { flex:0 0 100%; position:relative; aspect-ratio:16/10.5; cursor:pointer; }
+  .hero-slide img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
+  .hero-slide .shade { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.18) 40%, rgba(5,5,10,.88) 88%); }
+  .hero-tag { position:absolute; top:14px; left:16px; z-index:2; font-size:14px; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px; text-shadow:0 1px 6px rgba(0,0,0,.7); }
+  .hero-tag b { background:#fff; color:#111; font-size:12px; padding:2.5px 8px; border-radius:7px; font-weight:800; }
+  .hero-play { position:absolute; top:44%; left:50%; transform:translate(-50%,-50%); z-index:2; width:62px; height:62px; border-radius:50%; background:rgba(15,15,22,.55); border:1.5px solid rgba(255,255,255,.65); color:#fff; font-size:24px; display:flex; align-items:center; justify-content:center; padding-left:5px; backdrop-filter:blur(3px); }
+  .hero-info { position:absolute; left:16px; right:16px; bottom:26px; z-index:2; }
+  .hero-info .q { color:#d7d7e4; font-size:13.5px; font-style:italic; opacity:.92; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hero-info .t { font-size:24px; font-weight:800; margin-top:3px; text-shadow:0 2px 10px rgba(0,0,0,.6); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hero-info .g { color:#b9b9c9; font-size:13.5px; margin-top:2px; }
+  .hero-dots { position:absolute; bottom:9px; left:0; right:0; display:flex; justify-content:center; gap:5px; z-index:2; }
+  .hero-dots i { width:15px; height:3.5px; border-radius:99px; background:rgba(255,255,255,.35); transition:all .3s; }
+  .hero-dots i.on { width:26px; background:#fff; }
+
+  /* --- Shelves & grids --- */
+  h2.sec { font-size:19px; font-weight:800; margin:24px 0 12px; }
+  .shelf { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+  .shelf::-webkit-scrollbar { display:none; }
+  .scard { flex:0 0 128px; cursor:pointer; }
+  .scard .cv { width:128px; height:128px; border-radius:16px; overflow:hidden; position:relative; background:#17171f; }
+  .scard img, .gcard img, .sheet-head .cv img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
+  .covergrad { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:rgba(255,255,255,.92); text-shadow:0 2px 8px rgba(0,0,0,.45); }
+  .scard .t { font-size:13.5px; font-weight:600; margin-top:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .scard .s { font-size:11.5px; color:#8b8b9e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px 11px; }
+  @media (min-width:640px) { .grid { grid-template-columns:repeat(4,1fr); } }
+  .gcard { cursor:pointer; }
+  .gcard .cv { position:relative; aspect-ratio:1/1; border-radius:16px; overflow:hidden; background:#17171f; }
+  .gcard .t { font-size:13.5px; font-weight:600; margin:8px 0 7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .playpill { display:block; width:100%; text-align:center; background:#23232f; color:#f2f2f5; border:none; font-size:13.5px; font-weight:600; padding:9px 0; border-radius:999px; cursor:pointer; }
+  .playpill:active { background:#e94560; }
+  .syschip { position:absolute; top:7px; left:7px; z-index:2; font-size:9.5px; font-weight:800; padding:2.5px 7px; border-radius:999px; background:#e94560; color:#fff; letter-spacing:.4px; }
+  .syschip.gba { background:#7b5cff; }
+
+  /* --- Views --- */
+  .view { display:none; }
+  .view.on { display:block; }
+  .libhead { display:flex; align-items:baseline; justify-content:space-between; }
+  .libhead .cnt { color:#8b8b9e; font-size:13px; }
+  .loadcard { margin-top:14px; background:#14141f; border:1px dashed #3a3a52; border-radius:16px; padding:18px 16px; text-align:center; }
+  .loadcard .big { font-size:16px; font-weight:700; }
+  .loadcard p { color:#9a9ab0; font-size:13px; line-height:1.6; margin:7px 0 13px; }
+  .loadbtn { background:#e94560; color:#fff; border:none; font-size:15px; font-weight:700; padding:12px 28px; border-radius:999px; cursor:pointer; }
+  .how { margin-top:22px; color:#b9b9cc; font-size:14px; line-height:1.8; }
+  .how h3 { color:#fff; font-size:16px; margin-bottom:6px; }
+  .how ol { margin-left:20px; }
+  .note { margin-top:14px; background:#14141f; border:1px solid #26263a; border-radius:10px; padding:10px 14px; font-size:13px; color:#9a9ab0; line-height:1.6; }
+  .credits { margin-top:20px; color:#66667c; font-size:11.5px; line-height:1.7; }
+
+  /* --- Bottom nav --- */
+  .bottomnav { position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(10,10,16,.94); backdrop-filter:blur(12px); border-top:1px solid #1e1e2c; display:flex; padding:8px 6px calc(10px + env(safe-area-inset-bottom)); }
+  .navitem { flex:1; background:none; border:none; color:#8b8b9e; font-size:11.5px; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:2px 0; }
+  .navitem svg { width:23px; height:23px; }
+  .navitem.on { color:#fff; }
+
+  /* --- Game detail bottom sheet --- */
+  #sheetWrap { position:fixed; inset:0; z-index:60; display:none; }
+  #sheetWrap.on { display:block; }
+  #sheetBg { position:absolute; inset:0; background:rgba(4,4,8,.6); backdrop-filter:blur(6px); }
+  #sheet { position:absolute; left:0; right:0; bottom:0; max-width:960px; margin:0 auto; background:#17171f; border-radius:22px 22px 0 0; padding:20px 18px calc(18px + env(safe-area-inset-bottom)); animation:up .25s ease; }
+  @keyframes up { from { transform:translateY(40px); opacity:.4; } to { transform:none; opacity:1; } }
+  #sheetX { position:absolute; top:12px; right:14px; background:none; border:none; color:#c9c9d8; font-size:21px; cursor:pointer; padding:6px; }
+  .sheet-head { display:flex; gap:15px; align-items:center; padding-right:30px; }
+  .sheet-head .cv { position:relative; width:86px; height:86px; flex:none; border-radius:16px; overflow:hidden; background:#101018; }
+  .sheet-head .tt { font-size:19px; font-weight:800; line-height:1.25; }
+  .sheet-head .sz { color:#9a9ab0; font-size:13.5px; margin-top:4px; }
+  .sheet-head .au { color:#77778e; font-size:12px; margin-top:2px; }
+  #sheet h3 { font-size:16.5px; margin:19px 0 7px; }
+  #sheetSyn { color:#c6c6d4; font-size:14.5px; line-height:1.65; }
+  #sheetPlay { margin-top:20px; width:100%; border:none; border-radius:14px; padding:16px 0; font-size:17.5px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(90deg,#1c8fe8,#3ec1f5); box-shadow:0 8px 26px rgba(38,155,240,.35); }
+  #sheetPlay:active { filter:brightness(1.12); }
+
+  footer { text-align:center; color:#4c4c62; font-size:12px; margin-top:26px; }
+
+  /* --- Virtual gamepad restyle: smoked, soft, high-enough contrast --- */
   body .ejs_virtualGamepad_button {
     background:rgba(12,12,22,.42) !important;
     border:1.5px solid rgba(255,255,255,.45) !important;
@@ -81,70 +135,144 @@
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">RETRO<span>PLAY</span></div>
-  <p>Free retro games in your browser. Pick one below and play — or load your own ROM.</p>
-  <div class="badges">
-    <div class="badge"><b>12</b> free games included</div>
-    <div class="badge"><b>NES</b> + <b>GBA</b></div>
-    <div class="badge">Touch controls</div>
-    <div class="badge">Save states</div>
-  </div>
-  <button id="ownBtn" type="button">Load your own ROM</button>
-  <input type="file" id="fileInput" accept=".nes,.gba,.zip" hidden>
-</header>
-<div id="err"></div>
 
-<div id="wrap">
-  <div id="stage">
-    <div id="game"></div>
-    <button id="closeBtn" type="button">✕ Close</button>
-    <div id="loading">Loading game…</div>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">RETRO<span>PLAY</span></div>
+    <label class="search">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+      <input id="searchInput" type="search" placeholder="Search games…" autocomplete="off">
+    </label>
   </div>
 </div>
 
-<section class="lib">
-  <h2>GAME <i>LIBRARY</i></h2>
-  <p class="sub">Free homebrew games shared by their authors — tap a game and it starts right here. No downloads, no installs.</p>
-  <div class="grid" id="grid"></div>
-</section>
+<div class="wrap">
 
-<p class="credits">Every library game is homebrew released for free by its author under the license shown on its card. RetroPlay does not include commercial ROMs — to play your own games, use Load your own ROM above and load a ROM file you own.</p>
+  <!-- HOME VIEW -->
+  <div class="view on" id="view-home">
+    <div class="tabs">
+      <button class="tab on" data-tab="rec" type="button">Recommended</button>
+      <button class="tab" data-tab="nes" type="button">NES</button>
+      <button class="tab" data-tab="gba" type="button">GBA</button>
+    </div>
 
-<div class="how">
-  <h2>How to play</h2>
-  <ol>
-    <li>Tap any game in the library — or tap <b>Load your own ROM</b> to load your own ROM file (.nes, .gba, or a .zip containing one). You can also drag &amp; drop a file anywhere on this page.</li>
-    <li>On phones, the touch gamepad appears automatically while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
-    <li>Use the player menu (bottom bar) for save states, screenshots and full screen. Tap ✕ Close to stop and go back to the library.</li>
-  </ol>
-  <div class="note">RetroPlay does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
+    <div id="stage">
+      <div id="game"></div>
+      <button id="closeBtn" type="button">✕ Close</button>
+      <div id="loading">Loading game…</div>
+    </div>
+    <div id="err"></div>
+
+    <div id="tab-rec">
+      <div class="hero">
+        <div class="hero-track" id="heroTrack"></div>
+        <div class="hero-dots" id="heroDots"></div>
+      </div>
+      <h2 class="sec">Your Next Favorite</h2>
+      <div class="shelf" id="favShelf"></div>
+      <h2 class="sec">All Games</h2>
+      <div class="grid" id="recGrid"></div>
+    </div>
+
+    <div id="tab-sys" style="display:none">
+      <h2 class="sec" id="sysTitle">NES Games</h2>
+      <div class="grid" id="sysGrid"></div>
+    </div>
+  </div>
+
+  <!-- LIBRARY VIEW -->
+  <div class="view" id="view-library">
+    <div class="libhead"><h2 class="sec">Game Library</h2><span class="cnt" id="libCount"></span></div>
+    <div class="grid" id="libGrid"></div>
+    <p class="credits">Every library game is homebrew released for free by its author under the license shown in its details. RetroPlay does not include commercial ROMs — to play your own games, use My ROMs and load a ROM file you own.</p>
+  </div>
+
+  <!-- MY ROMS VIEW -->
+  <div class="view" id="view-myroms">
+    <h2 class="sec">My ROMs</h2>
+    <div class="loadcard">
+      <div class="big">Load your own ROM</div>
+      <p>Play a game file from your device — .nes for NES, .gba for GBA, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
+      <button class="loadbtn" id="ownBtn" type="button">Choose ROM file</button>
+      <input type="file" id="fileInput" accept=".nes,.gba,.zip" hidden>
+    </div>
+    <div class="how">
+      <h3>How to play</h3>
+      <ol>
+        <li>Tap a game and it starts right here — on phones it goes full screen in landscape automatically.</li>
+        <li>The touch gamepad appears while a game is running. On desktop, use the arrow keys + Z / X / Enter / Shift.</li>
+        <li>Use the player menu (bottom bar of the player) for save states, screenshots and settings. Tap ✕ Close to stop.</li>
+      </ol>
+      <div class="note">RetroPlay does not include any commercial games. Only load ROM files that you own and have the right to use.</div>
+    </div>
+  </div>
+
+  <footer>retro web v3.0</footer>
 </div>
 
-<footer>retro web v2.2</footer>
+<!-- BOTTOM NAV -->
+<nav class="bottomnav">
+  <button class="navitem on" data-view="home" type="button">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-4v-6H10v6H6v-9H3z"/></svg>Home
+  </button>
+  <button class="navitem" data-view="library" type="button">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Library
+  </button>
+  <button class="navitem" data-view="myroms" type="button">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.6l3.3-3.3L17 12l-5 5-5-5 1.7-1.7L12 13.6V3zM5 19h14v2H5z" transform="translate(0,-1)"/></svg>My ROMs
+  </button>
+</nav>
+
+<!-- GAME DETAIL SHEET -->
+<div id="sheetWrap">
+  <div id="sheetBg"></div>
+  <div id="sheet">
+    <button id="sheetX" type="button">✕</button>
+    <div class="sheet-head">
+      <div class="cv" id="sheetCv"></div>
+      <div>
+        <div class="tt" id="sheetTitle"></div>
+        <div class="sz" id="sheetSize"></div>
+        <div class="au" id="sheetAuthor"></div>
+      </div>
+    </div>
+    <h3>Synopsis</h3>
+    <p id="sheetSyn"></p>
+    <button id="sheetPlay" type="button">▶ PLAY</button>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
   var GAMES = [
-    {id:'nova',       t:'Nova the Squirrel', sys:'NES', core:'nes', file:'nova.nes',       genre:'Platform adventure', author:'NovaSquirrel', license:'GPLv3',        c1:'#2b5876', c2:'#4e4376', ini:'NS'},
-    {id:'anguna',     t:'Anguna',            sys:'GBA', core:'gba', file:'anguna.gba',     genre:'Dungeon adventure',  author:'Nathan Tolbert', license:'Open source', c1:'#134e5e', c2:'#71b280', ini:'AG'},
-    {id:'frombelow',  t:'From Below',        sys:'NES', core:'nes', file:'frombelow.nes',  genre:'Falling blocks vs. the kraken', author:'Matt Hughson', license:'MIT', c1:'#0f2027', c2:'#2c5364', ini:'FB'},
-    {id:'feline',     t:'Feline',            sys:'GBA', core:'gba', file:'feline.gba',     genre:'Cat platformer',     author:'Jono Shields', license:'MIT',          c1:'#8e2de2', c2:'#4a00e0', ini:'FE'},
-    {id:'twindragons',t:'Twin Dragons',      sys:'NES', core:'nes', file:'twindragons.nes',genre:'Platformer',         author:'Garydos', license:'zlib / CC-BY',    c1:'#c33764', c2:'#1d2671', ini:'TD'},
-    {id:'thwaite',    t:'Thwaite',           sys:'NES', core:'nes', file:'thwaite.nes',    genre:'Missile defense',    author:'Damian Yerrick', license:'GPL',        c1:'#232526', c2:'#414345', ini:'TH'},
-    {id:'symmerged',  t:'Symbol Merged',     sys:'GBA', core:'gba', file:'symmerged.gba',  genre:'Puzzle',             author:'copyrat90', license:'MIT',             c1:'#11998e', c2:'#38ef7d', ini:'SM'},
-    {id:'n2048',      t:'2048',              sys:'NES', core:'nes', file:'n2048.nes',      genre:'Sliding number puzzle', author:'tsone', license:'Open source',      c1:'#b7985a', c2:'#94762e', ini:'20'},
-    {id:'microjam23', t:"GBA Microjam '23",  sys:'GBA', core:'gba', file:'microjam23.gba', genre:'13 mini-games in one', author:'gbadev community', license:'Open source', c1:'#fc4a1a', c2:'#f7b733', ini:'MJ'},
-    {id:'rhde',       t:'RHDE: Furniture Fight', sys:'NES', core:'nes', file:'rhde.nes',   genre:'Furniture brawler',  author:'Damian Yerrick', license:'GPL',           c1:'#5d4157', c2:'#a8caba', ini:'RH'},
-    {id:'croom',      t:'Concentration Room', sys:'NES', core:'nes', file:'croom.nes',     genre:'Card matching',      author:'Damian Yerrick', license:'GPL',           c1:'#3a6186', c2:'#89253e', ini:'CR'},
-    {id:'roulette',   t:'Russian Roulette',  sys:'NES', core:'nes', file:'roulette.nes',   genre:'Party bluffing',     author:'Damian Yerrick', license:'GPL',           c1:'#41295a', c2:'#2f0743', ini:'RR'}
+    {id:'nova',       t:'Nova the Squirrel', sys:'NES', core:'nes', file:'nova.nes',       size:'256 KB',  genre:'Platform adventure', quote:'A tiny squirrel, a huge adventure.', syn:'A cheerful platform adventure. Run, jump and copy enemy abilities as Nova the squirrel across colorful hand-crafted worlds.', author:'NovaSquirrel', license:'GPLv3', c1:'#2b5876', c2:'#4e4376', ini:'NS'},
+    {id:'anguna',     t:'Anguna',            sys:'GBA', core:'gba', file:'anguna.gba',     size:'1.63 MB', genre:'Dungeon adventure', quote:'Every dungeon hides a secret.', syn:'A top-down dungeon adventure in the classic style. Explore dark dungeons, fight monsters, find new gear and uncover hidden rooms.', author:'Nathan Tolbert', license:'Open source', c1:'#134e5e', c2:'#71b280', ini:'AG'},
+    {id:'frombelow',  t:'From Below',        sys:'NES', core:'nes', file:'frombelow.nes',  size:'40 KB',   genre:'Falling blocks vs. the kraken', quote:'The kraken is climbing. Keep clearing.', syn:'A falling-block puzzler under attack. Stack and clear blocks to repair your tower while a giant kraken climbs up from the sea to pull it down.', author:'Matt Hughson', license:'MIT', c1:'#0f2027', c2:'#2c5364', ini:'FB'},
+    {id:'feline',     t:'Feline',            sys:'GBA', core:'gba', file:'feline.gba',     size:'864 KB',  genre:'Cat platformer', quote:'Nine lives. Zero fear.', syn:'A short and charming platformer about a little black cat. Leap across rooftops, hills and old ruins at your own pace.', author:'Jono Shields', license:'MIT', c1:'#8e2de2', c2:'#4a00e0', ini:'FE'},
+    {id:'twindragons',t:'Twin Dragons',      sys:'NES', core:'nes', file:'twindragons.nes',size:'40 KB',   genre:'Platformer', quote:'Two brothers. One quest.', syn:'A retro platformer starring two dragon brothers. Tight jumps, trap-filled stages and old-school challenge, straight from the NES era.', author:'Garydos', license:'zlib / CC-BY', c1:'#c33764', c2:'#1d2671', ini:'TD'},
+    {id:'thwaite',    t:'Thwaite',           sys:'NES', core:'nes', file:'thwaite.nes',    size:'24 KB',   genre:'Missile defense', quote:'Protect the town at all costs.', syn:'Missile defense in the classic arcade style. Watch the skies and intercept incoming missiles before they level your town.', author:'Damian Yerrick', license:'GPL', c1:'#232526', c2:'#414345', ini:'TH'},
+    {id:'symmerged',  t:'Symbol Merged',     sys:'GBA', core:'gba', file:'symmerged.gba',  size:'2.64 MB', genre:'Puzzle', quote:'Match it. Merge it. Beat the board.', syn:'A symbol-merging puzzle game. Slide and merge matching symbols into higher tiers and chase the biggest combo you can build.', author:'copyrat90', license:'MIT', c1:'#11998e', c2:'#38ef7d', ini:'SM'},
+    {id:'n2048',      t:'2048',              sys:'NES', core:'nes', file:'n2048.nes',      size:'16 KB',   genre:'Sliding number puzzle', quote:'Just one more move…', syn:'The classic sliding-number puzzle on NES. Merge matching tiles, double your way up, and try to reach the legendary 2048 tile.', author:'tsone', license:'Open source', c1:'#b7985a', c2:'#94762e', ini:'20'},
+    {id:'microjam23', t:"GBA Microjam '23",  sys:'GBA', core:'gba', file:'microjam23.gba', size:'10.65 MB', genre:'13 mini-games in one', quote:'13 micro-games. One cartridge.', syn:'A bundle of 13 bite-size mini-games made by the GBA homebrew community for the GBA Microjam 2023 — a little bit of everything in one cartridge.', author:'gbadev community', license:'Open source', c1:'#fc4a1a', c2:'#f7b733', ini:'MJ'},
+    {id:'rhde',       t:'RHDE: Furniture Fight', sys:'NES', core:'nes', file:'rhde.nes',   size:'32 KB',   genre:'Furniture brawler', quote:'May the best furniture win.', syn:'A one-room brawler where the weapons are the furniture. Rearrange the room, fling chairs and tables, and wreck your rival before they wreck you.', author:'Damian Yerrick', license:'GPL', c1:'#5d4157', c2:'#a8caba', ini:'RH'},
+    {id:'croom',      t:'Concentration Room', sys:'NES', core:'nes', file:'croom.nes',     size:'24 KB',   genre:'Card matching', quote:'Trust your memory.', syn:'The classic card-matching memory game. Flip the cards, remember what you saw, and find every pair — solo or against a friend.', author:'Damian Yerrick', license:'GPL', c1:'#3a6186', c2:'#89253e', ini:'CR'},
+    {id:'roulette',   t:'Russian Roulette',  sys:'NES', core:'nes', file:'roulette.nes',   size:'24 KB',   genre:'Party bluffing', quote:'Feeling lucky?', syn:'A bluffing party game with a toy revolver and paint capsules. Pull the trigger, pass it on, and hope your luck holds out longer than everyone else.', author:'Damian Yerrick', license:'GPL', c1:'#41295a', c2:'#2f0743', ini:'RR'}
   ];
+  var FEATURED = ['nova', 'anguna', 'frombelow'];
+  var byId = {};
+  GAMES.forEach(function (g) { byId[g.id] = g; });
 
   var stage = document.getElementById('stage');
   var fileInput = document.getElementById('fileInput');
   var errBox = document.getElementById('err');
   var loading = document.getElementById('loading');
   var started = false;
+
+  function coverHTML(g, withChip) {
+    return '<div class="covergrad" style="background:linear-gradient(135deg,' + g.c1 + ',' + g.c2 + ')">' + g.ini + '</div>' +
+      '<img src="games/covers/' + g.id + '.jpg" alt="" loading="lazy" onerror="this.remove()">' +
+      (withChip ? '<span class="syschip' + (g.sys === 'GBA' ? ' gba' : '') + '">' + g.sys + '</span>' : '');
+  }
 
   function showStage() {
     stage.classList.add('on');
@@ -156,27 +284,137 @@
     location.href = location.pathname;
   });
 
-  // --- Library cards ---
-  var grid = document.getElementById('grid');
-  GAMES.forEach(function (g) {
-    var card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML =
-      '<div class="coverbox">' +
-        '<div class="covergrad" style="background:linear-gradient(135deg,' + g.c1 + ',' + g.c2 + ')">' + g.ini + '</div>' +
-        '<img class="coverimg" src="games/covers/' + g.id + '.jpg" alt="" loading="lazy" onerror="this.remove()">' +
-        '<span class="sys' + (g.sys === 'GBA' ? ' gba' : '') + '">' + g.sys + '</span>' +
-        '<span class="playpill">▶ Play</span>' +
-      '</div>' +
-      '<div class="body">' +
-        '<div class="t">' + g.t + '</div>' +
-        '<div class="g">' + g.genre + '</div>' +
-        '<div class="meta">by ' + g.author + ' · ' + g.license + '</div>' +
-      '</div>';
-    card.addEventListener('click', function () { playLibrary(g); });
-    grid.appendChild(card);
+  /* ---------- Views (bottom nav) ---------- */
+  var navItems = document.querySelectorAll('.navitem');
+  function switchView(name) {
+    navItems.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name); });
+    ['home', 'library', 'myroms'].forEach(function (v) {
+      document.getElementById('view-' + v).classList.toggle('on', v === name);
+    });
+    window.scrollTo(0, 0);
+  }
+  navItems.forEach(function (b) {
+    b.addEventListener('click', function () { switchView(b.getAttribute('data-view')); });
   });
 
+  /* ---------- Tabs (Recommended / NES / GBA) ---------- */
+  var tabs = document.querySelectorAll('.tab');
+  function switchTab(name) {
+    tabs.forEach(function (t) { t.classList.toggle('on', t.getAttribute('data-tab') === name); });
+    document.getElementById('tab-rec').style.display = name === 'rec' ? '' : 'none';
+    var sysBox = document.getElementById('tab-sys');
+    if (name === 'rec') { sysBox.style.display = 'none'; return; }
+    sysBox.style.display = '';
+    var sys = name.toUpperCase();
+    document.getElementById('sysTitle').textContent = sys + ' Games';
+    var grid = document.getElementById('sysGrid');
+    grid.innerHTML = '';
+    GAMES.filter(function (g) { return g.sys === sys; }).forEach(function (g) { grid.appendChild(gridCard(g)); });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
+  });
+
+  /* ---------- Cards ---------- */
+  function gridCard(g) {
+    var card = document.createElement('div');
+    card.className = 'gcard';
+    card.setAttribute('data-title', g.t.toLowerCase());
+    card.innerHTML = '<div class="cv">' + coverHTML(g, true) + '</div>' +
+      '<div class="t">' + g.t + '</div>' +
+      '<button class="playpill" type="button">▶ Play</button>';
+    card.addEventListener('click', function () { openSheet(g); });
+    card.querySelector('.playpill').addEventListener('click', function (e) {
+      e.stopPropagation();
+      playLibrary(g);
+    });
+    return card;
+  }
+  function shelfCard(g) {
+    var card = document.createElement('div');
+    card.className = 'scard';
+    card.innerHTML = '<div class="cv">' + coverHTML(g, false) + '</div>' +
+      '<div class="t">' + g.t + '</div><div class="s">' + g.sys + ' · ' + g.genre + '</div>';
+    card.addEventListener('click', function () { openSheet(g); });
+    return card;
+  }
+
+  var favShelf = document.getElementById('favShelf');
+  GAMES.forEach(function (g) { favShelf.appendChild(shelfCard(g)); });
+  var recGrid = document.getElementById('recGrid');
+  var libGrid = document.getElementById('libGrid');
+  GAMES.forEach(function (g) { recGrid.appendChild(gridCard(g)); libGrid.appendChild(gridCard(g)); });
+  document.getElementById('libCount').textContent = GAMES.length + ' games';
+
+  /* ---------- Hero carousel ---------- */
+  var heroTrack = document.getElementById('heroTrack');
+  var heroDots = document.getElementById('heroDots');
+  var heroIdx = 0, heroTimer = null;
+  FEATURED.forEach(function (id, i) {
+    var g = byId[id];
+    var slide = document.createElement('div');
+    slide.className = 'hero-slide';
+    slide.innerHTML = coverHTML(g, false) +
+      '<div class="shade"></div>' +
+      '<div class="hero-tag">Featured <b>' + g.sys + '</b></div>' +
+      '<div class="hero-play">▶</div>' +
+      '<div class="hero-info"><div class="q">“' + g.quote + '”</div><div class="t">' + g.t + '</div><div class="g">' + g.genre + '</div></div>';
+    slide.addEventListener('click', function () { openSheet(g); });
+    heroTrack.appendChild(slide);
+    var d = document.createElement('i');
+    if (i === 0) d.className = 'on';
+    heroDots.appendChild(d);
+  });
+  function heroGo(i) {
+    heroIdx = (i + FEATURED.length) % FEATURED.length;
+    heroTrack.style.transform = 'translateX(-' + heroIdx * 100 + '%)';
+    heroDots.querySelectorAll('i').forEach(function (d, j) { d.classList.toggle('on', j === heroIdx); });
+  }
+  function heroAuto() {
+    clearInterval(heroTimer);
+    heroTimer = setInterval(function () { heroGo(heroIdx + 1); }, 5000);
+  }
+  heroAuto();
+  var heroTouchX = null;
+  heroTrack.addEventListener('touchstart', function (e) { heroTouchX = e.touches[0].clientX; }, {passive:true});
+  heroTrack.addEventListener('touchend', function (e) {
+    if (heroTouchX === null) return;
+    var dx = e.changedTouches[0].clientX - heroTouchX;
+    if (Math.abs(dx) > 40) heroGo(heroIdx + (dx < 0 ? 1 : -1));
+    heroTouchX = null;
+    heroAuto();
+  }, {passive:true});
+
+  /* ---------- Detail sheet ---------- */
+  var sheetWrap = document.getElementById('sheetWrap');
+  var sheetGame = null;
+  function openSheet(g) {
+    sheetGame = g;
+    document.getElementById('sheetCv').innerHTML = coverHTML(g, false);
+    document.getElementById('sheetTitle').textContent = g.t;
+    document.getElementById('sheetSize').textContent = g.sys + ' · ' + g.size;
+    document.getElementById('sheetAuthor').textContent = 'by ' + g.author + ' · ' + g.license;
+    document.getElementById('sheetSyn').textContent = g.syn;
+    sheetWrap.classList.add('on');
+  }
+  function closeSheet() { sheetWrap.classList.remove('on'); sheetGame = null; }
+  document.getElementById('sheetX').addEventListener('click', closeSheet);
+  document.getElementById('sheetBg').addEventListener('click', closeSheet);
+  document.getElementById('sheetPlay').addEventListener('click', function () {
+    if (sheetGame) { var g = sheetGame; closeSheet(); playLibrary(g); }
+  });
+
+  /* ---------- Search ---------- */
+  var searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function () {
+    var q = searchInput.value.trim().toLowerCase();
+    if (q) switchView('library');
+    libGrid.querySelectorAll('.gcard').forEach(function (c) {
+      c.style.display = (!q || c.getAttribute('data-title').indexOf(q) !== -1) ? '' : 'none';
+    });
+  });
+
+  /* ---------- Fullscreen + landscape ---------- */
   function lockLandscape() {
     try {
       if (screen.orientation && screen.orientation.lock) {
@@ -200,7 +438,10 @@
     }
   });
 
+  /* ---------- Playing ---------- */
   async function playLibrary(g) {
+    closeSheet();
+    switchView('home');
     if (started) { showStage(); enterPlayMode(); return; }
     showErr('');
     showStage();
@@ -218,7 +459,6 @@
     }
   }
 
-  // --- Own ROM picker ---
   document.getElementById('ownBtn').addEventListener('click', function () { fileInput.click(); });
   fileInput.addEventListener('change', function () {
     if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
@@ -238,7 +478,7 @@
   }
 
   async function handleFile(file) {
-    if (started) return;
+    if (started) { switchView('home'); showStage(); enterPlayMode(); return; }
     showErr('');
     var core = coreFor(file.name);
     var blob = file;
@@ -250,15 +490,16 @@
         zip.forEach(function (path, entry) {
           if (!inner && !entry.dir && coreFor(path)) inner = entry;
         });
-        if (!inner) { showErr('No .nes or .gba file found inside that zip.'); return; }
+        if (!inner) { switchView('myroms'); showErr('No .nes or .gba file found inside that zip.'); return; }
         core = coreFor(inner.name);
         gameName = inner.name.split('/').pop();
         blob = await inner.async('blob');
       }
     } catch (e) {
-      showErr('Could not read that file.'); return;
+      switchView('myroms'); showErr('Could not read that file.'); return;
     }
-    if (!core) { showErr('Unsupported file. Please pick a .nes, .gba or .zip file.'); return; }
+    if (!core) { switchView('myroms'); showErr('Unsupported file. Please pick a .nes, .gba or .zip file.'); return; }
+    switchView('home');
     showStage();
     startGame(blob, core, gameName);
   }
