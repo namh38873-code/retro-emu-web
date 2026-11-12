@@ -21,7 +21,9 @@
   .search input::placeholder { color:#8b8b9e; }
 
   /* --- Tabs --- */
-  .tabs { display:flex; gap:26px; padding:10px 2px 2px; }
+  .tabs { display:flex; gap:26px; padding:10px 2px 2px; overflow-x:auto; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab { flex:none; white-space:nowrap; }
   .tab { background:none; border:none; color:#8b8b9e; font-size:16.5px; font-weight:600; padding:6px 0 8px; cursor:pointer; position:relative; }
   .tab.on { color:#fff; font-weight:800; }
   .tab.on::after { content:''; position:absolute; left:50%; transform:translateX(-50%); bottom:0; width:20px; height:3.5px; border-radius:99px; background:#fff; }
@@ -82,7 +84,7 @@
   .gcard .cv { border-radius:12px; }
   .gcard .cv { position:relative; aspect-ratio:1/1; border-radius:16px; overflow:hidden; background:#17171f; }
   .gcard .t { font-size:13.5px; font-weight:600; margin:8px 2px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .playpill { display:block; width:100%; text-align:center; background:#26262f; color:#f2f2f5; border:none; font-size:13.5px; font-weight:600; padding:9px 0; border-radius:999px; cursor:pointer; }
+  .playpill { display:block; width:100%; text-align:center; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); box-shadow:0 4px 14px rgba(28,143,232,.35); color:#fff; border:none; font-size:13.5px; font-weight:600; padding:9px 0; border-radius:999px; cursor:pointer; }
   .playpill:active { background:#e94560; }
   .syschip { position:absolute; top:7px; left:7px; z-index:2; font-size:9.5px; font-weight:800; padding:2.5px 7px; border-radius:999px; background:#e94560; color:#fff; letter-spacing:.4px; }
   .syschip.gba { background:#7b5cff; }
@@ -129,25 +131,24 @@
   #toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%) translateY(16px); background:#23232f; color:#f2f2f5; font-size:13.5px; padding:11px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:70; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.5); }
   #toast.on { opacity:1; transform:translateX(-50%); }
 
-  /* --- Virtual gamepad restyle: smoked, soft, high-enough contrast --- */
+  /* --- Virtual gamepad restyle: colored buttons, dpad replaced by joystick --- */
+  body .ejs_dpad_main { display:none !important; }
   body .ejs_virtualGamepad_button {
-    background:rgba(12,12,22,.42) !important;
-    border:1.5px solid rgba(255,255,255,.45) !important;
-    color:rgba(255,255,255,.88) !important;
-    box-shadow:none;
+    background:rgba(14,18,36,.78) !important;
+    border:2px solid rgba(126,186,255,.55) !important;
+    color:#eaf4ff !important;
+    box-shadow:0 4px 14px rgba(0,0,0,.45);
     text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
-  body .ejs_virtualGamepad_button_down { background:rgba(233,69,96,.55) !important; }
-  body .ejs_dpad_main { opacity:.92 !important; }
-  body .ejs_dpad_bar { background:rgba(12,12,22,.42) !important; box-shadow:0 0 0 1.5px rgba(255,255,255,.30); }
-  body .ejs_dpad_horizontal:before { border-right-color:rgba(255,255,255,.85) !important; }
-  body .ejs_dpad_horizontal:after { border-left-color:rgba(255,255,255,.85) !important; }
-  body .ejs_dpad_vertical:before { border-bottom-color:rgba(255,255,255,.85) !important; }
-  body .ejs_dpad_vertical:after { border-top-color:rgba(255,255,255,.85) !important; }
-  body .ejs_dpad_left_pressed .ejs_dpad_horizontal:before { border-right-color:#e94560 !important; }
-  body .ejs_dpad_right_pressed .ejs_dpad_horizontal:after { border-left-color:#e94560 !important; }
-  body .ejs_dpad_up_pressed .ejs_dpad_vertical:before { border-bottom-color:#e94560 !important; }
-  body .ejs_dpad_down_pressed .ejs_dpad_vertical:after { border-top-color:#e94560 !important; }
+  body .ejs_virtualGamepad_button.b_a { background:linear-gradient(145deg,rgba(255,84,112,.95),rgba(196,24,58,.95)) !important; border-color:rgba(255,170,185,.85) !important; color:#fff !important; }
+  body .ejs_virtualGamepad_button.b_b { background:linear-gradient(145deg,rgba(62,193,245,.95),rgba(21,90,214,.95)) !important; border-color:rgba(160,220,255,.85) !important; color:#fff !important; }
+  body .ejs_virtualGamepad_button.b_x { background:linear-gradient(145deg,rgba(46,204,140,.95),rgba(16,140,90,.95)) !important; border-color:rgba(160,255,205,.85) !important; color:#fff !important; }
+  body .ejs_virtualGamepad_button.b_y { background:linear-gradient(145deg,rgba(170,110,255,.95),rgba(110,50,210,.95)) !important; border-color:rgba(215,185,255,.85) !important; color:#fff !important; }
+  body .ejs_virtualGamepad_button_down { filter:brightness(1.5) !important; }
+  /* --- Custom joystick --- */
+  #joy { display:none; position:absolute; left:16px; bottom:15%; width:126px; height:126px; border-radius:50%; background:rgba(10,14,28,.5); border:2px solid rgba(126,186,255,.55); z-index:40; touch-action:none; }
+  html.touch #stage.on:not(.mini) #joy { display:block; }
+  #joyKnob { position:absolute; left:50%; top:50%; width:56px; height:56px; margin:-28px 0 0 -28px; border-radius:50%; background:linear-gradient(145deg,#3ec1f5,#1c6fe0); border:2px solid rgba(255,255,255,.65); box-shadow:0 6px 18px rgba(0,0,0,.5); pointer-events:none; }
 </style>
 </head>
 <body>
@@ -171,6 +172,7 @@
 
   <div id="stage">
     <div id="game"></div>
+    <div id="joy"><div id="joyKnob"></div></div>
     <div id="loading">Loading game…</div>
     <div id="miniTap"></div>
     <button id="miniClose" type="button">✕</button>
@@ -185,6 +187,8 @@
       <button class="tab on" data-tab="rec" type="button">Recommended</button>
       <button class="tab" data-tab="nes" type="button">NES</button>
       <button class="tab" data-tab="gba" type="button">GBA</button>
+      <button class="tab" data-tab="gb" type="button">GB</button>
+      <button class="tab" data-tab="snes" type="button">SNES</button>
     </div>
 
 
@@ -197,6 +201,7 @@
         <h2 class="sec">Your Next Favorite</h2>
         <div class="shelf" id="favShelf"></div>
       </div>
+      <div id="shelves"></div>
       <h2 class="sec">All Games</h2>
       <div class="grid" id="recGrid"></div>
     </div>
@@ -219,9 +224,9 @@
     <h2 class="sec">My ROMs</h2>
     <div class="loadcard">
       <div class="big">Load your own ROM</div>
-      <p>Play a game file from your device — .nes for NES, .gba for GBA, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
+      <p>Play a game file from your device — .nes, .gba, .gb/.gbc, .sfc, or a .zip containing one. You can also drag &amp; drop a file anywhere on this page.</p>
       <button class="loadbtn" id="ownBtn" type="button">Choose ROM file</button>
-      <input type="file" id="fileInput" accept=".nes,.gba,.zip" hidden>
+      <input type="file" id="fileInput" accept=".nes,.gba,.gb,.gbc,.sfc,.smc,.zip" hidden>
     </div>
     <div class="how">
       <h3>How to play</h3>
@@ -234,7 +239,7 @@
     </div>
   </div>
 
-  <footer>retro web v3.4</footer>
+  <footer>retro web v3.5</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -285,7 +290,19 @@
     {id:'microjam23', t:"GBA Microjam '23",  sys:'GBA', core:'gba', file:'microjam23.gba', size:'10.65 MB', genre:'13 mini-games in one', quote:'13 micro-games. One cartridge.', syn:'A bundle of 13 bite-size mini-games made by the GBA homebrew community for the GBA Microjam 2023 — a little bit of everything in one cartridge.', author:'gbadev community', license:'Open source', c1:'#fc4a1a', c2:'#f7b733', ini:'MJ'},
     {id:'rhde',       t:'RHDE: Furniture Fight', sys:'NES', core:'nes', file:'rhde.nes',   size:'32 KB',   genre:'Furniture brawler', quote:'May the best furniture win.', syn:'A one-room brawler where the weapons are the furniture. Rearrange the room, fling chairs and tables, and wreck your rival before they wreck you.', author:'Damian Yerrick', license:'GPL', c1:'#5d4157', c2:'#a8caba', ini:'RH'},
     {id:'croom',      t:'Concentration Room', sys:'NES', core:'nes', file:'croom.nes',     size:'24 KB',   genre:'Card matching', quote:'Trust your memory.', syn:'The classic card-matching memory game. Flip the cards, remember what you saw, and find every pair — solo or against a friend.', author:'Damian Yerrick', license:'GPL', c1:'#3a6186', c2:'#89253e', ini:'CR'},
-    {id:'roulette',   t:'Russian Roulette',  sys:'NES', core:'nes', file:'roulette.nes',   size:'24 KB',   genre:'Party bluffing', quote:'Feeling lucky?', syn:'A bluffing party game with a toy revolver and paint capsules. Pull the trigger, pass it on, and hope your luck holds out longer than everyone else.', author:'Damian Yerrick', license:'GPL', c1:'#41295a', c2:'#2f0743', ini:'RR'}
+    {id:'roulette',   t:'Russian Roulette',  sys:'NES', core:'nes', file:'roulette.nes',   size:'24 KB',   genre:'Party bluffing', quote:'Feeling lucky?', syn:'A bluffing party game with a toy revolver and paint capsules. Pull the trigger, pass it on, and hope your luck holds out longer than everyone else.', author:'Damian Yerrick', license:'GPL', c1:'#41295a', c2:'#2f0743', ini:'RR'},
+    {id:'rfk',         t:'Robot Finds Kitten', sys:'NES', core:'nes', file:'robotfindskitten.nes', size:'32 KB', genre:'Zen simulation', quote:'Somewhere out there is a kitten.', syn:'A robot. A kitten. Hundreds of strange objects to inspect in between. The cult zen classic about finding one specific kitten in a field of delightful nonsense.', author:'Damian Yerrick', license:'Open source', c1:'#355c7d', c2:'#6c9ab0', ini:'RK'},
+    {id:'adjustris',   t:'Adjustris',          sys:'GB', core:'gb', file:'adjustris.gb',   size:'32 KB',  genre:'Puzzle', quote:'The well never sits still.', syn:'A falling-block puzzler with a twist: the well itself shifts and adjusts as you play, so no two games ever stack up the same way.', author:'Dave VanEe', license:'CC0', c1:'#134e5e', c2:'#71b280', ini:'AD'},
+    {id:'libbet',      t:'Libbet and the Magic Floor', sys:'GB', core:'gb', file:'libbet.gb', size:'32 KB', genre:'Puzzle', quote:'One careful step at a time.', syn:'Cross the magic floor one careful step at a time. A tiny logic puzzle about paths, tiles, and not painting yourself into a corner.', author:'Damian Yerrick', license:'GPLv3', c1:'#614385', c2:'#516395', ini:'LB'},
+    {id:'tobu',        t:'Tobu Tobu Girl',     sys:'GB', core:'gb', file:'tobu.gb',        size:'256 KB', genre:'Platformer', quote:'Your cat is in the sky. Go get her.', syn:'Bounce, stomp and fly higher and higher to rescue your cat from the sky. A fast, joyful platformer loved across the whole homebrew scene.', author:'Tangram Games', license:'MIT', c1:'#1d976c', c2:'#93f9b9', ini:'TB'},
+    {id:'porklike',    t:'Porklike',           sys:'GB', core:'gb', file:'porklike.gb',    size:'64 KB',  genre:'Roguelike', quote:'Descend. Grab the ham. Survive.', syn:'A pocket roguelike: descend the tower, grab the ham, and try not to die on the way down. Every run builds a brand-new tower.', author:'Ben Smith (binji)', license:'MIT', c1:'#8e2a3c', c2:'#d76d77', ini:'PL'},
+    {id:'rhythmland',  t:'Rhythm Land',        sys:'GB', core:'gb', file:'rhythmland.gb',  size:'128 KB', genre:'Rhythm', quote:'Stay on the beat.', syn:'Tap along to the beat through a pocket rhythm adventure. Timing is everything, and the tunes are pure Game Boy.', author:'martendo', license:'MIT', c1:'#fc4a1a', c2:'#f7b733', ini:'RL'},
+    {id:'shocklobster',t:'Shock Lobster',      sys:'GB', core:'gb', file:'shocklobster.gb',size:'32 KB',  genre:'Action', quote:'Claws of thunder.', syn:'A lobster. Lightning. Chaos. A bite-sized arcade action game with the hero you never expected and claws you will not forget.', author:'Dave VanEe', license:'Zlib', c1:'#283c86', c2:'#45a247', ini:'SL'},
+    {id:'big2small',   t:'Big2Small',          sys:'GB', core:'gb', file:'big2small.gb',   size:'64 KB',  genre:'Puzzle platformer', quote:'Size is the only key.', syn:'Grow big, shrink small, and use your size to solve each room. A clever puzzle platformer built entirely around one great idea.', author:'Matthew D. Steele', license:'GPLv3', c1:'#42275a', c2:'#734b6d', ini:'B2'},
+    {id:'ucity',       t:'µCity',              sys:'GB', core:'gb', file:'ucity.gbc',      size:'128 KB', genre:'City builder', quote:'A whole city in your pocket.', syn:'A full city builder in color on the Game Boy Color: lay roads, zone districts, supply power and watch your tiny city grow.', author:'AntonioND', license:'GPLv3', c1:'#136a8a', c2:'#89f7fe', ini:'µC'},
+    {id:'rebound',     t:'Rebound',            sys:'GB', core:'gb', file:'rebound.gbc',    size:'128 KB', genre:'Action puzzle', quote:'Keep it bouncing.', syn:'A Game Boy Color brick-breaker with a bounce: clear the blocks, keep the ball alive, and chase the high score.', author:'DevEd', license:'MIT', c1:'#7b2d8b', c2:'#f107a3', ini:'RB'},
+    {id:'ucityadvance',t:'µCity Advance',      sys:'GBA', core:'gba', file:'ucityadvance.gba', size:'1.8 MB', genre:'City builder', quote:'Mayor of a tiny world.', syn:'Build a tiny city on your GBA: zones, power, roads and budgets, all simulated in your pocket.', author:'AntonioND', license:'MIT / Unlicense', c1:'#1e3c72', c2:'#2a5298', ini:'µA'},
+    {id:'bomberworld', t:'BomberWorld',        sys:'SNES', core:'snes', file:'bomberworld.sfc', size:'256 KB', genre:'Maze action', quote:'Bomb your way out.', syn:'Bomb, blast and trap your way through maze arenas in this SNES homebrew take on the classic bomber formula.', author:'1r3n33', license:'Open source', c1:'#93291e', c2:'#ed213a', ini:'BW'}
   ];
   var FEATURED = ['nova', 'anguna', 'frombelow'];
   var byId = {};
@@ -370,6 +387,24 @@
 
   var favShelf = document.getElementById('favShelf');
   GAMES.forEach(function (g) { favShelf.appendChild(shelfCard(g)); });
+
+  /* ---------- Genre shelves ---------- */
+  var SHELVES = [
+    { title: 'Puzzle & Brain', ids: ['n2048', 'croom', 'adjustris', 'libbet', 'big2small', 'symmerged', 'rebound'] },
+    { title: 'Platform & Action', ids: ['nova', 'twindragons', 'tobu', 'feline', 'shocklobster', 'bomberworld'] },
+    { title: 'Adventure & Worlds', ids: ['anguna', 'frombelow', 'porklike', 'ucityadvance', 'ucity'] }
+  ];
+  var shelvesEl = document.getElementById('shelves');
+  SHELVES.forEach(function (sh) {
+    var h2 = document.createElement('h2');
+    h2.className = 'sec';
+    h2.textContent = sh.title;
+    var shelf = document.createElement('div');
+    shelf.className = 'shelf';
+    sh.ids.forEach(function (id) { shelf.appendChild(shelfCard(byId[id])); });
+    shelvesEl.appendChild(h2);
+    shelvesEl.appendChild(shelf);
+  });
   var recGrid = document.getElementById('recGrid');
   var libGrid = document.getElementById('libGrid');
   GAMES.forEach(function (g) { recGrid.appendChild(gridCard(g)); libGrid.appendChild(gridCard(g)); });
@@ -448,11 +483,60 @@
   document.getElementById('bellBtn').addEventListener('click', function () { toast('No new notifications'); });
   document.getElementById('importBtn').addEventListener('click', function () { switchView('myroms'); });
   (function () {
-    var picks = ['Nova the Squirrel', 'Anguna', 'From Below', 'Feline'];
+    var picks = ['Nova the Squirrel', 'Anguna', 'From Below', 'Feline', 'Tobu Tobu Girl', 'Porklike'];
     document.getElementById('searchInput').setAttribute('placeholder', picks[Math.floor(Math.random() * picks.length)]);
   })();
 
   /* ---------- Search ---------- */
+  /* ---------- Virtual joystick: drives the EJS dpad via keyboard events ---------- */
+  (function () {
+    var joy = document.getElementById('joy');
+    var knob = document.getElementById('joyKnob');
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) document.documentElement.classList.add('touch');
+    var DIRS = [
+      { code: 37, name: 'ArrowLeft' }, { code: 39, name: 'ArrowRight' },
+      { code: 38, name: 'ArrowUp' }, { code: 40, name: 'ArrowDown' }
+    ];
+    var active = {};
+    function send(type, d) {
+      var c = document.querySelector('#game canvas');
+      if (!c) return;
+      c.dispatchEvent(new KeyboardEvent(type, { key: d.name, code: d.name, keyCode: d.code, which: d.code, bubbles: true, cancelable: true }));
+    }
+    function setDirs(nx, ny) {
+      var want = {};
+      if (Math.abs(nx) > 0.42) want[nx < 0 ? 37 : 39] = true;
+      if (Math.abs(ny) > 0.42) want[ny < 0 ? 38 : 40] = true;
+      DIRS.forEach(function (d) {
+        if (want[d.code] && !active[d.code]) { active[d.code] = d; send('keydown', d); }
+        if (!want[d.code] && active[d.code]) { send('keyup', d); delete active[d.code]; }
+      });
+    }
+    function releaseAll() { Object.keys(active).forEach(function (k) { send('keyup', active[k]); }); active = {}; }
+    var pid = null, cx = 0, cy = 0;
+    function move(e) {
+      if (pid === null) return;
+      var R = 40;
+      var dx = e.clientX - cx, dy = e.clientY - cy;
+      var len = Math.sqrt(dx * dx + dy * dy);
+      var cl = len > R ? R / len : 1;
+      knob.style.transform = 'translate(' + (dx * cl) + 'px,' + (dy * cl) + 'px)';
+      if (len < 12) { setDirs(0, 0); return; }
+      setDirs(dx / R, dy / R);
+    }
+    joy.addEventListener('pointerdown', function (e) {
+      pid = e.pointerId;
+      var r = joy.getBoundingClientRect();
+      cx = r.left + r.width / 2; cy = r.top + r.height / 2;
+      try { joy.setPointerCapture(pid); } catch (err) {}
+      move(e);
+    });
+    joy.addEventListener('pointermove', move);
+    function end() { pid = null; knob.style.transform = ''; releaseAll(); }
+    joy.addEventListener('pointerup', end);
+    joy.addEventListener('pointercancel', end);
+  })();
+
   var searchInput = document.getElementById('searchInput');
   searchInput.addEventListener('input', function () {
     var q = searchInput.value.trim().toLowerCase();
@@ -582,6 +666,8 @@
     var n = name.toLowerCase();
     if (n.endsWith('.nes')) return 'nes';
     if (n.endsWith('.gba')) return 'gba';
+    if (n.endsWith('.gb') || n.endsWith('.gbc')) return 'gb';
+    if (n.endsWith('.sfc') || n.endsWith('.smc')) return 'snes';
     return null;
   }
 
@@ -598,7 +684,7 @@
         zip.forEach(function (path, entry) {
           if (!inner && !entry.dir && coreFor(path)) inner = entry;
         });
-        if (!inner) { switchView('myroms'); showErr('No .nes or .gba file found inside that zip.'); return; }
+        if (!inner) { switchView('myroms'); showErr('No supported game file found inside that zip.'); return; }
         core = coreFor(inner.name);
         gameName = inner.name.split('/').pop();
         blob = await inner.async('blob');
@@ -606,7 +692,7 @@
     } catch (e) {
       switchView('myroms'); showErr('Could not read that file.'); return;
     }
-    if (!core) { switchView('myroms'); showErr('Unsupported file. Please pick a .nes, .gba or .zip file.'); return; }
+    if (!core) { switchView('myroms'); showErr('Unsupported file. Please pick a .nes, .gba, .gb, .gbc, .sfc or .zip file.'); return; }
     switchView('home');
     showStage();
     startGame(blob, core, gameName);
