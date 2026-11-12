@@ -1,5 +1,12 @@
 [
   {
+    "build": 53,
+    "v": "5.3",
+    "date": "2026-11-12",
+    "en": "Search fix: the search bar no longer closes after the first letter - type full game names again.",
+    "vi": "Sửa tìm kiếm: ô tìm kiếm không còn tự đóng sau chữ đầu tiên - gõ được trọn tên game."
+  },
+  {
     "build": 52,
     "v": "5.2",
     "date": "2026-11-12",

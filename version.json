@@ -1,6 +1,6 @@
 {
-  "build": 52,
-  "notes_en": "The Android app now works fully offline: the interface, all 56 games and the emulator cores are built into the app. Only sign-in, cloud saves and update checks need the internet.",
-  "notes_vi": "App Android giờ chơi offline hoàn toàn: giao diện, cả 56 game và lõi giả lập đều nằm sẵn trong app. Chỉ đăng nhập, lưu đám mây và kiểm tra cập nhật mới cần mạng.",
-  "version": "5.2"
+  "build": 53,
+  "notes_en": "Fixed the search box: it used to close after the first letter, so full game names could not be typed. The search bar now stays open while you type.",
+  "notes_vi": "Sửa ô tìm kiếm: trước đây gõ 1 chữ là ô tự đóng, không gõ hết tên game được. Giờ ô tìm kiếm giữ nguyên trong lúc gõ.",
+  "version": "5.3"
 }
