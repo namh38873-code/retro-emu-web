@@ -12,9 +12,9 @@
 
   /* --- Top search (GameHub style) --- */
   .topbar { position:sticky; top:0; z-index:30; background:rgba(8,8,13,.92); backdrop-filter:blur(10px); padding:12px 14px 8px; }
-  .topbar-in { max-width:960px; margin:0 auto; display:flex; align-items:center; gap:10px; }
-  .brand { font-size:17px; font-weight:800; letter-spacing:.4px; white-space:nowrap; }
-  .brand span { color:#e94560; }
+  .topbar-in { max-width:960px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+  .iconbtn { flex:none; width:40px; height:40px; border-radius:50%; background:none; border:none; color:#e8e8f0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .iconbtn:active { background:#1b1b26; }
   .search { flex:1; display:flex; align-items:center; gap:8px; background:#1b1b26; border:1px solid #2a2a3a; border-radius:999px; padding:10px 16px; }
   .search svg { flex:none; opacity:.55; }
   .search input { flex:1; background:none; border:none; outline:none; color:#f2f2f5; font-size:14.5px; min-width:0; }
@@ -39,7 +39,7 @@
   /* --- Hero carousel --- */
   .hero { margin-top:14px; border-radius:20px; overflow:hidden; position:relative; background:#14141f; }
   .hero-track { display:flex; transition:transform .45s ease; }
-  .hero-slide { flex:0 0 100%; position:relative; aspect-ratio:16/10.5; cursor:pointer; }
+  .hero-slide { flex:0 0 100%; position:relative; aspect-ratio:4/3.1; cursor:pointer; }
   .hero-slide img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
   .hero-slide .shade { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.18) 40%, rgba(5,5,10,.88) 88%); }
   .hero-tag { position:absolute; top:14px; left:16px; z-index:2; font-size:14px; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px; text-shadow:0 1px 6px rgba(0,0,0,.7); }
@@ -54,7 +54,9 @@
   .hero-dots i.on { width:26px; background:#fff; }
 
   /* --- Shelves & grids --- */
-  h2.sec { font-size:19px; font-weight:800; margin:24px 0 12px; }
+  h2.sec { font-size:20px; font-weight:800; margin:24px 0 12px; }
+  .panel { background:#101018; border-radius:20px; padding:6px 14px 12px; margin-top:24px; }
+  .panel h2.sec { margin-top:14px; }
   .shelf { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
   .shelf::-webkit-scrollbar { display:none; }
   .scard { flex:0 0 128px; cursor:pointer; }
@@ -63,12 +65,13 @@
   .covergrad { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:rgba(255,255,255,.92); text-shadow:0 2px 8px rgba(0,0,0,.45); }
   .scard .t { font-size:13.5px; font-weight:600; margin-top:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .scard .s { font-size:11.5px; color:#8b8b9e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px 11px; }
-  @media (min-width:640px) { .grid { grid-template-columns:repeat(4,1fr); } }
-  .gcard { cursor:pointer; }
+  .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px 11px; }
+  @media (min-width:640px) { .grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  .gcard { cursor:pointer; min-width:0; background:#12121a; border-radius:18px; padding:8px 8px 10px; }
+  .gcard .cv { border-radius:12px; }
   .gcard .cv { position:relative; aspect-ratio:1/1; border-radius:16px; overflow:hidden; background:#17171f; }
-  .gcard .t { font-size:13.5px; font-weight:600; margin:8px 0 7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .playpill { display:block; width:100%; text-align:center; background:#23232f; color:#f2f2f5; border:none; font-size:13.5px; font-weight:600; padding:9px 0; border-radius:999px; cursor:pointer; }
+  .gcard .t { font-size:13.5px; font-weight:600; margin:8px 2px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .playpill { display:block; width:100%; text-align:center; background:#26262f; color:#f2f2f5; border:none; font-size:13.5px; font-weight:600; padding:9px 0; border-radius:999px; cursor:pointer; }
   .playpill:active { background:#e94560; }
   .syschip { position:absolute; top:7px; left:7px; z-index:2; font-size:9.5px; font-weight:800; padding:2.5px 7px; border-radius:999px; background:#e94560; color:#fff; letter-spacing:.4px; }
   .syschip.gba { background:#7b5cff; }
@@ -112,6 +115,8 @@
   #sheetPlay:active { filter:brightness(1.12); }
 
   footer { text-align:center; color:#4c4c62; font-size:12px; margin-top:26px; }
+  #toast { position:fixed; left:50%; bottom:104px; transform:translateX(-50%) translateY(16px); background:#23232f; color:#f2f2f5; font-size:13.5px; padding:11px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:70; white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.5); }
+  #toast.on { opacity:1; transform:translateX(-50%); }
 
   /* --- Virtual gamepad restyle: smoked, soft, high-enough contrast --- */
   body .ejs_virtualGamepad_button {
@@ -138,11 +143,16 @@
 
 <div class="topbar">
   <div class="topbar-in">
-    <div class="brand">RETRO<span>PLAY</span></div>
     <label class="search">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
       <input id="searchInput" type="search" placeholder="Search games…" autocomplete="off">
     </label>
+    <button class="iconbtn" id="bellBtn" type="button" aria-label="Notifications">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/></svg>
+    </button>
+    <button class="iconbtn" id="importBtn" type="button" aria-label="Load your own ROM">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8v7M9.5 12.5L12 15l2.5-2.5"/></svg>
+    </button>
   </div>
 </div>
 
@@ -168,8 +178,10 @@
         <div class="hero-track" id="heroTrack"></div>
         <div class="hero-dots" id="heroDots"></div>
       </div>
-      <h2 class="sec">Your Next Favorite</h2>
-      <div class="shelf" id="favShelf"></div>
+      <div class="panel">
+        <h2 class="sec">Your Next Favorite</h2>
+        <div class="shelf" id="favShelf"></div>
+      </div>
       <h2 class="sec">All Games</h2>
       <div class="grid" id="recGrid"></div>
     </div>
@@ -207,7 +219,7 @@
     </div>
   </div>
 
-  <footer>retro web v3.0</footer>
+  <footer>retro web v3.1</footer>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -222,6 +234,8 @@
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.6l3.3-3.3L17 12l-5 5-5-5 1.7-1.7L12 13.6V3zM5 19h14v2H5z" transform="translate(0,-1)"/></svg>My ROMs
   </button>
 </nav>
+
+<div id="toast"></div>
 
 <!-- GAME DETAIL SHEET -->
 <div id="sheetWrap">
@@ -356,9 +370,9 @@
     slide.className = 'hero-slide';
     slide.innerHTML = coverHTML(g, false) +
       '<div class="shade"></div>' +
-      '<div class="hero-tag">Featured <b>' + g.sys + '</b></div>' +
+      '<div class="hero-tag">Today <b class="heroDate"></b></div>' +
       '<div class="hero-play">▶</div>' +
-      '<div class="hero-info"><div class="q">“' + g.quote + '”</div><div class="t">' + g.t + '</div><div class="g">' + g.genre + '</div></div>';
+      '<div class="hero-info"><div class="q">❝ ' + g.quote + '</div><div class="t">' + g.t + '</div><div class="g">' + g.genre + '</div></div>';
     slide.addEventListener('click', function () { openSheet(g); });
     heroTrack.appendChild(slide);
     var d = document.createElement('i');
@@ -403,6 +417,25 @@
   document.getElementById('sheetPlay').addEventListener('click', function () {
     if (sheetGame) { var g = sheetGame; closeSheet(); playLibrary(g); }
   });
+
+  /* ---------- Top bar extras ---------- */
+  var now = new Date();
+  var dateTxt = now.getDate() + '/' + (now.getMonth() + 1);
+  document.querySelectorAll('.heroDate').forEach(function (el) { el.textContent = dateTxt; });
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('on'); }, 1900);
+  }
+  document.getElementById('bellBtn').addEventListener('click', function () { toast('No new notifications'); });
+  document.getElementById('importBtn').addEventListener('click', function () { switchView('myroms'); });
+  (function () {
+    var picks = ['Nova the Squirrel', 'Anguna', 'From Below', 'Feline'];
+    document.getElementById('searchInput').setAttribute('placeholder', picks[Math.floor(Math.random() * picks.length)]);
+  })();
 
   /* ---------- Search ---------- */
   var searchInput = document.getElementById('searchInput');
