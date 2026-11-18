@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pixcade PSP Player</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0b0b12; color:#f2f2f5; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; }
+  header { display:flex; align-items:center; gap:12px; padding:14px 16px; }
+  header .logo { font-size:19px; font-weight:800; }
+  header .logo span { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  header a.back { margin-left:auto; color:#9a9ab0; text-decoration:none; font-size:14px; font-weight:600; }
+  main { padding:0 16px 28px; max-width:860px; margin:0 auto; }
+  .card { background:#12121a; border-radius:18px; padding:16px; margin-top:14px; }
+  .card .big { font-size:16px; font-weight:700; }
+  .card p { color:#9a9ab0; font-size:13.5px; line-height:1.6; margin:7px 0 13px; }
+  .loadbtn { width:100%; border:none; border-radius:13px; padding:14px; font-size:15px; font-weight:700; color:#fff; background:linear-gradient(135deg,#1c8fe8,#3ec1f5); cursor:pointer; }
+  .gamerow { display:flex; align-items:center; gap:11px; padding:12px 0; }
+  .gamerow + .gamerow { border-top:1px solid #23232f; }
+  .gamerow .nm { flex:1; min-width:0; font-size:14.5px; font-weight:600; word-break:break-all; }
+  .gamerow .sz { color:#9a9ab0; font-size:12.5px; }
+  .gamerow button { border:none; border-radius:999px; font-size:13px; font-weight:700; padding:8px 14px; cursor:pointer; }
+  .gamerow .play { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); color:#fff; }
+  .gamerow .del { background:#1b1b26; border:1px solid #34344a; color:#f2f2f5; }
+  .empty { color:#9a9ab0; font-size:13.5px; padding:10px 0 2px; }
+  #stage { display:none; margin-top:14px; background:#000; border-radius:14px; overflow:hidden; }
+  #stage.on { display:block; }
+  #game { width:100%; aspect-ratio:16/9; }
+  .bar { display:flex; gap:9px; margin-top:12px; }
+  .bar button { flex:1; border-radius:999px; font-size:13.5px; font-weight:700; padding:10px 8px; cursor:pointer; background:#1b1b26; border:1px solid #34344a; color:#f2f2f5; }
+  .bar button.primary { background:linear-gradient(135deg,#1c8fe8,#3ec1f5); border:none; color:#fff; }
+  #toast { position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:#1d1d2b; color:#fff; font-size:14px; font-weight:600; padding:11px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:.25s; z-index:50; max-width:92vw; text-align:center; }
+  #toast.on { opacity:1; transform:translateX(-50%) translateY(0); }
+  #prep { text-align:center; color:#9a9ab0; font-size:14.5px; padding:44px 20px; line-height:1.7; }
+  footer { text-align:center; color:#55556e; font-size:12.5px; padding:6px 0 20px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Pixcade <span>PSP</span></div>
+  <a class="back" href="../" id="backLink">‹ Pixcade</a>
+</header>
+<main id="ui" style="display:none">
+  <div class="card">
+    <div class="big" id="tTitle">Play PSP games</div>
+    <p id="tDesc">Load your own PSP game file (.iso or .cso). The file is stored only on this device and never uploaded anywhere.</p>
+    <button class="loadbtn" id="pickBtn" type="button">Choose PSP game file</button>
+    <input type="file" id="fileInput" accept=".iso,.cso" style="display:none">
+  </div>
+
+  <div class="card">
+    <div class="big" id="tYours">On this device</div>
+    <div id="libList"></div>
+    <p class="empty" id="libEmpty">No PSP games added yet.</p>
+  </div>
+
+  <div id="stage"><div id="game"></div></div>
+  <div class="bar" id="playBar" style="display:none">
+    <button id="saveBtn" type="button">Save state</button>
+    <button id="loadBtn" type="button">Load state</button>
+    <button id="closeBtn" type="button" class="primary">Close game</button>
+  </div>
+
+  <footer>Pixcade PSP Player</footer>
+</main>
+<div id="prep">Preparing the PSP player…</div>
+<div id="toast"></div>
+
+<script>
+  var STR = {
+    en: { title:'Play PSP games', desc:'Load your own PSP game file (.iso or .cso). The file is stored only on this device and never uploaded anywhere.', pick:'Choose PSP game file', yours:'On this device', empty:'No PSP games added yet.', save:'Save state', load:'Load state', close:'Close game', saved:'Saved', loaded:'Save loaded', nosave:'No save yet', play:'Play', del:'Delete', added:'Game added', badfile:'Please choose a .iso or .cso file', prepFail:'This browser could not enable PSP mode. Please try Chrome or update the app.' },
+    vi: { title:'Chơi game PSP', desc:'Nạp file game PSP của bạn (.iso hoặc .cso). File chỉ lưu trên máy của bạn, không bao giờ được tải lên đâu.', pick:'Chọn file game PSP', yours:'Trên máy này', empty:'Chưa thêm game PSP nào.', save:'Lưu game', load:'Tải game', close:'Đóng game', saved:'Đã lưu', loaded:'Đã tải bản lưu', nosave:'Chưa có bản lưu', play:'Chơi', del:'Xóa', added:'Đã thêm game', badfile:'Hãy chọn file .iso hoặc .cso', prepFail:'Trình duyệt này không bật được chế độ PSP. Hãy thử Chrome hoặc cập nhật app.' }
+  };
+  var qs = new URLSearchParams(location.search);
+  var lang = qs.get('lang') || null;
+  if (!lang) { try { lang = localStorage.getItem('rp_lang'); } catch (e) {} }
+  if (lang !== 'vi') lang = 'en';
+  function T(k) { return STR[lang][k] || STR.en[k] || k; }
+
+  /* ---- Cross-origin isolation gate: the ppsspp core needs SharedArrayBuffer.
+         GitHub Pages sends no COOP/COEP, so coi-sw.js (this folder only)
+         re-serves this page with those headers; first visit reloads once. ---- */
+  function coiGate() {
+    if (window.crossOriginIsolated) return true;
+    var tries = 0;
+    try { tries = parseInt(sessionStorage.getItem('psp_coi_tries') || '0', 10) || 0; } catch (e) {}
+    if (tries >= 3 || !('serviceWorker' in navigator)) {
+      document.getElementById('prep').textContent = T('prepFail');
+      return false;
+    }
+    try { sessionStorage.setItem('psp_coi_tries', String(tries + 1)); } catch (e) {}
+    navigator.serviceWorker.register('coi-sw.js').then(function () {
+      if (navigator.serviceWorker.controller) { location.reload(); return; }
+      navigator.serviceWorker.addEventListener('controllerchange', function () { location.reload(); });
+      setTimeout(function () { location.reload(); }, 2500);
+    }).catch(function () {
+      document.getElementById('prep').textContent = T('prepFail');
+    });
+    return false;
+  }
+
+  function init() {
+    try { sessionStorage.removeItem('psp_coi_tries'); } catch (e) {}
+    document.getElementById('prep').style.display = 'none';
+    document.getElementById('ui').style.display = '';
+    document.getElementById('tTitle').textContent = T('title');
+    document.getElementById('tDesc').textContent = T('desc');
+    document.getElementById('pickBtn').textContent = T('pick');
+    document.getElementById('tYours').textContent = T('yours');
+    document.getElementById('libEmpty').textContent = T('empty');
+    document.getElementById('saveBtn').textContent = T('save');
+    document.getElementById('loadBtn').textContent = T('load');
+    document.getElementById('closeBtn').textContent = T('close');
+
+    var toastTimer = null;
+    function toast(msg) {
+      var el = document.getElementById('toast');
+      el.textContent = msg; el.classList.add('on');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { el.classList.remove('on'); }, 2200);
+    }
+
+    /* Same database as the main app (same origin): roms + autostates. */
+    var dbP = null;
+    function db() {
+      if (dbP) return dbP;
+      dbP = new Promise(function (res, rej) {
+        var rq = indexedDB.open('retroplay', 3);
+        rq.onupgradeneeded = function () {
+          var d = rq.result;
+          if (!d.objectStoreNames.contains('autostates')) d.createObjectStore('autostates');
+          if (!d.objectStoreNames.contains('roms')) d.createObjectStore('roms');
+          if (!d.objectStoreNames.contains('misc')) d.createObjectStore('misc');
+        };
+        rq.onsuccess = function () { res(rq.result); };
+        rq.onerror = function () { rej(rq.error); };
+      });
+      return dbP;
+    }
+    function idb(mode, store, fn) {
+      return db().then(function (d) {
+        return new Promise(function (res, rej) {
+          var tx = d.transaction(store, mode);
+          var rq = fn(tx.objectStore(store));
+          rq.onsuccess = function () { res(rq.result); };
+          rq.onerror = function () { rej(rq.error); };
+        });
+      });
+    }
+    function romAll() { return idb('readonly', 'roms', function (s) { return s.getAll(); }); }
+    function romGet(name) { return idb('readonly', 'roms', function (s) { return s.get(name); }); }
+    function romPut(rec) { return idb('readwrite', 'roms', function (s) { return s.put(rec, rec.name); }); }
+    function romDel(name) { return idb('readwrite', 'roms', function (s) { return s.delete(name); }); }
+    function statePut(key, val) { return idb('readwrite', 'autostates', function (s) { return s.put(val, key); }); }
+    function stateGet(key) { return idb('readonly', 'autostates', function (s) { return s.get(key); }); }
+
+    function fmtSize(b) {
+      if (b >= 1073741824) return (b / 1073741824).toFixed(2) + ' GB';
+      if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
+      return Math.max(1, Math.round(b / 1024)) + ' KB';
+    }
+    function pspEntries(entries) {
+      return entries.filter(function (e) { return e && e.core === 'psp'; })
+        .sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+    }
+
+    function renderLib() {
+      return romAll().then(function (entries) {
+        var mine = pspEntries(entries);
+        var list = document.getElementById('libList');
+        list.innerHTML = '';
+        document.getElementById('libEmpty').style.display = mine.length ? 'none' : '';
+        mine.forEach(function (e) {
+          var row = document.createElement('div');
+          row.className = 'gamerow';
+          var nm = document.createElement('div');
+          nm.className = 'nm'; nm.textContent = e.name;
+          var sz = document.createElement('div');
+          sz.className = 'sz'; sz.textContent = fmtSize(e.data ? e.data.byteLength : 0);
+          var play = document.createElement('button');
+          play.className = 'play'; play.type = 'button'; play.textContent = '▶ ' + T('play');
+          play.addEventListener('click', function () {
+            location.href = '?play=' + encodeURIComponent(e.name);
+          });
+          var del = document.createElement('button');
+          del.className = 'del'; del.type = 'button'; del.textContent = T('del');
+          del.addEventListener('click', function () { romDel(e.name).then(renderLib); });
+          row.appendChild(nm); row.appendChild(sz); row.appendChild(play); row.appendChild(del);
+          list.appendChild(row);
+        });
+      }).catch(function () {});
+    }
+
+    var fileInput = document.getElementById('fileInput');
+    document.getElementById('pickBtn').addEventListener('click', function () { fileInput.click(); });
+    function takeFile(file) {
+      if (!file) return;
+      if (!/\.(iso|cso)$/i.test(file.name)) { toast(T('badfile')); return; }
+      file.arrayBuffer().then(function (buf) {
+        return romPut({ name: file.name, core: 'psp', data: new Uint8Array(buf), ts: Date.now() });
+      }).then(function () {
+        toast(T('added'));
+        location.href = '?play=' + encodeURIComponent(file.name);
+      }).catch(function () {});
+    }
+    fileInput.addEventListener('change', function () {
+      var f = fileInput.files && fileInput.files[0];
+      fileInput.value = '';
+      takeFile(f);
+    });
+    document.addEventListener('dragover', function (e) { e.preventDefault(); });
+    document.addEventListener('drop', function (e) {
+      e.preventDefault();
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) takeFile(e.dataTransfer.files[0]);
+    });
+
+    /* ---- Emulator data source: test hook, then the APK local bundle if it
+           already carries the PSP core, else same-origin data/ via the SW. ---- */
+    function pickData() {
+      var param = qs.get('data');
+      if (param) return Promise.resolve(param);
+      try {
+        var stored = localStorage.getItem('rp_psp_data');
+        if (stored) return Promise.resolve(stored);
+      } catch (e) {}
+      if (window.PixcadeNative && PixcadeNative.ejsDataUrl) {
+        var local = '';
+        try { local = PixcadeNative.ejsDataUrl(); } catch (e) {}
+        if (local) {
+          return fetch(local + 'cores/ppsspp-thread-wasm.data', { method: 'HEAD' })
+            .then(function (r) { return r.ok ? local : 'data/'; })
+            .catch(function () { return 'data/'; });
+        }
+      }
+      return Promise.resolve('data/');
+    }
+
+    var curName = qs.get('play');
+    var started = false;
+    function markSaveTs(key, ts) {
+      try {
+        var m = JSON.parse(localStorage.getItem('rp_save_ts') || '{}') || {};
+        m[key] = ts;
+        localStorage.setItem('rp_save_ts', JSON.stringify(m));
+      } catch (e) {}
+    }
+    function autoSave() {
+      if (!started || !curName || !window.EJS_emulator || !EJS_emulator.gameManager) return;
+      try {
+        var st = EJS_emulator.gameManager.getState();
+        if (st && st.length) {
+          var ts = Date.now();
+          statePut('own:' + curName, { state: new Uint8Array(st), ts: ts })
+            .then(function () { markSaveTs('own:' + curName, ts); }).catch(function () {});
+        }
+      } catch (e) {}
+    }
+
+    if (curName) {
+      romGet(curName).then(function (rec) {
+        if (!rec || !rec.data) { renderLib(); return; }
+        document.getElementById('stage').classList.add('on');
+        document.getElementById('playBar').style.display = '';
+        pickData().then(function (dataUrl) {
+          var blob = new Blob([rec.data], { type: 'application/octet-stream' });
+          window.EJS_player = '#game';
+          window.EJS_core = 'psp';
+          window.EJS_pathtodata = dataUrl;
+          window.EJS_gameUrl = URL.createObjectURL(blob);
+          window.EJS_gameName = curName;
+          window.EJS_threads = true;
+          window.EJS_startOnLoaded = true;
+          window.EJS_defaultOptions = { 'virtual-gamepad': 'enabled', 'save-state-location': 'browser' };
+          window.EJS_onGameStart = function () {
+            started = true;
+            stateGet('own:' + curName).then(function (sv) {
+              var raw = sv && sv.state ? sv.state : sv;
+              if (raw && raw.length && window.EJS_emulator && EJS_emulator.gameManager) {
+                try { EJS_emulator.gameManager.loadState(raw); } catch (e) {}
+              }
+            }).catch(function () {});
+          };
+          var sc = document.createElement('script');
+          sc.src = dataUrl + 'loader.js';
+          document.body.appendChild(sc);
+          var stage = document.getElementById('stage');
+          try {
+            if (stage.requestFullscreen) {
+              stage.requestFullscreen({ navigationUI: 'hide' }).then(function () {
+                try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); } catch (e) {}
+              }).catch(function () {});
+            }
+          } catch (e) {}
+          setInterval(autoSave, 30000);
+          document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') autoSave(); });
+        });
+      }).catch(function () { renderLib(); });
+    } else {
+      renderLib();
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', function () {
+      if (!started || !window.EJS_emulator || !EJS_emulator.gameManager) return;
+      try {
+        var st = EJS_emulator.gameManager.getState();
+        if (st && st.length) {
+          var ts = Date.now();
+          statePut('own:' + curName, { state: new Uint8Array(st), ts: ts }).then(function () {
+            markSaveTs('own:' + curName, ts);
+            toast(T('saved'));
+          });
+        }
+      } catch (e) {}
+    });
+    document.getElementById('loadBtn').addEventListener('click', function () {
+      stateGet('own:' + curName).then(function (sv) {
+        var raw = sv && sv.state ? sv.state : sv;
+        if (raw && raw.length && window.EJS_emulator && EJS_emulator.gameManager) {
+          try { EJS_emulator.gameManager.loadState(raw); toast(T('loaded')); } catch (e) {}
+        } else {
+          toast(T('nosave'));
+        }
+      }).catch(function () { toast(T('nosave')); });
+    });
+    document.getElementById('closeBtn').addEventListener('click', function () {
+      autoSave();
+      setTimeout(function () { location.href = './'; }, 350);
+    });
+  }
+
+  if (coiGate()) init();
+</script>
+</body>
+</html>

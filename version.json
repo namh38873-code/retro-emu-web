@@ -1,6 +1,6 @@
 {
-  "build": 58,
-  "notes_en": "PSP is here: open Add Game and tap Open PSP Player to play your own PSP games (.iso / .cso). Files stay only on your device - no PSP games are included.",
-  "notes_vi": "Đã có PSP: mở mục Thêm game và bấm Mở trình chơi PSP để chơi game PSP của bạn (.iso / .cso). File chỉ lưu trên máy của bạn - không kèm sẵn game PSP.",
-  "version": "5.8"
+  "build": 59,
+  "notes_en": "PSP now lives inside the app: add your own PSP games (.iso / .cso) right in Add Game and play them without leaving Pixcade. No PSP games are included.",
+  "notes_vi": "PSP giờ nằm ngay trong app: thêm game PSP của bạn (.iso / .cso) ngay trong mục Thêm game và chơi luôn không cần rời Pixcade. Không kèm sẵn game PSP.",
+  "version": "5.9"
 }
