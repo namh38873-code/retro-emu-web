@@ -1,6 +1,6 @@
 {
-  "build": 61,
-  "notes_en": "All emulator cores (including PSP) are now built into the app itself - nothing is loaded from an outside server when you play.",
-  "notes_vi": "Toàn bộ lõi giả lập (kể cả PSP) giờ nằm cứng trong app - khi chơi không còn tải gì từ máy chủ bên ngoài nữa.",
-  "version": "6.1"
+  "build": 62,
+  "notes_en": "The PSP picker now also accepts a .zip file containing a PSP game (.iso/.cso) - the app extracts it for you.",
+  "notes_vi": "Mục thêm game PSP giờ nhận cả file .zip chứa game PSP (.iso/.cso) - app tự giải nén cho bạn.",
+  "version": "6.2"
 }
