@@ -1,6 +1,6 @@
 {
-  "build": 60,
-  "notes_en": "PSP now plays right inside Pixcade - no separate player page. The app reloads itself once to enable PSP mode; Google sign-in on the web now opens the sign-in page and returns automatically.",
-  "notes_vi": "PSP giờ chơi ngay trong Pixcade - không còn trang player riêng. App sẽ tự tải lại 1 lần để bật chế độ PSP; đăng nhập Google trên web sẽ mở trang đăng nhập rồi tự quay lại app.",
-  "version": "6.0"
+  "build": 61,
+  "notes_en": "All emulator cores (including PSP) are now built into the app itself - nothing is loaded from an outside server when you play.",
+  "notes_vi": "Toàn bộ lõi giả lập (kể cả PSP) giờ nằm cứng trong app - khi chơi không còn tải gì từ máy chủ bên ngoài nữa.",
+  "version": "6.1"
 }

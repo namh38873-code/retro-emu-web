@@ -1,5 +1,12 @@
 [
   {
+    "build": 61,
+    "v": "6.1",
+    "date": "2026-11-18",
+    "en": "All emulator cores (including PSP) are now built into the app itself - nothing is loaded from an outside server when you play.",
+    "vi": "Toàn bộ lõi giả lập (kể cả PSP) giờ nằm cứng trong app - khi chơi không còn tải gì từ máy chủ bên ngoài nữa."
+  },
+  {
     "build": 60,
     "v": "6.0",
     "date": "2026-11-18",
