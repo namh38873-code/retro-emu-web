@@ -1,6 +1,6 @@
 {
-  "build": 66,
-  "notes_en": "PSP in the Android app: the app shell no longer lets a quick connectivity check decide whether PSP support is attached (that check could silently switch it off on slow networks), and the PSP card now shows the shell's own report.",
-  "notes_vi": "PSP trong app Android: vỏ app không còn để một lần kiểm tra mạng nhanh quyết định việc gắn hỗ trợ PSP (lần kiểm tra đó có thể âm thầm tắt nó trên mạng chậm), và thẻ PSP giờ hiện báo cáo của chính vỏ app.",
-  "version": "6.6"
+  "build": 67,
+  "notes_en": "PSP and PS1 support removed. The PSP core needs a browser feature the Android app engine does not support, so PSP never worked inside the app; both systems and their Add Game cards are gone. Everything else is unchanged.",
+  "notes_vi": "Đã gỡ hỗ trợ PSP và PS1. Lõi PSP cần một tính năng mà nhân trình duyệt trong app Android không hỗ trợ nên PSP không bao giờ chạy được trong app; cả 2 hệ máy và thẻ thêm game của chúng đã bị loại bỏ. Mọi thứ còn lại giữ nguyên.",
+  "version": "6.7"
 }

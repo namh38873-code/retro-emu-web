@@ -1,5 +1,12 @@
 [
   {
+    "build": 67,
+    "v": "6.7",
+    "date": "2026-11-18",
+    "en": "PSP and PS1 support removed. The PSP core needs a browser feature the Android app engine does not support, so PSP never worked inside the app; both systems and their Add Game cards are gone. Everything else is unchanged.",
+    "vi": "Đã gỡ hỗ trợ PSP và PS1. Lõi PSP cần một tính năng mà nhân trình duyệt trong app Android không hỗ trợ nên PSP không bao giờ chạy được trong app; cả 2 hệ máy và thẻ thêm game của chúng đã bị loại bỏ. Mọi thứ còn lại giữ nguyên."
+  },
+  {
     "build": 66,
     "v": "6.6",
     "date": "2026-11-18",
