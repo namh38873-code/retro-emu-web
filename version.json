@@ -1,6 +1,6 @@
 {
-  "build": 65,
-  "notes_en": "Diagnostics release for PSP in the Android app: the PSP card now shows the technical state of PSP mode, and tapping the status opens a check page - this pinpoints exactly why PSP mode is still off on some devices.",
-  "notes_vi": "Bản chẩn đoán cho PSP trong app Android: thẻ PSP giờ hiện rõ thông số kỹ thuật của chế độ PSP, chạm vào dòng trạng thái để mở trang kiểm tra - xác định chính xác vì sao chế độ PSP chưa bật trên một số máy.",
-  "version": "6.5"
+  "build": 66,
+  "notes_en": "PSP in the Android app: the app shell no longer lets a quick connectivity check decide whether PSP support is attached (that check could silently switch it off on slow networks), and the PSP card now shows the shell's own report.",
+  "notes_vi": "PSP trong app Android: vỏ app không còn để một lần kiểm tra mạng nhanh quyết định việc gắn hỗ trợ PSP (lần kiểm tra đó có thể âm thầm tắt nó trên mạng chậm), và thẻ PSP giờ hiện báo cáo của chính vỏ app.",
+  "version": "6.6"
 }

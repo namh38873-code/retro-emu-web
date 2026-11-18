@@ -1,5 +1,12 @@
 [
   {
+    "build": 66,
+    "v": "6.6",
+    "date": "2026-11-18",
+    "en": "PSP in the Android app: the app shell no longer lets a quick connectivity check decide whether PSP support is attached (that check could silently switch it off on slow networks), and the PSP card now shows the shell's own report.",
+    "vi": "PSP trong app Android: vỏ app không còn để một lần kiểm tra mạng nhanh quyết định việc gắn hỗ trợ PSP (lần kiểm tra đó có thể âm thầm tắt nó trên mạng chậm), và thẻ PSP giờ hiện báo cáo của chính vỏ app."
+  },
+  {
     "build": 65,
     "v": "6.5",
     "date": "2026-11-18",
