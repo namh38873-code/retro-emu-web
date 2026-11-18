@@ -1,5 +1,12 @@
 [
   {
+    "build": 64,
+    "v": "6.4",
+    "date": "2026-11-18",
+    "en": "In the Android app, PSP mode was blocked by an old background component from earlier versions - the app now removes it so the app shell's own PSP support can work. Plus a visible PSP status line on the PSP card.",
+    "vi": "Trong app Android, chế độ PSP bị một thành phần nền cũ của các bản trước chặn - app giờ tự gỡ nó để cơ chế PSP của vỏ app hoạt động. Thêm dòng trạng thái PSP ngay trên thẻ PSP."
+  },
+  {
     "build": 63,
     "v": "6.3",
     "date": "2026-11-18",
