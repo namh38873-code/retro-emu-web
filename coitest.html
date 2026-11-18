@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixcade — kiểm tra chế độ PSP</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  body { background:#0b0b12; color:#f2f2f8; font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; margin:0; padding:22px; font-size:19px; line-height:1.5; }
+  h1 { font-size:24px; margin:0 0 14px; }
+  .row { background:#171724; border:1px solid #2b2b40; border-radius:12px; padding:14px 16px; margin-bottom:12px; word-break:break-word; }
+  .k { color:#9a9ab0; font-size:15px; }
+  .ok { color:#5ee08a; font-weight:700; }
+  .bad { color:#ff8a7a; font-weight:700; }
+  .small { font-size:14px; color:#9a9ab0; }
+</style>
+</head>
+<body>
+<h1>Kiểm tra chế độ PSP</h1>
+<div class="row"><div class="k">Chế độ PSP (crossOriginIsolated)</div><div id="coi">Đang kiểm tra…</div></div>
+<div class="row"><div class="k">SharedArrayBuffer</div><div id="sab">…</div></div>
+<div class="row"><div class="k">Service Worker điều khiển trang</div><div id="sw">…</div></div>
+<div class="row"><div class="k">Đã tự tải lại để bật</div><div id="tried">…</div></div>
+<div class="row"><div class="k">Trình duyệt / môi trường (User Agent)</div><div id="ua" class="small">…</div></div>
+<p class="small">Chụp màn hình trang này gửi lại là đủ.</p>
+<script>
+(function () {
+  var tried = false;
+  try { tried = sessionStorage.getItem('coitest_reloaded') === '1'; } catch (e) {}
+  function render() {
+    var coi = window.crossOriginIsolated === true;
+    document.getElementById('coi').innerHTML = coi ? '<span class="ok">ĐÃ BẬT</span>' : '<span class="bad">CHƯA BẬT</span>';
+    var sab = 'Chưa có';
+    if (typeof SharedArrayBuffer === 'function') {
+      try { new SharedArrayBuffer(8); sab = 'Có, dùng được'; } catch (e) { sab = 'Có nhưng bị chặn'; }
+    }
+    document.getElementById('sab').textContent = sab;
+    document.getElementById('sw').textContent = ('serviceWorker' in navigator)
+      ? (navigator.serviceWorker.controller ? 'Có' : 'Chưa (trang chưa được điều khiển)')
+      : 'Trình duyệt không hỗ trợ';
+    document.getElementById('tried').textContent = tried ? 'Rồi' : 'Chưa';
+    document.getElementById('ua').textContent = navigator.userAgent;
+  }
+  render();
+  if (!window.crossOriginIsolated && 'serviceWorker' in navigator && !tried) {
+    try { sessionStorage.setItem('coitest_reloaded', '1'); } catch (e) {}
+    navigator.serviceWorker.register('coi-sw.js').then(function () {
+      if (navigator.serviceWorker.controller) { location.reload(); return; }
+      navigator.serviceWorker.addEventListener('controllerchange', function () { location.reload(); });
+      setTimeout(function () { location.reload(); }, 3000);
+    }).catch(function () { render(); });
+  }
+})();
+</script>
+</body>
+</html>
