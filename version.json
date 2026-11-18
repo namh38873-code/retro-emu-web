@@ -1,6 +1,6 @@
 {
-  "build": 55,
-  "notes_en": "New in-game Settings screen: tap ≡ while playing for categorized options — Game, Sound, Controls and Display — replacing the old icon toolbar.",
-  "notes_vi": "Màn hình Cài đặt trong game mới: bấm ≡ khi đang chơi để mở cài đặt theo danh mục — Trò chơi, Âm thanh, Điều khiển, Hiển thị — thay cho thanh icon cũ.",
-  "version": "5.5"
+  "build": 56,
+  "notes_en": "In-game Settings now fills the whole screen, and you can drag the gamepad clusters to your own positions: Settings, Controls, Edit button positions.",
+  "notes_vi": "Cài đặt trong game giờ phủ kín toàn màn hình, và bạn kéo được 2 cụm nút bấm tới vị trí tùy ý: Cài đặt > Điều khiển > Chỉnh vị trí nút.",
+  "version": "5.6"
 }
