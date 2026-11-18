@@ -1,5 +1,12 @@
 [
   {
+    "build": 63,
+    "v": "6.3",
+    "date": "2026-11-18",
+    "en": "Fix: PSP mode could get stuck off on some phones after several updates in a row. Tapping Play on a PSP game now enables it with one reload.",
+    "vi": "Sửa lỗi: chế độ PSP có thể bị kẹt không bật được trên một số máy sau nhiều lần cập nhật liên tiếp. Giờ bấm Chơi game PSP là app tự tải lại 1 lần để bật."
+  },
+  {
     "build": 62,
     "v": "6.2",
     "date": "2026-11-18",

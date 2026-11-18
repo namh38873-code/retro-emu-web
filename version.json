@@ -1,6 +1,6 @@
 {
-  "build": 62,
-  "notes_en": "The PSP picker now also accepts a .zip file containing a PSP game (.iso/.cso) - the app extracts it for you.",
-  "notes_vi": "Mục thêm game PSP giờ nhận cả file .zip chứa game PSP (.iso/.cso) - app tự giải nén cho bạn.",
-  "version": "6.2"
+  "build": 63,
+  "notes_en": "Fix: PSP mode could get stuck off on some phones after several updates in a row. Tapping Play on a PSP game now enables it with one reload.",
+  "notes_vi": "Sửa lỗi: chế độ PSP có thể bị kẹt không bật được trên một số máy sau nhiều lần cập nhật liên tiếp. Giờ bấm Chơi game PSP là app tự tải lại 1 lần để bật.",
+  "version": "6.3"
 }
