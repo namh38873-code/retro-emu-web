@@ -1,5 +1,12 @@
 [
   {
+    "build": 57,
+    "v": "5.7",
+    "date": "2026-11-18",
+    "en": "New Profile tab in GameHub style with your real stats (Favorites, Played, Library), and the gear button now opens a Settings list: Account, Language, Button sounds, Notifications, Storage, Privacy and About.",
+    "vi": "Tab Hồ sơ mới kiểu GameHub với số liệu thật của bạn (Yêu thích, Đã chơi, Thư viện), và nút bánh răng giờ mở trang Cài đặt dạng danh sách: Tài khoản, Ngôn ngữ, Tiếng bấm nút, Thông báo, Lưu trữ, Riêng tư và Giới thiệu."
+  },
+  {
     "build": 56,
     "v": "5.6",
     "date": "2026-11-18",
