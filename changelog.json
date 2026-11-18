@@ -1,5 +1,12 @@
 [
   {
+    "build": 65,
+    "v": "6.5",
+    "date": "2026-11-18",
+    "en": "Diagnostics release for PSP in the Android app: the PSP card now shows the technical state of PSP mode, and tapping the status opens a check page - this pinpoints exactly why PSP mode is still off on some devices.",
+    "vi": "Bản chẩn đoán cho PSP trong app Android: thẻ PSP giờ hiện rõ thông số kỹ thuật của chế độ PSP, chạm vào dòng trạng thái để mở trang kiểm tra - xác định chính xác vì sao chế độ PSP chưa bật trên một số máy."
+  },
+  {
     "build": 64,
     "v": "6.4",
     "date": "2026-11-18",

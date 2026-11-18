@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixcade PSP check 2</title>
+<style>
+  body { background:#0b0b12; color:#fff; font-family:sans-serif; margin:0; padding:24px; font-size:20px; line-height:1.6; word-break:break-all; }
+  b { color:#7ee787; } .bad { color:#ff7b72; }
+  a { color:#58a6ff; font-size:22px; }
+</style>
+</head>
+<body>
+<div id="out">checking…</div>
+<p>This page does NOT use a service worker. Its result shows whether the app shell's own headers can switch PSP mode on.</p>
+<p><a href="index.html">← Back to Pixcade</a></p>
+<script>
+  function show() {
+    var coi = window.crossOriginIsolated === true;
+    var sw = 'n/a';
+    try { sw = (navigator.serviceWorker && navigator.serviceWorker.controller) ? 'on' : 'off'; } catch (e) {}
+    document.getElementById('out').innerHTML =
+      'PSP mode (COI): ' + (coi ? '<b>ON</b>' : '<span class="bad">OFF</span>') + '<br>' +
+      'SharedArrayBuffer: ' + (typeof SharedArrayBuffer) + '<br>' +
+      'Service worker control: ' + sw + '<br>' +
+      'Browser: ' + navigator.userAgent;
+  }
+  show();
+  setTimeout(show, 2000);
+</script>
+</body>
+</html>

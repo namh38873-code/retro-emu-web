@@ -1,6 +1,6 @@
 {
-  "build": 64,
-  "notes_en": "In the Android app, PSP mode was blocked by an old background component from earlier versions - the app now removes it so the app shell's own PSP support can work. Plus a visible PSP status line on the PSP card.",
-  "notes_vi": "Trong app Android, chế độ PSP bị một thành phần nền cũ của các bản trước chặn - app giờ tự gỡ nó để cơ chế PSP của vỏ app hoạt động. Thêm dòng trạng thái PSP ngay trên thẻ PSP.",
-  "version": "6.4"
+  "build": 65,
+  "notes_en": "Diagnostics release for PSP in the Android app: the PSP card now shows the technical state of PSP mode, and tapping the status opens a check page - this pinpoints exactly why PSP mode is still off on some devices.",
+  "notes_vi": "Bản chẩn đoán cho PSP trong app Android: thẻ PSP giờ hiện rõ thông số kỹ thuật của chế độ PSP, chạm vào dòng trạng thái để mở trang kiểm tra - xác định chính xác vì sao chế độ PSP chưa bật trên một số máy.",
+  "version": "6.5"
 }
