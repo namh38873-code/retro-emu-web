@@ -1,5 +1,12 @@
 [
   {
+    "build": 55,
+    "v": "5.5",
+    "date": "2026-11-18",
+    "en": "New in-game Settings screen: tap ≡ while playing for categorized options — Game, Sound, Controls and Display — replacing the old icon toolbar.",
+    "vi": "Màn hình Cài đặt trong game mới: bấm ≡ khi đang chơi để mở cài đặt theo danh mục — Trò chơi, Âm thanh, Điều khiển, Hiển thị — thay cho thanh icon cũ."
+  },
+  {
     "build": 54,
     "v": "5.4",
     "date": "2026-11-12",
