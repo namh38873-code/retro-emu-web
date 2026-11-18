@@ -1,5 +1,12 @@
 [
   {
+    "build": 60,
+    "v": "6.0",
+    "date": "2026-11-18",
+    "en": "PSP now plays right inside Pixcade - no separate player page. The app reloads itself once to enable PSP mode; Google sign-in on the web now opens the sign-in page and returns automatically.",
+    "vi": "PSP giờ chơi ngay trong Pixcade - không còn trang player riêng. App sẽ tự tải lại 1 lần để bật chế độ PSP; đăng nhập Google trên web sẽ mở trang đăng nhập rồi tự quay lại app."
+  },
+  {
     "build": 59,
     "v": "5.9",
     "date": "2026-11-18",

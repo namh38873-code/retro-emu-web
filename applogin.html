@@ -50,6 +50,13 @@
       body: JSON.stringify({ idToken: resp.credential }),
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (!j.token) { msg.innerHTML = '<span class="err">Sign-in failed. Please go back to the app and try again.</span>'; return; }
+      var backFile = new URLSearchParams(location.search).get('back') || '';
+      if (/^app-\d+\.html$/.test(backFile) || backFile === 'index.html') {
+        // Web app flow: the session lives in localStorage on this origin.
+        try { localStorage.setItem('rp_auth', JSON.stringify({ token: j.token, user: j.user || {} })); } catch (e) {}
+        back(backFile);
+        return;
+      }
       back('pixcade://auth#t=' + encodeURIComponent(j.token) + '&u=' + encodeURIComponent(JSON.stringify(j.user || {})));
     }).catch(function () {
       msg.innerHTML = '<span class="err">Connection problem. Please try again.</span>';

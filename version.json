@@ -1,6 +1,6 @@
 {
-  "build": 59,
-  "notes_en": "PSP now lives inside the app: add your own PSP games (.iso / .cso) right in Add Game and play them without leaving Pixcade. No PSP games are included.",
-  "notes_vi": "PSP giờ nằm ngay trong app: thêm game PSP của bạn (.iso / .cso) ngay trong mục Thêm game và chơi luôn không cần rời Pixcade. Không kèm sẵn game PSP.",
-  "version": "5.9"
+  "build": 60,
+  "notes_en": "PSP now plays right inside Pixcade - no separate player page. The app reloads itself once to enable PSP mode; Google sign-in on the web now opens the sign-in page and returns automatically.",
+  "notes_vi": "PSP giờ chơi ngay trong Pixcade - không còn trang player riêng. App sẽ tự tải lại 1 lần để bật chế độ PSP; đăng nhập Google trên web sẽ mở trang đăng nhập rồi tự quay lại app.",
+  "version": "6.0"
 }
