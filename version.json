@@ -1,6 +1,6 @@
 {
   "build": 68,
-  "notes_en": "Fixed: missing touch buttons in Genesis, SMS and Atari games. Improved: game covers load instantly — no more text showing before the cover.",
-  "notes_vi": "Sửa lỗi: mất nút bấm ở game Genesis, SMS, Atari. Cải thiện: ảnh bìa nạp ngay khi mở app, không còn hiện chữ trước ảnh sau.",
+  "notes_en": "Bug fixes and feature improvements.",
+  "notes_vi": "Sửa lỗi, cải thiện tính năng.",
   "version": "6.8"
 }
