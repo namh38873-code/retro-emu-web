@@ -1,6 +1,6 @@
 {
-  "build": 67,
-  "notes_en": "PSP and PS1 support removed. The PSP core needs a browser feature the Android app engine does not support, so PSP never worked inside the app; both systems and their Add Game cards are gone. Everything else is unchanged.",
-  "notes_vi": "Đã gỡ hỗ trợ PSP và PS1. Lõi PSP cần một tính năng mà nhân trình duyệt trong app Android không hỗ trợ nên PSP không bao giờ chạy được trong app; cả 2 hệ máy và thẻ thêm game của chúng đã bị loại bỏ. Mọi thứ còn lại giữ nguyên.",
-  "version": "6.7"
+  "build": 68,
+  "notes_en": "Fixed: missing touch buttons in Genesis, SMS and Atari games. Improved: game covers load instantly — no more text showing before the cover.",
+  "notes_vi": "Sửa lỗi: mất nút bấm ở game Genesis, SMS, Atari. Cải thiện: ảnh bìa nạp ngay khi mở app, không còn hiện chữ trước ảnh sau.",
+  "version": "6.8"
 }

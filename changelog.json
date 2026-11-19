@@ -1,212 +1,219 @@
 [
   {
+    "build": 68,
+    "v": "6.8",
+    "date": "2026-11-19",
+    "en": "Fixed: missing touch buttons in Genesis, SMS and Atari games. Improved: game covers load instantly — no more text showing before the cover.",
+    "vi": "Sửa lỗi: mất nút bấm ở game Genesis, SMS, Atari. Cải thiện: ảnh bìa nạp ngay khi mở app, không còn hiện chữ trước ảnh sau."
+  },
+  {
     "build": 67,
     "v": "6.7",
     "date": "2026-11-18",
-    "en": "PSP and PS1 support removed. The PSP core needs a browser feature the Android app engine does not support, so PSP never worked inside the app; both systems and their Add Game cards are gone. Everything else is unchanged.",
-    "vi": "Đã gỡ hỗ trợ PSP và PS1. Lõi PSP cần một tính năng mà nhân trình duyệt trong app Android không hỗ trợ nên PSP không bao giờ chạy được trong app; cả 2 hệ máy và thẻ thêm game của chúng đã bị loại bỏ. Mọi thứ còn lại giữ nguyên."
+    "en": "System: PSP and PS1 removed from the app. All other systems unchanged.",
+    "vi": "Hệ thống: gỡ bỏ PSP và PS1 khỏi app. Mọi hệ máy còn lại giữ nguyên."
   },
   {
     "build": 66,
     "v": "6.6",
     "date": "2026-11-18",
-    "en": "PSP in the Android app: the app shell no longer lets a quick connectivity check decide whether PSP support is attached (that check could silently switch it off on slow networks), and the PSP card now shows the shell's own report.",
-    "vi": "PSP trong app Android: vỏ app không còn để một lần kiểm tra mạng nhanh quyết định việc gắn hỗ trợ PSP (lần kiểm tra đó có thể âm thầm tắt nó trên mạng chậm), và thẻ PSP giờ hiện báo cáo của chính vỏ app."
+    "en": "System: PSP support tuning in the Android app.",
+    "vi": "Hệ thống: tinh chỉnh hỗ trợ PSP trong app Android."
   },
   {
     "build": 65,
     "v": "6.5",
     "date": "2026-11-18",
-    "en": "Diagnostics release for PSP in the Android app: the PSP card now shows the technical state of PSP mode, and tapping the status opens a check page - this pinpoints exactly why PSP mode is still off on some devices.",
-    "vi": "Bản chẩn đoán cho PSP trong app Android: thẻ PSP giờ hiện rõ thông số kỹ thuật của chế độ PSP, chạm vào dòng trạng thái để mở trang kiểm tra - xác định chính xác vì sao chế độ PSP chưa bật trên một số máy."
+    "en": "System: technical diagnostics build for PSP in the Android app.",
+    "vi": "Hệ thống: bản chẩn đoán kỹ thuật cho PSP trong app Android."
   },
   {
     "build": 64,
     "v": "6.4",
     "date": "2026-11-18",
-    "en": "In the Android app, PSP mode was blocked by an old background component from earlier versions - the app now removes it so the app shell's own PSP support can work. Plus a visible PSP status line on the PSP card.",
-    "vi": "Trong app Android, chế độ PSP bị một thành phần nền cũ của các bản trước chặn - app giờ tự gỡ nó để cơ chế PSP của vỏ app hoạt động. Thêm dòng trạng thái PSP ngay trên thẻ PSP."
+    "en": "System: unblocked PSP mode in the Android app. New: PSP status line on the PSP card.",
+    "vi": "Hệ thống: gỡ thành phần cũ chặn chế độ PSP trong app Android. Thêm dòng trạng thái PSP trên thẻ PSP."
   },
   {
     "build": 63,
     "v": "6.3",
     "date": "2026-11-18",
-    "en": "Fix: PSP mode could get stuck off on some phones after several updates in a row. Tapping Play on a PSP game now enables it with one reload.",
-    "vi": "Sửa lỗi: chế độ PSP có thể bị kẹt không bật được trên một số máy sau nhiều lần cập nhật liên tiếp. Giờ bấm Chơi game PSP là app tự tải lại 1 lần để bật."
+    "en": "Fixed: PSP mode could get stuck off on some phones.",
+    "vi": "Sửa lỗi: chế độ PSP bị kẹt không bật được trên một số máy."
   },
   {
     "build": 62,
     "v": "6.2",
     "date": "2026-11-18",
-    "en": "The PSP picker now also accepts a .zip file containing a PSP game (.iso/.cso) - the app extracts it for you.",
-    "vi": "Mục thêm game PSP giờ nhận cả file .zip chứa game PSP (.iso/.cso) - app tự giải nén cho bạn."
+    "en": "New: add PSP games from a .zip containing an .iso/.cso — the app extracts it for you.",
+    "vi": "Tính năng mới: thêm game PSP bằng file .zip chứa .iso/.cso, app tự giải nén."
   },
   {
     "build": 61,
     "v": "6.1",
     "date": "2026-11-18",
-    "en": "All emulator cores (including PSP) are now built into the app itself - nothing is loaded from an outside server when you play.",
-    "vi": "Toàn bộ lõi giả lập (kể cả PSP) giờ nằm cứng trong app - khi chơi không còn tải gì từ máy chủ bên ngoài nữa."
+    "en": "System: all emulator cores built into the app — nothing loads from outside servers.",
+    "vi": "Hệ thống: toàn bộ lõi giả lập nằm cứng trong app, không tải từ bên ngoài."
   },
   {
     "build": 60,
     "v": "6.0",
     "date": "2026-11-18",
-    "en": "PSP now plays right inside Pixcade - no separate player page. The app reloads itself once to enable PSP mode; Google sign-in on the web now opens the sign-in page and returns automatically.",
-    "vi": "PSP giờ chơi ngay trong Pixcade - không còn trang player riêng. App sẽ tự tải lại 1 lần để bật chế độ PSP; đăng nhập Google trên web sẽ mở trang đăng nhập rồi tự quay lại app."
+    "en": "New: PSP plays right inside the app. Improved: Google sign-in on the web returns to the app automatically.",
+    "vi": "Tính năng mới: chơi PSP ngay trong app. Cải thiện: đăng nhập Google trên web tự quay lại app."
   },
   {
     "build": 59,
     "v": "5.9",
     "date": "2026-11-18",
-    "en": "PSP now lives inside the app: add your own PSP games (.iso / .cso) right in Add Game and play them without leaving Pixcade. No PSP games are included.",
-    "vi": "PSP giờ nằm ngay trong app: thêm game PSP của bạn (.iso / .cso) ngay trong mục Thêm game và chơi luôn không cần rời Pixcade. Không kèm sẵn game PSP."
+    "en": "New: add and play your own PSP games (.iso/.cso) right in Add Game.",
+    "vi": "Tính năng mới: thêm và chơi game PSP của bạn (.iso/.cso) ngay trong mục Thêm game."
   },
   {
     "build": 58,
     "v": "5.8",
     "date": "2026-11-18",
-    "en": "PSP is here: open Add Game and tap Open PSP Player to play your own PSP games (.iso / .cso). Files stay only on your device - no PSP games are included.",
-    "vi": "Đã có PSP: mở mục Thêm game và bấm Mở trình chơi PSP để chơi game PSP của bạn (.iso / .cso). File chỉ lưu trên máy của bạn - không kèm sẵn game PSP."
+    "en": "New: PSP player — play your own PSP games (.iso/.cso) from Add Game.",
+    "vi": "Tính năng mới: trình chơi PSP — chơi game PSP của bạn (.iso/.cso) từ mục Thêm game."
   },
   {
     "build": 57,
     "v": "5.7",
     "date": "2026-11-18",
-    "en": "New Profile tab in GameHub style with your real stats (Favorites, Played, Library), and the gear button now opens a Settings list: Account, Language, Button sounds, Notifications, Storage, Privacy and About.",
-    "vi": "Tab Hồ sơ mới kiểu GameHub với số liệu thật của bạn (Yêu thích, Đã chơi, Thư viện), và nút bánh răng giờ mở trang Cài đặt dạng danh sách: Tài khoản, Ngôn ngữ, Tiếng bấm nút, Thông báo, Lưu trữ, Riêng tư và Giới thiệu."
+    "en": "New: Profile tab with your stats, and a Settings list page (Account, Language, Notifications, Storage, Privacy, About).",
+    "vi": "Tính năng mới: tab Hồ sơ kèm số liệu của bạn + trang Cài đặt dạng danh sách (Tài khoản, Ngôn ngữ, Thông báo, Lưu trữ, Riêng tư, Giới thiệu)."
   },
   {
     "build": 56,
     "v": "5.6",
     "date": "2026-11-18",
-    "en": "In-game Settings now fills the whole screen, and you can drag the gamepad clusters to your own positions: Settings, Controls, Edit button positions.",
-    "vi": "Cài đặt trong game giờ phủ kín toàn màn hình, và bạn kéo được 2 cụm nút bấm tới vị trí tùy ý: Cài đặt > Điều khiển > Chỉnh vị trí nút."
+    "en": "New: full-screen in-game Settings, and drag the gamepad clusters to your own positions.",
+    "vi": "Tính năng mới: Cài đặt trong game full màn hình + kéo chỉnh vị trí 2 cụm nút bấm."
   },
   {
     "build": 55,
     "v": "5.5",
     "date": "2026-11-18",
-    "en": "New in-game Settings screen: tap ≡ while playing for categorized options — Game, Sound, Controls and Display — replacing the old icon toolbar.",
-    "vi": "Màn hình Cài đặt trong game mới: bấm ≡ khi đang chơi để mở cài đặt theo danh mục — Trò chơi, Âm thanh, Điều khiển, Hiển thị — thay cho thanh icon cũ."
+    "en": "New: in-game Settings screen — tap ≡ while playing (Game, Sound, Controls, Display).",
+    "vi": "Tính năng mới: màn Cài đặt trong game — bấm ≡ khi đang chơi (Trò chơi, Âm thanh, Điều khiển, Hiển thị)."
   },
   {
     "build": 54,
     "v": "5.4",
     "date": "2026-11-12",
-    "en": "Crisp button sounds across the app interface (never in-game). Toggle them in Settings.",
-    "vi": "Tiếng bấm tách giòn cho mọi nút trong giao diện app (không kêu trong game). Bật/tắt trong Cài đặt."
+    "en": "New: button tap sounds across the app (never in-game). Toggle in Settings.",
+    "vi": "Tính năng mới: tiếng bấm nút trong app (không kêu trong game), bật/tắt trong Cài đặt."
   },
   {
     "build": 53,
     "v": "5.3",
     "date": "2026-11-12",
-    "en": "Search fix: the search bar no longer closes after the first letter - type full game names again.",
-    "vi": "Sửa tìm kiếm: ô tìm kiếm không còn tự đóng sau chữ đầu tiên - gõ được trọn tên game."
+    "en": "Fixed: the search box closed after the first letter in Library.",
+    "vi": "Sửa lỗi: ô tìm kiếm tự đóng sau chữ đầu tiên khi gõ trong Thư viện."
   },
   {
     "build": 52,
     "v": "5.2",
     "date": "2026-11-12",
-    "en": "The Android app is now fully offline: interface, games and emulator cores are built in. Only sign-in, cloud saves and updates need a connection.",
-    "vi": "App Android giờ offline hoàn toàn: giao diện, game và lõi giả lập đều có sẵn trong app. Chỉ đăng nhập, lưu đám mây và cập nhật mới cần mạng."
+    "en": "System: the Android app is fully offline — interface, games and cores built in.",
+    "vi": "Hệ thống: app Android chơi offline hoàn toàn — giao diện, game, lõi giả lập có sẵn trong app."
   },
   {
     "build": 51,
     "date": "2026-11-12",
-    "en": "The bell now opens this update log — every Pixcade version and what changed in it, all in one place. A red dot on the bell means there's something new to read.",
+    "en": "New: the bell opens this update log; a red dot means something new to read.",
     "v": "5.1",
-    "vi": "Nút chuông giờ mở ra nhật ký cập nhật này — mọi phiên bản Pixcade và nội dung thay đổi, gom hết vào một chỗ. Chuông có chấm đỏ là có mục mới chưa xem."
+    "vi": "Tính năng mới: chuông thông báo mở nhật ký cập nhật; chấm đỏ là có mục mới chưa xem."
   },
   {
     "build": 50,
     "date": "2026-11-12",
-    "en": "Google sign-in works inside the Android app: tap Sign in, confirm in your browser, and you come right back signed in — cloud saves included. (Needs the Pixcade 5.0 APK.)",
+    "en": "New: Google sign-in inside the Android app, with cloud saves. (Needs the Pixcade 5.0 APK.)",
     "v": "5.0",
-    "vi": "Đăng nhập Google dùng được trong app Android: bấm Đăng nhập, xác nhận ở trình duyệt, quay lại app là đã vào tài khoản — kèm save mây. (Cần bản APK Pixcade 5.0.)"
+    "vi": "Tính năng mới: đăng nhập Google trong app Android, kèm lưu đám mây. (Cần bản APK Pixcade 5.0.)"
   },
   {
     "build": 49,
     "date": "2026-11-12",
-    "en": "Gamepad polish: the dark plates now hug each system's buttons instead of floating in big empty circles, and the menu button in the middle shows all three lines properly.",
+    "en": "Improved: gamepad plates hug each system's buttons; the menu button shows all three lines.",
     "v": "4.9",
-    "vi": "Chỉnh tay cầm: tấm đen giờ ôm sát theo nút của từng hệ máy, không còn vòng tròn to trống rỗng; nút menu ở giữa hiện đủ 3 gạch."
+    "vi": "Cải thiện: tấm nền tay cầm ôm sát nút của từng hệ máy; nút menu hiện đủ 3 gạch."
   },
   {
     "build": 48,
     "date": "2026-11-12",
-    "en": "Update check: this popup is how every future Pixcade update will be announced, with the changes listed before you decide. This version itself only fine-tunes the update system and includes the v4.7 gamepad.",
+    "en": "System: update popup — every new version now announces its changes before you decide.",
     "v": "4.8",
-    "vi": "Kiểm tra hệ thống cập nhật: popup này là cách mọi bản Pixcade sau này được thông báo, kèm nội dung thay đổi để bạn quyết định. Bản này chỉ tinh chỉnh hệ thống cập nhật và chứa tay cầm của bản 4.7."
+    "vi": "Hệ thống: popup thông báo cập nhật — từ nay mọi bản mới đều báo trước nội dung."
   },
   {
     "build": 47,
     "date": "2026-11-12",
-    "en": "New gamepad: buttons sit on dark oval plates, steering is four chunky arrow buttons you can slide a thumb across, and the action buttons go monochrome with clean white labels.",
+    "en": "New: redesigned gamepad — dark oval plates, four arrow buttons, monochrome action buttons.",
     "v": "4.7",
-    "vi": "Tay cầm mới: nút nằm trên 2 tấm oval đen, điều hướng bằng 4 nút mũi tên bấm và vuốt qua được, nút hành động chuyển sang đen đơn sắc chữ trắng."
+    "vi": "Tính năng mới: tay cầm kiểu mới — nút trên 2 tấm oval đen, 4 phím mũi tên, nút hành động đen trắng."
   },
   {
     "build": 46,
     "date": "2026-11-12",
-    "en": "Slimmer bottom bar, and the page behind a game detail sheet no longer scrolls while you're reading it.",
+    "en": "Improved: slimmer bottom bar; the page no longer scrolls behind a game detail sheet.",
     "v": "4.6",
-    "vi": "Thanh điều hướng dưới gọn lại; mở bảng chi tiết game thì nền sau lưng không cuộn theo nữa."
+    "vi": "Cải thiện: thanh điều hướng dưới gọn hơn; mở chi tiết game thì nền không cuộn theo."
   },
   {
     "build": 45,
     "date": "2026-11-12",
-    "en": "Five new games (56 in total): Game of Life, Candy Kid and 3D City on Master System, plus FIREFLY and Doorframe bringing an Atari 2600 section. Gamepad layout fixes included.",
+    "en": "New games: 5 more (56 total) and a new Atari 2600 section. Plus gamepad layout fixes.",
     "v": "4.5",
-    "vi": "Thêm 5 game (tổng 56): Game of Life, Candy Kid, 3D City (Master System) và FIREFLY, Doorframe mở mục Atari 2600. Kèm sửa bố cục tay cầm."
+    "vi": "Game mới: thêm 5 game (tổng 56) + mục Atari 2600 mới. Kèm sửa bố cục tay cầm."
   },
   {
     "build": 44,
     "date": "2026-11-12",
-    "en": "25 new games (51 in total), including Skyland, and a new Master System section. PlayStation joins the bring-your-own-ROM systems: add your own PS1 games plus a BIOS on the Add Game screen.",
+    "en": "New games: 25 more (51 total), including Skyland, plus a new Master System section. New: bring your own PS1 games with a BIOS.",
     "v": "4.4",
-    "vi": "Thêm 25 game (tổng 51), có cả Skyland, và mục Master System mới. PlayStation gia nhập nhóm tự nạp ROM: thêm game PS1 của bạn kèm BIOS ở màn Thêm game."
+    "vi": "Game mới: thêm 25 game (tổng 51), có Skyland + mục Master System mới. Thêm: tự nạp game PS1 kèm BIOS."
   },
   {
     "build": 43,
     "date": "2026-11-12",
-    "en": "Update notices arrive: from now on Pixcade tells you what a new version contains before anything is applied — updates never install themselves.",
+    "en": "System: the app now shows what a new version contains before updating — it never updates itself.",
     "v": "4.3",
-    "vi": "Có thông báo cập nhật: từ giờ Pixcade luôn cho bạn xem nội dung bản mới trước khi áp dụng — không bao giờ tự cập nhật."
+    "vi": "Hệ thống: từ nay app luôn báo nội dung bản mới trước khi cập nhật — không bao giờ tự cập nhật."
   },
   {
     "build": 42,
     "date": "2026-11-12",
-    "en": "A dedicated Add Game screen: one big button to load your ROM, and a list of the games stored on this device with a remove button for each.",
+    "en": "New: a dedicated Add Game screen — load ROMs and manage games stored on this device.",
     "v": "4.2",
-    "vi": "Màn Thêm game riêng: 1 nút to để nạp ROM, kèm danh sách game đã lưu trên máy này và nút xóa từng game."
+    "vi": "Tính năng mới: màn Thêm game riêng — nạp ROM và quản lý game đã lưu trên máy này."
   },
   {
     "build": 41,
     "date": "2026-11-12",
-    "en": "Your own ROMs are now kept on your device: load a game once and it's still in Your Games next time you open Pixcade.",
+    "en": "New: your own ROMs are kept on your device — still there next time you open the app.",
     "v": "4.1",
-    "vi": "ROM bạn tự nạp giờ được lưu ngay trên máy: nạp 1 lần, lần sau mở Pixcade vẫn còn trong mục Game của bạn."
+    "vi": "Tính năng mới: ROM tự nạp được lưu ngay trên máy — mở app lần sau vẫn còn."
   },
   {
     "build": 40,
     "date": "2026-11-12",
-    "en": "The library becomes a live catalog: new games can be added on the server without an app update.",
+    "en": "System: the library is now a live catalog — new games arrive from the server, no app update needed.",
     "v": "4.0",
-    "vi": "Thư viện chuyển sang catalog trực tuyến: thêm game mới từ server, không cần cập nhật app."
+    "vi": "Hệ thống: thư viện chuyển sang catalog trực tuyến — thêm game từ server, không cần cập nhật app."
   },
   {
     "build": 38,
     "date": "2026-11-12",
-    "en": "Accounts are here: sign in with Google to sync favorites, recently played and every save state to the cloud. Interface language can be switched between English and Vietnamese in Settings.",
+    "en": "New: Google accounts — sync favorites, recent games and saves to the cloud. Switch English/Vietnamese in Settings.",
     "v": "3.8",
-    "vi": "Đã có tài khoản: đăng nhập Google để đồng bộ game yêu thích, game vừa chơi và mọi bản lưu lên mây. Đổi được ngôn ngữ Anh/Việt trong Cài đặt."
+    "vi": "Tính năng mới: tài khoản Google — đồng bộ yêu thích, game vừa chơi và bản lưu lên mây. Đổi ngôn ngữ Anh/Việt trong Cài đặt."
   },
   {
     "build": 1,
     "date": "2026-11-12",
-    "en": "Pixcade launches: a home for classic handheld and console homebrew — NES, Game Boy, GBA, SNES and Genesis — with touch controls, auto-saves that resume right where you left off, and a floating mini-player.",
+    "en": "Pixcade launches: homebrew games for NES, Game Boy, GBA, SNES and Genesis — touch controls, auto-saves that resume where you left off, floating mini-player.",
     "v": "1.0",
-    "vi": "Pixcade ra mắt: ngôi nhà cho game homebrew cổ điển — NES, Game Boy, GBA, SNES, Genesis — nút cảm ứng, tự lưu và chơi tiếp đúng chỗ bỏ dở, kèm trình phát nổi thu nhỏ."
+    "vi": "Pixcade ra mắt: game homebrew NES, Game Boy, GBA, SNES, Genesis — nút cảm ứng, tự lưu và chơi tiếp đúng chỗ bỏ dở, trình phát nổi thu nhỏ."
   }
 ]
