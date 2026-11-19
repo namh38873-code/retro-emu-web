@@ -3,217 +3,217 @@
     "build": 68,
     "v": "6.8",
     "date": "2026-11-19",
-    "en": "Bug fixes and feature improvements.",
-    "vi": "Sửa lỗi, cải thiện tính năng."
+    "en": "Fixed gamepad buttons, faster cover loading.",
+    "vi": "Sửa lỗi nút bấm, tải ảnh bìa nhanh hơn."
   },
   {
     "build": 67,
     "v": "6.7",
     "date": "2026-11-18",
-    "en": "System update.",
-    "vi": "Cập nhật hệ thống."
+    "en": "System update, PSP and PS1 removed.",
+    "vi": "Cập nhật hệ thống, bỏ PSP và PS1."
   },
   {
     "build": 66,
     "v": "6.6",
     "date": "2026-11-18",
-    "en": "System update.",
-    "vi": "Cập nhật hệ thống."
+    "en": "System update, PSP support tweaks.",
+    "vi": "Cập nhật hệ thống, chỉnh hỗ trợ PSP."
   },
   {
     "build": 65,
     "v": "6.5",
     "date": "2026-11-18",
-    "en": "System update.",
-    "vi": "Cập nhật hệ thống."
+    "en": "System update, PSP diagnostics build.",
+    "vi": "Cập nhật hệ thống, bản kiểm tra PSP."
   },
   {
     "build": 64,
     "v": "6.4",
     "date": "2026-11-18",
-    "en": "System update.",
-    "vi": "Cập nhật hệ thống."
+    "en": "System update, unblocked PSP mode.",
+    "vi": "Cập nhật hệ thống, gỡ chặn chế độ PSP."
   },
   {
     "build": 63,
     "v": "6.3",
     "date": "2026-11-18",
-    "en": "Bug fixes and system update.",
-    "vi": "Sửa lỗi, cập nhật hệ thống."
+    "en": "Fixed PSP mode getting stuck.",
+    "vi": "Sửa lỗi kẹt chế độ PSP."
   },
   {
     "build": 62,
     "v": "6.2",
     "date": "2026-11-18",
-    "en": "Feature improvements.",
-    "vi": "Cải thiện tính năng."
+    "en": "Feature improvement, add PSP games from zip files.",
+    "vi": "Cải thiện tính năng, thêm game PSP bằng file zip."
   },
   {
     "build": 61,
     "v": "6.1",
     "date": "2026-11-18",
-    "en": "System upgrade.",
-    "vi": "Nâng cấp hệ thống."
+    "en": "System upgrade, emulator cores built into the app.",
+    "vi": "Nâng cấp hệ thống, lõi giả lập có sẵn trong app."
   },
   {
     "build": 60,
     "v": "6.0",
     "date": "2026-11-18",
-    "en": "New features and system upgrade.",
-    "vi": "Thêm tính năng mới, nâng cấp hệ thống."
+    "en": "New feature, play PSP right inside the app.",
+    "vi": "Thêm tính năng mới, chơi PSP ngay trong app."
   },
   {
     "build": 59,
     "v": "5.9",
     "date": "2026-11-18",
-    "en": "New features.",
-    "vi": "Thêm tính năng mới."
+    "en": "New feature, play PSP games in the app.",
+    "vi": "Thêm tính năng mới, chơi game PSP trong app."
   },
   {
     "build": 58,
     "v": "5.8",
     "date": "2026-11-18",
-    "en": "New features.",
-    "vi": "Thêm tính năng mới."
+    "en": "New feature, PSP player.",
+    "vi": "Thêm tính năng mới, trình chơi PSP."
   },
   {
     "build": 57,
     "v": "5.7",
     "date": "2026-11-18",
-    "en": "New features and improvements.",
-    "vi": "Thêm tính năng mới, cải thiện tính năng."
+    "en": "New features, Profile tab and new Settings page.",
+    "vi": "Thêm tính năng mới, tab Hồ sơ và Cài đặt mới."
   },
   {
     "build": 56,
     "v": "5.6",
     "date": "2026-11-18",
-    "en": "Feature improvements.",
-    "vi": "Cải thiện tính năng."
+    "en": "Feature improvement, drag gamepad buttons to your positions.",
+    "vi": "Cải thiện tính năng, kéo chỉnh vị trí nút bấm."
   },
   {
     "build": 55,
     "v": "5.5",
     "date": "2026-11-18",
-    "en": "New features.",
-    "vi": "Thêm tính năng mới."
+    "en": "New feature, Settings right inside the game.",
+    "vi": "Thêm tính năng mới, Cài đặt ngay trong game."
   },
   {
     "build": 54,
     "v": "5.4",
     "date": "2026-11-12",
-    "en": "New features.",
-    "vi": "Thêm tính năng mới."
+    "en": "New feature, button tap sounds.",
+    "vi": "Thêm tính năng mới, tiếng bấm nút."
   },
   {
     "build": 53,
     "v": "5.3",
     "date": "2026-11-12",
-    "en": "Bug fixes.",
-    "vi": "Sửa lỗi."
+    "en": "Fixed the search box in Library.",
+    "vi": "Sửa lỗi ô tìm kiếm trong Thư viện."
   },
   {
     "build": 52,
     "v": "5.2",
     "date": "2026-11-12",
-    "en": "System upgrade.",
-    "vi": "Nâng cấp hệ thống."
+    "en": "System upgrade, fully offline play.",
+    "vi": "Nâng cấp hệ thống, chơi offline hoàn toàn."
   },
   {
     "build": 51,
     "date": "2026-11-12",
-    "en": "New features.",
+    "en": "New feature, update log.",
     "v": "5.1",
-    "vi": "Thêm tính năng mới."
+    "vi": "Thêm tính năng mới, nhật ký cập nhật."
   },
   {
     "build": 50,
     "date": "2026-11-12",
-    "en": "New features.",
+    "en": "New feature, Google sign-in in the app.",
     "v": "5.0",
-    "vi": "Thêm tính năng mới."
+    "vi": "Thêm tính năng mới, đăng nhập Google trong app."
   },
   {
     "build": 49,
     "date": "2026-11-12",
-    "en": "Feature improvements.",
+    "en": "Feature improvement, gamepad plate polish.",
     "v": "4.9",
-    "vi": "Cải thiện tính năng."
+    "vi": "Cải thiện tính năng, chỉnh tấm nền tay cầm."
   },
   {
     "build": 48,
     "date": "2026-11-12",
-    "en": "System update.",
+    "en": "System update, new-version popup.",
     "v": "4.8",
-    "vi": "Cập nhật hệ thống."
+    "vi": "Cập nhật hệ thống, popup báo bản mới."
   },
   {
     "build": 47,
     "date": "2026-11-12",
-    "en": "Feature improvements.",
+    "en": "Feature improvement, redesigned gamepad.",
     "v": "4.7",
-    "vi": "Cải thiện tính năng."
+    "vi": "Cải thiện tính năng, tay cầm kiểu mới."
   },
   {
     "build": 46,
     "date": "2026-11-12",
-    "en": "Feature improvements.",
+    "en": "Interface improvement, slimmer bottom bar.",
     "v": "4.6",
-    "vi": "Cải thiện tính năng."
+    "vi": "Cải thiện giao diện, thanh dưới gọn hơn."
   },
   {
     "build": 45,
     "date": "2026-11-12",
-    "en": "New games added.",
+    "en": "New games added, Atari 2600 section opens.",
     "v": "4.5",
-    "vi": "Thêm game mới."
+    "vi": "Thêm game mới, mở mục Atari 2600."
   },
   {
     "build": 44,
     "date": "2026-11-12",
-    "en": "New games and new features.",
+    "en": "New games added, Master System section opens.",
     "v": "4.4",
-    "vi": "Thêm game mới, thêm tính năng mới."
+    "vi": "Thêm game mới, mở mục Master System."
   },
   {
     "build": 43,
     "date": "2026-11-12",
-    "en": "System update.",
+    "en": "System update, update notices before applying.",
     "v": "4.3",
-    "vi": "Cập nhật hệ thống."
+    "vi": "Cập nhật hệ thống, báo trước khi cập nhật."
   },
   {
     "build": 42,
     "date": "2026-11-12",
-    "en": "New features.",
+    "en": "New feature, dedicated Add Game screen.",
     "v": "4.2",
-    "vi": "Thêm tính năng mới."
+    "vi": "Thêm tính năng mới, màn Thêm game riêng."
   },
   {
     "build": 41,
     "date": "2026-11-12",
-    "en": "New features.",
+    "en": "New feature, your ROMs stay on your device.",
     "v": "4.1",
-    "vi": "Thêm tính năng mới."
+    "vi": "Thêm tính năng mới, lưu ROM ngay trên máy."
   },
   {
     "build": 40,
     "date": "2026-11-12",
-    "en": "System upgrade.",
+    "en": "System upgrade, live online library.",
     "v": "4.0",
-    "vi": "Nâng cấp hệ thống."
+    "vi": "Nâng cấp hệ thống, thư viện trực tuyến."
   },
   {
     "build": 38,
     "date": "2026-11-12",
-    "en": "New features.",
+    "en": "New features, Google accounts and cloud saves.",
     "v": "3.8",
-    "vi": "Thêm tính năng mới."
+    "vi": "Thêm tính năng mới, tài khoản Google và lưu mây."
   },
   {
     "build": 1,
     "date": "2026-11-12",
-    "en": "First release.",
+    "en": "First release of Pixcade.",
     "v": "1.0",
-    "vi": "Phiên bản đầu tiên."
+    "vi": "Phiên bản đầu tiên của Pixcade."
   }
 ]
