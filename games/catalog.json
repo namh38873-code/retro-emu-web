@@ -4048,22 +4048,6 @@
   "ini": "CD"
  },
  {
-  "id": "cosmicattack",
-  "t": "Cosmic Attack",
-  "sys": "GB",
-  "core": "gb",
-  "file": "cosmic-attack.gbc",
-  "size": "32 KB",
-  "genre": "Arcade",
-  "quote": "One more try. Always.",
-  "syn": "Arcade homebrew for the Game Boy Color by Unknown, released for free.",
-  "author": "Unknown",
-  "license": "Freeware",
-  "c1": "#393839",
-  "c2": "#bdbabd",
-  "ini": "CA"
- },
- {
   "id": "coucou",
   "t": "coucou",
   "sys": "GB",
