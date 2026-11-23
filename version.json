@@ -1,6 +1,6 @@
 {
-  "build": 68,
-  "notes_en": "Fixed gamepad buttons, faster cover loading.",
-  "notes_vi": "Sửa lỗi nút bấm, tải ảnh bìa nhanh hơn.",
-  "version": "6.8"
+  "build": 69,
+  "version": "6.9",
+  "notes_en": "Added account deletion and a privacy page.",
+  "notes_vi": "Thêm xóa tài khoản và trang riêng tư."
 }
