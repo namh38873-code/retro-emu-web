@@ -1,6 +1,6 @@
 {
-  "build": 69,
-  "version": "6.9",
-  "notes_en": "Added account deletion and a privacy page.",
-  "notes_vi": "Thêm xóa tài khoản và trang riêng tư."
+  "build": 70,
+  "notes_en": "Added handheld mode.",
+  "notes_vi": "Th\u00eam ch\u1ebf \u0111\u1ed9 m\u00e1y ngang.",
+  "version": "7.0"
 }
