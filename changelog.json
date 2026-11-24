@@ -1,5 +1,12 @@
 [
  {
+  "build": 74,
+  "v": "7.4",
+  "date": "2026-11-24",
+  "en": "Fixed uneven game spacing in handheld mode.",
+  "vi": "Sửa lỗi khoảng cách game ở máy ngang."
+ },
+ {
   "build": 73,
   "v": "7.3",
   "date": "2026-11-24",

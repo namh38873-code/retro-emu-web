@@ -1,6 +1,6 @@
 {
-  "build": 73,
-  "notes_en": "Smaller game icons in handheld mode.",
-  "notes_vi": "Thu nh\u1ecf icon game \u1edf m\u00e1y ngang.",
-  "version": "7.3"
+  "build": 74,
+  "notes_en": "Fixed uneven game spacing in handheld mode.",
+  "notes_vi": "S\u1eeda l\u1ed7i kho\u1ea3ng c\u00e1ch game \u1edf m\u00e1y ngang.",
+  "version": "7.4"
 }
