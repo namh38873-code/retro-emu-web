@@ -1,5 +1,12 @@
 [
  {
+  "build": 71,
+  "v": "7.1",
+  "date": "2026-11-24",
+  "en": "Fixed turning off handheld mode.",
+  "vi": "Sửa lỗi tắt chế độ máy ngang."
+ },
+ {
   "build": 70,
   "v": "7.0",
   "date": "2026-11-23",

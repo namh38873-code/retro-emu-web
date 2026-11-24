@@ -1,6 +1,6 @@
 {
-  "build": 70,
-  "notes_en": "Added handheld mode.",
-  "notes_vi": "Th\u00eam ch\u1ebf \u0111\u1ed9 m\u00e1y ngang.",
-  "version": "7.0"
+  "build": 71,
+  "notes_en": "Fixed turning off handheld mode.",
+  "notes_vi": "S\u1eeda l\u1ed7i t\u1eaft ch\u1ebf \u0111\u1ed9 m\u00e1y ngang.",
+  "version": "7.1"
 }
