@@ -1,6 +1,6 @@
 {
-  "build": 71,
-  "notes_en": "Fixed turning off handheld mode.",
-  "notes_vi": "S\u1eeda l\u1ed7i t\u1eaft ch\u1ebf \u0111\u1ed9 m\u00e1y ngang.",
-  "version": "7.1"
+  "build": 72,
+  "notes_en": "Added background colors and images.",
+  "notes_vi": "Th\u00eam \u0111\u1ed5i m\u00e0u n\u1ec1n v\u00e0 \u1ea3nh n\u1ec1n.",
+  "version": "7.2"
 }
