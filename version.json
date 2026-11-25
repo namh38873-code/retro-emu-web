@@ -1,6 +1,6 @@
 {
-  "build": 76,
-  "notes_en": "New look, console-style home screen.",
-  "notes_vi": "Thêm giao diện mới, kiểu máy chơi game.",
-  "version": "7.6"
+ "build": 77,
+ "notes_en": "Smaller game icons, closer to console style.",
+ "notes_vi": "Thu nhỏ icon game, giống giao diện PS5 hơn.",
+ "version": "7.7"
 }
